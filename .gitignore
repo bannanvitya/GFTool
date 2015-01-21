@@ -1,0 +1,22 @@
+# Eclipse
+.classpath
+.project
+.settings/
+.tpignore
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+
+# Surefire-Junit
+output
+*.log
+
