@@ -1,4 +1,4 @@
-package tool;
+package ru.ar_consulting.autotest.soapclient;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

@@ -4,20 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.at_consulting</groupId>
+    <groupId>ru.at_consulting.autotest</groupId>
     <artifactId>gftool</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <properties>
-        <log4j.version>1.2.17</log4j.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-    </dependencies>
+    <packaging>pom</packaging>
+    <modules>
+        <module>api</module>
+        <module>gui</module>
+        <module>soapClient</module>
+    </modules>
 
     <build>
         <plugins>
@@ -26,10 +21,9 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>8.1.2</version>
                 <configuration>
-                    <mainClass>tool.MainApp</mainClass>
+                    <mainClass>MainApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>
