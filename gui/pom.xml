@@ -28,12 +28,13 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+        <!-- To use the plugin goals in your POM or parent POM -->
             <plugin>
                 <groupId>com.zenjava</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>8.1.2</version>
                 <configuration>
-                    <mainClass>MainApp</mainClass>
+                    <mainClass>ru.at_consulting.autotest.gui.MainApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

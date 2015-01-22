@@ -1,4 +1,4 @@
-package ru.ar_consulting.autotest.soapclient;
+package ru.ar_consulting.autotest.gui;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

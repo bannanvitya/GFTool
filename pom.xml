@@ -15,15 +15,15 @@
     </modules>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>com.zenjava</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>8.1.2</version>
-                <configuration>
-                    <mainClass>MainApp</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
+        <!-- To define the plugin version in your parent POM -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.zenjava</groupId>
+                    <artifactId>javafx-maven-plugin</artifactId>
+                    <version>8.1.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>
