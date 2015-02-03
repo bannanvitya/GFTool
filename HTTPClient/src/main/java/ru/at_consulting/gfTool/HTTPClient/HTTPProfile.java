@@ -6,6 +6,7 @@ import java.util.Properties;
 
 public class HTTPProfile implements Profile {
     private Properties serviceProp;
+    private Properties headers = null;
     private String profileId = null;
 
 
@@ -26,8 +27,18 @@ public class HTTPProfile implements Profile {
         serviceProp = prop;
     }
 
+    public void setId(String id, Properties prop, Properties head) throws ProfileNotFoundException, ProfileStructureException {
+        profileId = id;
+        serviceProp = prop;
+        headers = head;
+    }
+
     public Properties getProperties() {
         return serviceProp;
+    }
+
+    public Properties getHeaders(){
+        return headers;
     }
     @Override
     public void updateValue(String key, String newValue) throws ProfileUpdateException {

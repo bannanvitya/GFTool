@@ -10,8 +10,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by VKhozhaynov on 02.02.2015.
@@ -39,7 +41,15 @@ public class HTTPClient implements Client {
 
             if (profile.getProperties().getProperty("methodType").equals("GET") ){
 
-                con.setRequestProperty("User-Agent", "USER_AGENT");
+                Properties headers = profile.getHeaders();
+                if (headers != null) {
+                    Enumeration<?> heads = headers.propertyNames();
+                    while (heads.hasMoreElements()) {
+                        String key = (String) heads.nextElement();
+                        String value = headers.getProperty(key);
+                        con.setRequestProperty(key, value);
+                    }
+                }
 
                 httpResultCode = con.getResponseCode(); // Code
 
@@ -89,11 +99,8 @@ public class HTTPClient implements Client {
 
     @Override
     public Request prepareRequest(String requestId) throws PrepareRequestException, ProfileStructureException {
-
         return null;
     }
-
-
 
 
     @Override
