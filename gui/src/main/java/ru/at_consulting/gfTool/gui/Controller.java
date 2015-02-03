@@ -16,17 +16,6 @@ import ru.at_consulting.gfTool.api.ProfileStructureException;
 import ru.at_consulting.gfTool.api.SendRequestException;
 
 
-import com.ibm.jms.JMSTextMessage;
-import com.ibm.mq.jms.JMSC;
-import com.ibm.mq.jms.MQQueueConnection;
-import com.ibm.mq.jms.MQQueueConnectionFactory;
-import com.ibm.mq.jms.MQQueueSender;
-import com.ibm.mq.jms.MQQueueSession;
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.Session;
-
-
 import java.io.*;
 import java.net.URL;
 import java.util.Date;
