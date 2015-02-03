@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>gftool</artifactId>
-        <groupId>ru.at_consulting.autotest</groupId>
+        <groupId>ru.at_consulting.gfTool</groupId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -28,7 +28,7 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
-                    <plugin>
+            <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.17</version>
@@ -45,42 +45,13 @@
                                 <version>2.17</version>
                             </dependency>
                         </dependencies>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.mock-server</groupId>
-                        <artifactId>mockserver-maven-plugin</artifactId>
-                        <version>3.4</version>
-                        <configuration>
-                            <serverPort>1081</serverPort>
-                            <logLevel>DEBUG</logLevel>
-                            <timeout>10</timeout>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>start-mock-server</id>
-                                <phase>process-test-resources</phase>
-                                <goals>
-                                   <!-- <goal>stopForked</goal> -->
-                                   <goal>start</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-mock-server</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                   <!--  <goal>stopForked</goal> -->
-                                   <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                
+            </plugin>
         </plugins>
     </build>
 	
 	<dependencies>
         <dependency>
-            <groupId>ru.at_consulting.autotest</groupId>
+            <groupId>ru.at_consulting.gfTool</groupId>
             <artifactId>api</artifactId>
             <version>1.0</version>
         </dependency>
@@ -104,25 +75,5 @@
             <artifactId>junit</artifactId>
             <version>4.11</version>
         </dependency>
-		<dependency>
-                    <groupId>org.mock-server</groupId>
-                    <artifactId>mockserver-netty</artifactId>
-                    <version>3.4</version>
-                    <scope>test</scope>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.apache.logging.log4j</groupId>
-                            <artifactId>slf4j-impl</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>org.slf4j</groupId>
-                            <artifactId>slf4j-log4j12</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>log4j</groupId>
-                            <artifactId>log4j</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
     </dependencies>
 </project>
