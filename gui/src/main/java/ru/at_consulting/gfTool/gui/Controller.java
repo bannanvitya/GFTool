@@ -1,13 +1,16 @@
 package ru.at_consulting.gfTool.gui;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
+import javafx.scene.control.*;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.input.InputEvent;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqClient;
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqProfile;
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqRequest;
@@ -22,7 +25,7 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable{
+public class Controller implements Initializable {
     @FXML public Button button1;
     @FXML public TextField hostField;
     @FXML public TextField portField;
@@ -37,26 +40,31 @@ public class Controller implements Initializable{
     @FXML public Tab soapTab;
 
 
+    @FXML public Button httpButton;
+    @FXML public TextField contentTypeField;
+    @FXML public RadioButton appJson;
+    @FXML public RadioButton textXml;
+
+
     @Override // This method is called by the FXMLLoader when initialization is complete
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
         if ((new File(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects")).length() != 0)
-        try {
-            ObjectInputStream ois =
-                    new ObjectInputStream(new FileInputStream(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects"));
+            try {
+                ObjectInputStream ois =
+                        new ObjectInputStream(new FileInputStream(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects"));
 
-            hostField.setText(ois.readLine());
-            portField.setText(ois.readLine());
-            queueManagerField.setText(ois.readLine());
-            channelField.setText(ois.readLine());
-            transportTypeField.setText(ois.readLine());
-            queueNameField.setText(ois.readLine());
-            userIdField.setText(ois.readLine());
-            passField.setText(ois.readLine());
-            messageField.setText(ois.readLine());
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
+                hostField.setText(ois.readLine());
+                portField.setText(ois.readLine());
+                queueManagerField.setText(ois.readLine());
+                channelField.setText(ois.readLine());
+                transportTypeField.setText(ois.readLine());
+                queueNameField.setText(ois.readLine());
+                userIdField.setText(ois.readLine());
+                passField.setText(ois.readLine());
+                messageField.setText(ois.readLine());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
 
         button1.setOnAction(new EventHandler<ActionEvent>() {
@@ -69,14 +77,14 @@ public class Controller implements Initializable{
                     ObjectOutputStream oout = new ObjectOutputStream(out);
 
                     oout.writeChars(hostField.getText() + "\n");
-                    oout.writeChars(portField.getText()+ "\n");
-                    oout.writeChars(queueManagerField.getText()+ "\n");
-                    oout.writeChars(channelField.getText()+ "\n");
-                    oout.writeChars(transportTypeField.getText()+ "\n");
-                    oout.writeChars(queueNameField.getText()+ "\n");
-                    oout.writeChars(userIdField.getText()+ "\n");
-                    oout.writeChars(passField.getText()+ "\n");
-                    oout.writeChars(messageField.getText()+ "\n");
+                    oout.writeChars(portField.getText() + "\n");
+                    oout.writeChars(queueManagerField.getText() + "\n");
+                    oout.writeChars(channelField.getText() + "\n");
+                    oout.writeChars(transportTypeField.getText() + "\n");
+                    oout.writeChars(queueNameField.getText() + "\n");
+                    oout.writeChars(userIdField.getText() + "\n");
+                    oout.writeChars(passField.getText() + "\n");
+                    oout.writeChars(messageField.getText() + "\n");
                     oout.close();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -111,7 +119,7 @@ public class Controller implements Initializable{
                 Date now = new Date();
 
                 try {
-                    client.prepareRequest("request."+now.toString());
+                    client.prepareRequest("request." + now.toString());
 
                 } catch (ProfileStructureException e) {
                     e.printStackTrace();
@@ -128,6 +136,31 @@ public class Controller implements Initializable{
             }
         });
 
+
+        httpButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
+        });
+
+        contentTypeField.textProperty().addListener(new ChangeListener<String>(){
+            @Override
+            public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+                if (!contentTypeField.getText().equals("")) {
+                    appJson.setTextFill(Color.GRAY);
+                    textXml.setTextFill(Color.GRAY);
+                }
+                else {
+                    appJson.setTextFill(Color.BLACK);
+                    textXml.setTextFill(Color.BLACK);
+                }
+            }
+        });
+
+
     }
+
 
 }

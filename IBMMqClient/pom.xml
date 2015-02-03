@@ -18,10 +18,17 @@
         </dependency>
         <dependency>
             <groupId>com.ibm</groupId>
-            <artifactId>ibm.mq</artifactId>
+            <artifactId>ibm</artifactId>
             <version>7.0.1.0</version>
             <scope>system</scope>
             <systemPath>${project.root}/libs/com.ibm.mqjms.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.ibm.mq</groupId>
+            <artifactId>ibm.mq</artifactId>
+            <version>7.0.1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.root}/libs/com.ibm.mq.jmqi.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>javax</groupId>

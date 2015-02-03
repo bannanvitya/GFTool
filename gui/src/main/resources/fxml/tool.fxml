@@ -18,39 +18,60 @@
             <content>
               <AnchorPane>
                      <children>
-                        <TextArea fx:id="messageField" layoutY="36.0" prefHeight="615.0" prefWidth="543.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="450.0" AnchorPane.topAnchor="36.0" />
-                        <VBox layoutX="715.0" layoutY="14.0" prefHeight="635.0" prefWidth="280.0" spacing="2.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
-                           <children>
-                              <TextField fx:id="hostField" prefHeight="22.0" />
-                              <TextField fx:id="portField" prefHeight="22.0" />
-                              <TextField fx:id="queueManagerField" prefHeight="22.0" />
-                              <TextField fx:id="channelField" prefHeight="22.0" />
-                              <TextField fx:id="transportTypeField" prefHeight="22.0" prefWidth="280.0" />
-                              <Separator prefHeight="10.0" prefWidth="147.0" />
-                              <TextField fx:id="queueNameField" prefHeight="22.0">
-                                 <VBox.margin>
-                                    <Insets bottom="3.0" />
-                                 </VBox.margin></TextField>
-                              <Separator prefHeight="39.0" prefWidth="147.0" />
-                              <TextField fx:id="userIdField" prefHeight="22.0" />
-                              <TextField fx:id="passField" prefHeight="22.0" />
-                           </children>
-                        </VBox>
-                        <VBox alignment="TOP_RIGHT" layoutX="559.0" layoutY="14.0" prefHeight="644.0" prefWidth="147.0" spacing="5.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="287.0" AnchorPane.topAnchor="7.0">
-                           <children>
-                              <Label prefHeight="22.0" text="Host" />
-                              <Label prefHeight="22.0" text="Port" />
-                              <Label prefHeight="22.0" text="QueueManager" />
-                              <Label prefHeight="22.0" text="Channel" />
-                              <Label prefHeight="22.0" prefWidth="77.0" text="TransportType" />
-                              <Separator prefHeight="10.0" prefWidth="147.0" />
-                              <Label prefHeight="22.0" text="QueueName" />
-                              <Separator prefHeight="39.0" prefWidth="147.0" />
-                              <Label prefHeight="22.0" text="UserID" />
-                              <Label prefHeight="22.0" text="Password" />
-                           </children>
-                        </VBox>
+                        <TextArea fx:id="messageField" layoutY="36.0" prefHeight="640.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="403.0" AnchorPane.topAnchor="36.0" />
                         <Button fx:id="button1" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.bottomAnchor="651.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                        <FlowPane alignment="TOP_RIGHT" columnHalignment="RIGHT" layoutX="605.0" layoutY="14.0" prefHeight="669.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="605.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
+                           <children>
+                              <Label prefHeight="22.0" text="Host">
+                                 <FlowPane.margin>
+                                    <Insets left="50.0" right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="hostField" prefHeight="25.0" prefWidth="300.0" />
+                              <Label prefHeight="22.0" text="Port">
+                                 <FlowPane.margin>
+                                    <Insets right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="portField" prefHeight="25.0" prefWidth="300.0" />
+                              <Label prefHeight="22.0" text="QueueManager">
+                                 <FlowPane.margin>
+                                    <Insets right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="queueManagerField" prefHeight="22.0" prefWidth="300.0" />
+                              <Label prefHeight="22.0" text="Channel">
+                                 <FlowPane.margin>
+                                    <Insets right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="channelField" prefHeight="22.0" prefWidth="300.0" />
+                              <Label prefHeight="22.0" prefWidth="77.0" text="TransportType">
+                                 <FlowPane.margin>
+                                    <Insets right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="transportTypeField" prefHeight="22.0" prefWidth="300.0" />
+                              <Label prefHeight="22.0" text="QueueName">
+                                 <FlowPane.margin>
+                                    <Insets right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="queueNameField" prefHeight="22.0" prefWidth="300.0" />
+                              <Label prefHeight="22.0" text="UserID">
+                                 <FlowPane.margin>
+                                    <Insets right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="userIdField" prefHeight="22.0" prefWidth="300.0" />
+                              <Label prefHeight="22.0" text="Password">
+                                 <FlowPane.margin>
+                                    <Insets right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="passField" prefHeight="22.0" prefWidth="300.0" />
+                           </children>
+                        </FlowPane>
                      </children>
                   </AnchorPane>
             </content>
@@ -59,40 +80,68 @@
                <content>
                   <AnchorPane>
                      <children>
-                        <Button fx:id="button11" layoutX="7.0" layoutY="7.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.bottomAnchor="651.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
-                        <VBox alignment="TOP_RIGHT" prefHeight="644.0" prefWidth="147.0" spacing="5.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="287.0" AnchorPane.topAnchor="7.0">
+                        <Button fx:id="httpButton" layoutX="7.0" layoutY="7.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.bottomAnchor="651.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                        <TextArea fx:id="httpMessageField1" layoutX="438.0" layoutY="65.0" prefHeight="615.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="36.0" />
+                        <FlowPane alignment="TOP_RIGHT" columnHalignment="RIGHT" layoutX="597.0" layoutY="7.0" prefHeight="669.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
                            <children>
-                              <Label prefHeight="22.0" text="Host" />
-                              <Label prefHeight="22.0" text="Port" />
-                              <Label prefHeight="22.0" text="QueueManager" />
-                              <Label prefHeight="22.0" text="Channel" />
-                              <Label prefHeight="22.0" prefWidth="77.0" text="TransportType" />
-                              <Separator prefHeight="10.0" prefWidth="147.0" />
-                              <Label prefHeight="22.0" text="QueueName" />
-                              <Separator prefHeight="39.0" prefWidth="147.0" />
-                              <Label prefHeight="22.0" text="UserID" />
-                              <Label prefHeight="22.0" text="Password" />
+                              <Label text="Method:">
+                                 <FlowPane.margin>
+                                    <Insets right="340.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <RadioButton fx:id="getM" alignment="CENTER_LEFT" mnemonicParsing="false" prefWidth="80.0" selected="true" text="GET">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="request_type" />
+                                 </toggleGroup>
+                                 <FlowPane.margin>
+                                    <Insets right="300.0" />
+                                 </FlowPane.margin>
+                              </RadioButton>
+                              <RadioButton fx:id="postM" mnemonicParsing="false" prefWidth="80.0" text="POST" toggleGroup="$request_type">
+                                 <FlowPane.margin>
+                                    <Insets right="300.0" />
+                                 </FlowPane.margin>
+                              </RadioButton>
+                              <Separator halignment="RIGHT" orientation="VERTICAL" prefHeight="38.0" prefWidth="1.0">
+                                 <FlowPane.margin>
+                                    <Insets left="370.0" />
+                                 </FlowPane.margin>
+                              </Separator>
+                              <Label prefHeight="22.0" text="URL">
+                                 <FlowPane.margin>
+                                    <Insets left="50.0" right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="urlField" prefHeight="25.0" prefWidth="300.0" />
+                              <Label prefHeight="22.0" text="ContentType:">
+                                 <FlowPane.margin>
+                                    <Insets left="2.0" right="318.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <RadioButton fx:id="appJson" mnemonicParsing="false" prefWidth="130.0" selected="true" text="application/json">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="content_type" />
+                                 </toggleGroup>
+                                 <FlowPane.margin>
+                                    <Insets right="250.0" />
+                                 </FlowPane.margin>
+                              </RadioButton>
+                              <RadioButton fx:id="textXml" mnemonicParsing="false" prefWidth="130.0" text="text/xml" toggleGroup="$content_type">
+                                 <FlowPane.margin>
+                                    <Insets right="250.0" />
+                                 </FlowPane.margin>
+                              </RadioButton>
+                              <Label text="or other:">
+                                 <FlowPane.margin>
+                                    <Insets right="4.0" />
+                                 </FlowPane.margin>
+                              </Label>
+                              <TextField fx:id="contentTypeField" prefHeight="25.0" prefWidth="300.0">
+                                 <FlowPane.margin>
+                                    <Insets />
+                                 </FlowPane.margin></TextField>
                            </children>
-                        </VBox>
-                        <VBox layoutX="247.0" layoutY="5.0" prefHeight="635.0" prefWidth="280.0" spacing="2.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
-                           <children>
-                              <TextField fx:id="hostField1" prefHeight="22.0" />
-                              <TextField fx:id="portField1" prefHeight="22.0" />
-                              <TextField fx:id="queueManagerField1" prefHeight="22.0" />
-                              <TextField fx:id="channelField1" prefHeight="22.0" />
-                              <TextField fx:id="transportTypeField1" prefHeight="22.0" prefWidth="280.0" />
-                              <Separator prefHeight="10.0" prefWidth="147.0" />
-                              <TextField fx:id="queueNameField1" prefHeight="22.0">
-                                 <VBox.margin>
-                                    <Insets bottom="3.0" />
-                                 </VBox.margin>
-                              </TextField>
-                              <Separator prefHeight="39.0" prefWidth="147.0" />
-                              <TextField fx:id="userIdField1" prefHeight="22.0" />
-                              <TextField fx:id="passField1" prefHeight="22.0" />
-                           </children>
-                        </VBox>
-                        <TextArea fx:id="messageField1" layoutX="438.0" layoutY="65.0" prefHeight="615.0" prefWidth="543.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="36.0" />
+                        </FlowPane>
                      </children>
                   </AnchorPane>
                </content>
