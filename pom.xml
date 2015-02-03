@@ -13,6 +13,7 @@
         <module>gui</module>
         <module>soapClient</module>
         <module>IBMMqClient</module>
+        <module>HTTPClient</module>
     </modules>
 
     <build>

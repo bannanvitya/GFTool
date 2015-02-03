@@ -18,8 +18,8 @@
             <content>
               <AnchorPane>
                      <children>
-                        <TextArea fx:id="messageField" layoutY="36.0" prefHeight="640.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="403.0" AnchorPane.topAnchor="36.0" />
-                        <Button fx:id="button1" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.bottomAnchor="651.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                        <TextArea fx:id="messageField" layoutY="36.0" prefHeight="640.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="403.0" AnchorPane.topAnchor="62.0" />
+                        <Button fx:id="button1" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
                         <FlowPane alignment="TOP_RIGHT" columnHalignment="RIGHT" layoutX="605.0" layoutY="14.0" prefHeight="669.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="605.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
                            <children>
                               <Label prefHeight="22.0" text="Host">
@@ -72,6 +72,7 @@
                               <TextField fx:id="passField" prefHeight="22.0" prefWidth="300.0" />
                            </children>
                         </FlowPane>
+                        <Label layoutX="6.0" layoutY="32.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="39.0" />
                      </children>
                   </AnchorPane>
             </content>
@@ -80,9 +81,9 @@
                <content>
                   <AnchorPane>
                      <children>
-                        <Button fx:id="httpButton" layoutX="7.0" layoutY="7.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.bottomAnchor="651.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
-                        <TextArea fx:id="httpMessageField1" layoutX="438.0" layoutY="65.0" prefHeight="615.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="36.0" />
-                        <FlowPane alignment="TOP_RIGHT" columnHalignment="RIGHT" layoutX="597.0" layoutY="7.0" prefHeight="669.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
+                        <Button fx:id="httpButton" layoutX="7.0" layoutY="7.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                        <TextArea fx:id="httpMessageField1" layoutX="438.0" layoutY="62.0" prefHeight="614.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="62.0" />
+                        <FlowPane alignment="TOP_RIGHT" columnHalignment="RIGHT" layoutX="597.0" layoutY="7.0" prefHeight="229.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.bottomAnchor="478.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
                            <children>
                               <Label text="Method:">
                                  <FlowPane.margin>
@@ -142,6 +143,18 @@
                                  </FlowPane.margin></TextField>
                            </children>
                         </FlowPane>
+                        <TextArea fx:id="httpResponseField" layoutX="605.0" layoutY="285.0" prefHeight="201.0" prefWidth="388.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="7.0" />
+                        <Label layoutX="605.0" layoutY="482.0" text="Response" />
+                        <Label layoutX="7.0" layoutY="39.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="39.0" />
+                        <TableView fx:id="paramTable" editable="true" layoutX="605.0" layoutY="245.0" prefHeight="168.0" prefWidth="387.0">
+                          <columns>
+                            <TableColumn fx:id="paramName" prefWidth="161.0" text="ParamName" />
+                            <TableColumn fx:id="paramValue" prefWidth="225.0" text="ParamValue" />
+                          </columns>
+                        </TableView>
+                        <TextField fx:id="paramNameField" layoutX="605.0" layoutY="425.0" promptText="ParamName" />
+                        <TextField fx:id="paramValueField" layoutX="758.0" layoutY="425.0" prefHeight="25.0" prefWidth="152.0" promptText="ParamValue" />
+                        <Button fx:id="addRow" layoutX="916.0" layoutY="425.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Add" />
                      </children>
                   </AnchorPane>
                </content>

@@ -1,16 +1,17 @@
 package ru.at_consulting.gfTool.gui;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.fxml.Initializable;
-import javafx.scene.input.InputEvent;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqClient;
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqProfile;
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqRequest;
@@ -44,10 +45,30 @@ public class Controller implements Initializable {
     @FXML public TextField contentTypeField;
     @FXML public RadioButton appJson;
     @FXML public RadioButton textXml;
+    @FXML public RadioButton getM;
+    @FXML public RadioButton postM;
+    @FXML public TableView<Params> paramTable;
+    @FXML public TextField paramNameField;
+    @FXML public TextField paramValueField;
+    @FXML public Button addRow;
+
+
+
+
 
 
     @Override // This method is called by the FXMLLoader when initialization is complete
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
+        if (!getM.isSelected()) {
+            paramTable.setVisible(false);
+            paramNameField.setVisible(false);
+            paramValueField.setVisible(false);
+            addRow.setVisible(false);
+        }
+
+        final ObservableList<Params> data = FXCollections.observableArrayList(); // For TableView in HTTP Tab
+        paramTable.setItems(data);
+
         if ((new File(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects")).length() != 0)
             try {
                 ObjectInputStream ois =
@@ -145,6 +166,45 @@ public class Controller implements Initializable {
             }
         });
 
+        getM.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                paramTable.setVisible(true);
+                paramNameField.setVisible(true);
+                paramValueField.setVisible(true);
+                addRow.setVisible(true);
+            }
+        });
+
+        postM.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                paramTable.setVisible(false);
+                paramNameField.setVisible(false);
+                paramValueField.setVisible(false);
+                addRow.setVisible(false);
+
+            }
+        });
+
+        addRow.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (!paramNameField.getText().equals("") && !paramValueField.getText().equals("")){
+                    data.add(new Params(paramNameField.getText(), paramValueField.getText()));
+                    paramNameField.clear();
+                    paramValueField.clear();
+                }
+
+            }
+        });
+
+
+
+
+
         contentTypeField.textProperty().addListener(new ChangeListener<String>(){
             @Override
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
@@ -158,6 +218,35 @@ public class Controller implements Initializable {
                 }
             }
         });
+
+
+    }
+
+    public static class Params {
+
+        private final SimpleStringProperty paramName;
+        private final SimpleStringProperty paramValue;
+
+        private Params(String pName, String pValue) {
+            this.paramName = new SimpleStringProperty(pName);
+            this.paramValue = new SimpleStringProperty(pValue);
+        }
+
+        public String getFirstName() {
+            return paramName.get();
+        }
+
+        public void setFirstName(String fName) {
+            paramName.set(fName);
+        }
+
+        public String getLastName() {
+            return paramValue.get();
+        }
+
+        public void setLastName(String fName) {
+            paramValue.set(fName);
+        }
 
 
     }
