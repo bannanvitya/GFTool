@@ -31,33 +31,34 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
     @FXML public Button jmsButton;
-    @FXML public TextField hostField;
-    @FXML public TextField portField;
-    @FXML public TextField queueManagerField;
-    @FXML public TextField channelField;
-    @FXML public TextField transportTypeField;
-    @FXML public TextField queueNameField;
-    @FXML public TextField userIdField;
-    @FXML public TextField passField;
-    @FXML public TextArea messageField;
+    @FXML public TextField jmsHostField;
+    @FXML public TextField jmsPortField;
+    @FXML public TextField jmsQueueManagerField;
+    @FXML public TextField jmsChannelField;
+    @FXML public TextField jmsTransportTypeField;
+    @FXML public TextField jmsQueueNameField;
+    @FXML public TextField jmsUserIdField;
+    @FXML public TextField jmsPassField;
+    @FXML public TextArea jmsRequestField;
+
     @FXML public Tab jmsTab;
     @FXML public Tab httpTab;
     @FXML public Tab soapTab;
 
 
     @FXML public Button httpButton;
-    @FXML public TextField contentTypeField;
-    @FXML public RadioButton appJson;
-    @FXML public RadioButton textXml;
-    @FXML public RadioButton otherContentType;
-    @FXML public RadioButton getM;
-    @FXML public RadioButton postM;
-    @FXML public TableView<Params> paramTable;
-    @FXML public TextField paramNameField;
-    @FXML public TextField paramValueField;
-    @FXML public TextField urlField;
-    @FXML public Button addRow;
-    @FXML public TextArea httpMessageField;
+    @FXML public TextField httpContentTypeField;
+    @FXML public RadioButton httpAppJson;
+    @FXML public RadioButton httpTextXml;
+    @FXML public RadioButton httpOtherContentType;
+    @FXML public RadioButton httpGetMethod;
+    @FXML public RadioButton httpPostMethod;
+    @FXML public TableView<Params> httpParamTable;
+    @FXML public TextField httpParamNameField;
+    @FXML public TextField httpParamValueField;
+    @FXML public TextField httpUrlField;
+    @FXML public Button httpAddRow;
+    @FXML public TextArea httpRequestField;
     @FXML public TextArea httpResponseField;
 
 
@@ -67,29 +68,29 @@ public class Controller implements Initializable {
 
     @Override // This method is called by the FXMLLoader when initialization is complete
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        if (!getM.isSelected()) {
-            paramTable.setVisible(false);
-            paramNameField.setVisible(false);
-            paramValueField.setVisible(false);
-            addRow.setVisible(false);
+        if (!httpGetMethod.isSelected()) {
+            httpParamTable.setVisible(false);
+            httpParamNameField.setVisible(false);
+            httpParamValueField.setVisible(false);
+            httpAddRow.setVisible(false);
         }
 
         //final ObservableList<Params> data = FXCollections.observableArrayList(); // For TableView in HTTP Tab
-        //paramTable.setItems(data);
+        //httpParamTable.setItems(data);
 
         if ((new File(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects")).length() != 0)
             try {
                 ObjectInputStream ois =
                         new ObjectInputStream(new FileInputStream(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects"));
 
-                hostField.setText(ois.readLine());
-                portField.setText(ois.readLine());
-                queueManagerField.setText(ois.readLine());
-                channelField.setText(ois.readLine());
-                transportTypeField.setText(ois.readLine());
-                queueNameField.setText(ois.readLine());
-                userIdField.setText(ois.readLine());
-                passField.setText(ois.readLine());
+                jmsHostField.setText(ois.readLine());
+                jmsPortField.setText(ois.readLine());
+                jmsQueueManagerField.setText(ois.readLine());
+                jmsChannelField.setText(ois.readLine());
+                jmsTransportTypeField.setText(ois.readLine());
+                jmsQueueNameField.setText(ois.readLine());
+                jmsUserIdField.setText(ois.readLine());
+                jmsPassField.setText(ois.readLine());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -100,9 +101,9 @@ public class Controller implements Initializable {
                 ObjectInputStream ois =
                         new ObjectInputStream(new FileInputStream(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects"));
 
-                urlField.setText(ois.readLine());
-                paramNameField.setText(ois.readLine());
-                paramValueField.setText(ois.readLine());
+                httpUrlField.setText(ois.readLine());
+                httpParamNameField.setText(ois.readLine());
+                httpParamValueField.setText(ois.readLine());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -119,7 +120,7 @@ public class Controller implements Initializable {
                     fileData.append(readData);
                 }
                 reader.close();
-                messageField.setText(fileData.toString());
+                jmsRequestField.setText(fileData.toString());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -136,7 +137,7 @@ public class Controller implements Initializable {
                     fileData.append(readData);
                 }
                 reader.close();
-                httpMessageField.setText(fileData.toString());
+                httpRequestField.setText(fileData.toString());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -152,15 +153,15 @@ public class Controller implements Initializable {
                     FileOutputStream out = new FileOutputStream(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
                     ObjectOutputStream oout = new ObjectOutputStream(out);
 
-                    oout.writeChars(hostField.getText() + "\n");
-                    oout.writeChars(portField.getText() + "\n");
-                    oout.writeChars(queueManagerField.getText() + "\n");
-                    oout.writeChars(channelField.getText() + "\n");
-                    oout.writeChars(transportTypeField.getText() + "\n");
-                    oout.writeChars(queueNameField.getText() + "\n");
-                    oout.writeChars(userIdField.getText() + "\n");
-                    oout.writeChars(passField.getText() + "\n");
-                    oout.writeChars(messageField.getText() + "\n");
+                    oout.writeChars(jmsHostField.getText() + "\n");
+                    oout.writeChars(jmsPortField.getText() + "\n");
+                    oout.writeChars(jmsQueueManagerField.getText() + "\n");
+                    oout.writeChars(jmsChannelField.getText() + "\n");
+                    oout.writeChars(jmsTransportTypeField.getText() + "\n");
+                    oout.writeChars(jmsQueueNameField.getText() + "\n");
+                    oout.writeChars(jmsUserIdField.getText() + "\n");
+                    oout.writeChars(jmsPassField.getText() + "\n");
+                    oout.writeChars(jmsRequestField.getText() + "\n");
                     oout.close();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -176,7 +177,7 @@ public class Controller implements Initializable {
                     }
 
                     // get the content in bytes
-                    byte[] contentInBytes = messageField.getText().getBytes();
+                    byte[] contentInBytes = jmsRequestField.getText().getBytes();
 
                     fop.write(contentInBytes);
                     fop.flush();
@@ -189,14 +190,14 @@ public class Controller implements Initializable {
 
                 Properties prop = new Properties();
 
-                prop.setProperty("host", hostField.getText());
-                prop.setProperty("port", portField.getText());
-                prop.setProperty("queueManager", queueManagerField.getText());
-                prop.setProperty("channel", channelField.getText());
-                prop.setProperty("transportType", transportTypeField.getText());
-                prop.setProperty("queueName", queueNameField.getText());
-                prop.setProperty("userId", userIdField.getText());
-                prop.setProperty("password", passField.getText());
+                prop.setProperty("host", jmsHostField.getText());
+                prop.setProperty("port", jmsPortField.getText());
+                prop.setProperty("queueManager", jmsQueueManagerField.getText());
+                prop.setProperty("channel", jmsChannelField.getText());
+                prop.setProperty("transportType", jmsTransportTypeField.getText());
+                prop.setProperty("queueName", jmsQueueNameField.getText());
+                prop.setProperty("userId", jmsUserIdField.getText());
+                prop.setProperty("password", jmsPassField.getText());
 
 
                 try {
@@ -207,7 +208,7 @@ public class Controller implements Initializable {
                     e.printStackTrace();
                 }
 
-                IBMMqRequest request = new IBMMqRequest(messageField.getText());
+                IBMMqRequest request = new IBMMqRequest(jmsRequestField.getText());
                 IBMMqClient client = new IBMMqClient();
                 client.setProfile(profile);
 
@@ -240,9 +241,9 @@ public class Controller implements Initializable {
                     FileOutputStream out = new FileOutputStream(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects");
                     ObjectOutputStream oout = new ObjectOutputStream(out);
 
-                    oout.writeChars(urlField.getText() + "\n");
-                    oout.writeChars(paramNameField.getText() + "\n");
-                    oout.writeChars(paramValueField.getText() + "\n");
+                    oout.writeChars(httpUrlField.getText() + "\n");
+                    oout.writeChars(httpParamNameField.getText() + "\n");
+                    oout.writeChars(httpParamValueField.getText() + "\n");
                     oout.close();
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -258,7 +259,7 @@ public class Controller implements Initializable {
                     }
 
                     // get the content in bytes
-                    byte[] contentInBytes = httpMessageField.getText().getBytes();
+                    byte[] contentInBytes = httpRequestField.getText().getBytes();
 
                     fop.write(contentInBytes);
                     fop.flush();
@@ -272,24 +273,24 @@ public class Controller implements Initializable {
                 Properties prop = new Properties();
                 Properties headers = new Properties();
 
-                for (Params param : paramTable.getItems()) {
+                for (Params param : httpParamTable.getItems()) {
                     headers.setProperty(param.getParamName(), param.getParamValue());
                 }
 
-                prop.setProperty("url", urlField.getText());
+                prop.setProperty("url", httpUrlField.getText());
 
-                if (getM.isSelected())
+                if (httpGetMethod.isSelected())
                     prop.setProperty("methodType", "GET");
                 else
                     prop.setProperty("methodType", "POST");
 
 
-                if (appJson.isSelected())
+                if (httpAppJson.isSelected())
                     prop.setProperty("contentType", "application/json");
-                else if (textXml.isSelected())
+                else if (httpTextXml.isSelected())
                     prop.setProperty("contentType", "text/xml");
-                else if (otherContentType.isSelected())
-                    prop.setProperty("contentType", contentTypeField.getText());
+                else if (httpOtherContentType.isSelected())
+                    prop.setProperty("contentType", httpContentTypeField.getText());
 
 
                 try {
@@ -305,7 +306,7 @@ public class Controller implements Initializable {
                 }
 
                 HTTPClient client = new HTTPClient();
-                HTTPRequest req = new HTTPRequest(httpMessageField.getText());
+                HTTPRequest req = new HTTPRequest(httpRequestField.getText());
                 client.setProfile(profile);
                 HTTPResponse resp = null;
                 try {
@@ -321,36 +322,36 @@ public class Controller implements Initializable {
             }
         });
 
-        getM.setOnAction(new EventHandler<ActionEvent>() {
+        httpGetMethod.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                paramTable.setVisible(true);
-                paramNameField.setVisible(true);
-                paramValueField.setVisible(true);
-                addRow.setVisible(true);
+                httpParamTable.setVisible(true);
+                httpParamNameField.setVisible(true);
+                httpParamValueField.setVisible(true);
+                httpAddRow.setVisible(true);
             }
         });
 
-        postM.setOnAction(new EventHandler<ActionEvent>() {
+        httpPostMethod.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                paramTable.setVisible(false);
-                paramNameField.setVisible(false);
-                paramValueField.setVisible(false);
-                addRow.setVisible(false);
+                httpParamTable.setVisible(false);
+                httpParamNameField.setVisible(false);
+                httpParamValueField.setVisible(false);
+                httpAddRow.setVisible(false);
 
             }
         });
 
-        addRow.setOnAction(new EventHandler<ActionEvent>() {
+        httpAddRow.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (!paramNameField.getText().equals("") && !paramValueField.getText().equals("")){
-                    paramTable.getItems().add(new Params(paramNameField.getText(), paramValueField.getText()));
-                    paramNameField.clear();
-                    paramValueField.clear();
+                if (!httpParamNameField.getText().equals("") && !httpParamValueField.getText().equals("")){
+                    httpParamTable.getItems().add(new Params(httpParamNameField.getText(), httpParamValueField.getText()));
+                    httpParamNameField.clear();
+                    httpParamValueField.clear();
                 }
 
             }
@@ -360,43 +361,43 @@ public class Controller implements Initializable {
 
 
 
-        contentTypeField.textProperty().addListener(new ChangeListener<String>(){
+        httpContentTypeField.textProperty().addListener(new ChangeListener<String>(){
             @Override
             public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-                if (!contentTypeField.getText().equals("")) {
-                    otherContentType.setSelected(true);
-                    appJson.setTextFill(Color.GRAY);
-                    textXml.setTextFill(Color.GRAY);
+                if (!httpContentTypeField.getText().equals("")) {
+                    httpOtherContentType.setSelected(true);
+                    httpAppJson.setTextFill(Color.GRAY);
+                    httpTextXml.setTextFill(Color.GRAY);
                 }
                 else {
-                    appJson.setTextFill(Color.BLACK);
-                    textXml.setTextFill(Color.BLACK);
+                    httpAppJson.setTextFill(Color.BLACK);
+                    httpTextXml.setTextFill(Color.BLACK);
                 }
             }
         });
 
 
-        otherContentType.setOnAction(new EventHandler<ActionEvent>() {
+        httpOtherContentType.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                appJson.setTextFill(Color.GRAY);
-                textXml.setTextFill(Color.GRAY);
+                httpAppJson.setTextFill(Color.GRAY);
+                httpTextXml.setTextFill(Color.GRAY);
             }
         });
 
-        textXml.setOnAction(new EventHandler<ActionEvent>() {
+        httpTextXml.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                appJson.setTextFill(Color.BLACK);
-                textXml.setTextFill(Color.BLACK);
+                httpAppJson.setTextFill(Color.BLACK);
+                httpTextXml.setTextFill(Color.BLACK);
             }
         });
 
-        appJson.setOnAction(new EventHandler<ActionEvent>() {
+        httpAppJson.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                appJson.setTextFill(Color.BLACK);
-                textXml.setTextFill(Color.BLACK);
+                httpAppJson.setTextFill(Color.BLACK);
+                httpTextXml.setTextFill(Color.BLACK);
             }
         });
 
