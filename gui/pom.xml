@@ -65,6 +65,11 @@
             <artifactId>IBMMqClient</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>ru.at_consulting.gfTool</groupId>
+            <artifactId>HTTPClient</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
 </project>

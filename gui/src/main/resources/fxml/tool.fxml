@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
@@ -12,9 +13,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 
-<Pane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.Controller">
+
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.Controller">
    <children>
-      <TabPane maxWidth="-Infinity" minWidth="-Infinity" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane minWidth="-Infinity" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <tabs>
           <Tab fx:id="jmsTab" text="JMS">
             <content>
@@ -22,7 +24,7 @@
                      <children>
                         <TextArea fx:id="messageField" layoutY="36.0" prefHeight="640.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="403.0" AnchorPane.topAnchor="62.0" />
                         <Button fx:id="jmsButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
-                        <FlowPane alignment="TOP_RIGHT" columnHalignment="RIGHT" layoutX="605.0" layoutY="14.0" prefHeight="669.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="605.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
+                        <FlowPane alignment="TOP_RIGHT" columnHalignment="RIGHT" layoutX="605.0" layoutY="14.0" maxWidth="-Infinity" prefHeight="669.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
                            <children>
                               <Label prefHeight="22.0" text="Host">
                                  <FlowPane.margin>
@@ -54,12 +56,22 @@
                                  </FlowPane.margin>
                               </Label>
                               <TextField fx:id="transportTypeField" prefHeight="22.0" prefWidth="300.0" />
+                              <Separator orientation="VERTICAL" prefHeight="21.0" prefWidth="0.0">
+                                 <FlowPane.margin>
+                                    <Insets left="350.0" />
+                                 </FlowPane.margin>
+                              </Separator>
                               <Label prefHeight="22.0" text="QueueName">
                                  <FlowPane.margin>
                                     <Insets right="4.0" />
                                  </FlowPane.margin>
                               </Label>
                               <TextField fx:id="queueNameField" prefHeight="22.0" prefWidth="300.0" />
+                              <Separator orientation="VERTICAL" prefHeight="56.0" prefWidth="0.0">
+                                 <FlowPane.margin>
+                                    <Insets left="350.0" />
+                                 </FlowPane.margin>
+                              </Separator>
                               <Label prefHeight="22.0" text="UserID">
                                  <FlowPane.margin>
                                     <Insets right="4.0" />
@@ -81,99 +93,140 @@
           </Tab>
             <Tab fx:id="httpTab" text="HTTP">
                <content>
-                  <AnchorPane>
+                  <GridPane>
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="944.0" minWidth="10.0" percentWidth="59.0" prefWidth="482.0" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="532.0" minWidth="10.0" percentWidth="41.0" prefWidth="518.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
                      <children>
-                        <Button fx:id="httpButton" layoutX="7.0" layoutY="7.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
-                        <TextArea fx:id="httpMessageField" layoutX="438.0" layoutY="62.0" prefHeight="614.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="62.0" />
-                        <FlowPane alignment="TOP_RIGHT" columnHalignment="RIGHT" layoutX="597.0" layoutY="7.0" prefHeight="229.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.bottomAnchor="478.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
+                        <AnchorPane>
                            <children>
-                              <Label text="Method:">
-                                 <FlowPane.margin>
-                                    <Insets right="340.0" />
-                                 </FlowPane.margin>
-                              </Label>
-                              <RadioButton fx:id="getM" alignment="CENTER_LEFT" mnemonicParsing="false" prefWidth="80.0" selected="true" text="GET">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="request_type" />
-                                 </toggleGroup>
-                                 <FlowPane.margin>
-                                    <Insets right="300.0" />
-                                 </FlowPane.margin>
-                              </RadioButton>
-                              <RadioButton fx:id="postM" mnemonicParsing="false" prefWidth="80.0" text="POST" toggleGroup="$request_type">
-                                 <FlowPane.margin>
-                                    <Insets right="300.0" />
-                                 </FlowPane.margin>
-                              </RadioButton>
-                              <Separator halignment="RIGHT" orientation="VERTICAL" prefHeight="38.0" prefWidth="1.0">
-                                 <FlowPane.margin>
-                                    <Insets left="370.0" />
-                                 </FlowPane.margin>
-                              </Separator>
-                              <TextField fx:id="urlField" prefHeight="25.0" prefWidth="388.0" promptText="URL">
-                                 <FlowPane.margin>
-                                    <Insets />
-                                 </FlowPane.margin></TextField>
-                              <Label prefHeight="22.0" text="ContentType:">
-                                 <FlowPane.margin>
-                                    <Insets left="2.0" right="318.0" />
-                                 </FlowPane.margin>
-                              </Label>
-                              <RadioButton fx:id="appJson" mnemonicParsing="false" prefWidth="130.0" selected="true" text="application/json">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="content_type" />
-                                 </toggleGroup>
-                                 <FlowPane.margin>
-                                    <Insets right="250.0" />
-                                 </FlowPane.margin>
-                              </RadioButton>
-                              <RadioButton fx:id="textXml" mnemonicParsing="false" prefWidth="130.0" text="text/xml" toggleGroup="$content_type">
-                                 <FlowPane.margin>
-                                    <Insets right="250.0" />
-                                 </FlowPane.margin>
-                              </RadioButton>
-                              <RadioButton fx:id="otherContentType" mnemonicParsing="false" prefWidth="130.0" text="or other" toggleGroup="$content_type">
-                                 <FlowPane.margin>
-                                    <Insets right="250.0" />
-                                 </FlowPane.margin>
-                              </RadioButton>
-                              <TextField fx:id="contentTypeField" prefHeight="25.0" prefWidth="280.0">
-                                 <FlowPane.margin>
-                                    <Insets />
-                                 </FlowPane.margin></TextField>
+                              <Button fx:id="httpButton" layoutX="7.0" layoutY="7.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                              <TextArea fx:id="httpMessageField" layoutX="438.0" layoutY="62.0" prefHeight="614.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="88.0" />
+                              <Label layoutX="7.0" layoutY="39.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="39.0" />
                            </children>
-                        </FlowPane>
-                        <TextArea fx:id="httpResponseField" layoutX="605.0" layoutY="285.0" prefHeight="201.0" prefWidth="388.0" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="7.0" />
-                        <Label layoutX="605.0" layoutY="482.0" text="Response" />
-                        <Label layoutX="7.0" layoutY="39.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="39.0" />
-                        <TableView fx:id="paramTable" editable="true" layoutX="605.0" layoutY="245.0" prefHeight="168.0" prefWidth="387.0">
-                          <columns>
-                            <TableColumn fx:id="paramName" prefWidth="161.0" text="HeaderName">
-                              <cellValueFactory>
-                                  <PropertyValueFactory property="paramName" />
-                              </cellValueFactory>
-                            </TableColumn>
-
-                            <TableColumn fx:id="paramValue" prefWidth="225.0" text="HeaderValue">
-                              <cellValueFactory>
-                                  <PropertyValueFactory property="paramValue" />
-                              </cellValueFactory>
-                            </TableColumn>
-                          </columns>
-                        </TableView>
-                        <TextField fx:id="paramNameField" layoutX="605.0" layoutY="425.0" prefHeight="25.0" prefWidth="152.0" promptText="HeaderName" AnchorPane.bottomAnchor="264.0" />
-                        <TextField fx:id="paramValueField" layoutX="758.0" layoutY="425.0" prefHeight="25.0" prefWidth="152.0" promptText="HeaderValue" AnchorPane.bottomAnchor="264.0" />
-                        <Button fx:id="addRow" layoutX="916.0" layoutY="425.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Add" AnchorPane.bottomAnchor="264.0" />
+                        </AnchorPane>
+                        <AnchorPane minWidth="10.0" prefHeight="740.0" prefWidth="274.0" GridPane.columnIndex="1">
+                           <children>
+                              <TableView fx:id="paramTable" editable="true" layoutX="-77.0" layoutY="254.0" maxWidth="-Infinity" prefHeight="168.0" prefWidth="387.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="254.0">
+                                <columns>
+                                  <TableColumn fx:id="paramName" minWidth="131.0" prefWidth="-1.0" text="HeaderName">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="paramName" />
+                                    </cellValueFactory>
+                                  </TableColumn>
+      
+                                                          <TableColumn fx:id="paramValue" minWidth="268.0" prefWidth="-1.0" text="HeaderValue">
+                                    <cellValueFactory>
+                                        <PropertyValueFactory property="paramValue" />
+                                    </cellValueFactory>
+                                  </TableColumn>
+                                </columns>
+                              </TableView>
+                              <FlowPane columnHalignment="RIGHT" layoutX="-160.0" layoutY="95.0" maxHeight="-Infinity" prefHeight="229.0" prefWidth="388.0" prefWrapLength="500.0" vgap="2.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0">
+                                 <children>
+                                    <Label text="Method:">
+                                       <FlowPane.margin>
+                                          <Insets right="1000.0" />
+                                       </FlowPane.margin>
+                                    </Label>
+                                    <RadioButton fx:id="getM" alignment="CENTER_LEFT" mnemonicParsing="false" prefWidth="80.0" selected="true" text="GET">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="request_type" />
+                                       </toggleGroup>
+                                       <FlowPane.margin>
+                                          <Insets right="1000.0" />
+                                       </FlowPane.margin>
+                                    </RadioButton>
+                                    <RadioButton fx:id="postM" mnemonicParsing="false" prefWidth="80.0" text="POST" toggleGroup="$request_type">
+                                       <FlowPane.margin>
+                                          <Insets right="1000.0" />
+                                       </FlowPane.margin>
+                                    </RadioButton>
+                                    <Separator halignment="RIGHT" orientation="VERTICAL" prefHeight="38.0" prefWidth="1.0">
+                                       <FlowPane.margin>
+                                          <Insets left="1000.0" />
+                                       </FlowPane.margin>
+                                    </Separator>
+                                    <TextField fx:id="urlField" prefHeight="25.0" prefWidth="388.0" promptText="URL">
+                                       <FlowPane.margin>
+                                          <Insets left="2.0" right="7.0" />
+                                       </FlowPane.margin>
+                                    </TextField>
+                                    <Label prefHeight="22.0" text="ContentType:">
+                                       <FlowPane.margin>
+                                          <Insets left="2.0" right="1000.0" />
+                                       </FlowPane.margin>
+                                    </Label>
+                                    <RadioButton fx:id="appJson" mnemonicParsing="false" prefWidth="130.0" selected="true" text="application/json">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="content_type" />
+                                       </toggleGroup>
+                                       <FlowPane.margin>
+                                          <Insets right="1000.0" />
+                                       </FlowPane.margin>
+                                    </RadioButton>
+                                    <RadioButton fx:id="textXml" mnemonicParsing="false" prefWidth="130.0" text="text/xml" toggleGroup="$content_type">
+                                       <FlowPane.margin>
+                                          <Insets right="1000.0" />
+                                       </FlowPane.margin>
+                                    </RadioButton>
+                                    <RadioButton fx:id="otherContentType" mnemonicParsing="false" prefWidth="130.0" text="or other" toggleGroup="$content_type">
+                                       <FlowPane.margin>
+                                          <Insets right="1000.0" />
+                                       </FlowPane.margin>
+                                    </RadioButton>
+                                    <TextField fx:id="contentTypeField" prefHeight="25.0" prefWidth="280.0">
+                                       <FlowPane.margin>
+                                          <Insets left="2.0" />
+                                       </FlowPane.margin>
+                                    </TextField>
+                                 </children>
+                              </FlowPane>
+                              <TextArea fx:id="httpResponseField" layoutX="115.0" layoutY="539.0" prefHeight="201.0" prefWidth="388.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="539.0" />
+                              <Label layoutX="14.0" layoutY="516.0" text="Response" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="516.0" />
+                              <TextField fx:id="paramNameField" layoutX="6.0" layoutY="428.0" prefHeight="25.0" prefWidth="131.0" promptText="HeaderName" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="425.0" />
+                              <TextField fx:id="paramValueField" layoutX="160.0" layoutY="428.0" prefHeight="25.0" promptText="HeaderValue" AnchorPane.leftAnchor="135.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="425.0" />
+                              <Button fx:id="addRow" layoutX="321.0" layoutY="459.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Add" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="453.0" />
+                           </children>
+                        </AnchorPane>
                      </children>
-                  </AnchorPane>
+                  </GridPane>
                </content>
             </Tab>
           <Tab fx:id="soapTab" text="HTTP/SOAP">
             <content>
-              <AnchorPane />
+                  <GridPane>
+                     <columnConstraints>
+                        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" percentWidth="50.0" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" percentWidth="50.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" valignment="TOP" vgrow="ALWAYS" />
+                     </rowConstraints>
+                     <children>
+                    <AnchorPane minWidth="503.0">
+                           <children>
+                              <Label layoutY="68.0" prefHeight="20.0" prefWidth="61.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
+                              <TextField fx:id="soapUrlField" layoutX="59.0" layoutY="7.0" prefHeight="25.0" prefWidth="388.0" promptText="URL" AnchorPane.leftAnchor="59.0" AnchorPane.topAnchor="7.0" />
+                              <TextArea fx:id="soapMessageField" layoutX="14.0" layoutY="84.0" prefHeight="614.0" prefWidth="493.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
+                              <Button fx:id="soapButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane minWidth="503.0" GridPane.columnIndex="1">
+                           <children>
+                              <TextArea fx:id="soapResponseField" prefHeight="614.0" prefWidth="493.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="88.0" />
+                              <Label layoutX="14.0" layoutY="73.0" text="Response" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </GridPane>
             </content>
           </Tab>
         </tabs>        
       </TabPane>
    </children>
-</Pane>
+</AnchorPane>
