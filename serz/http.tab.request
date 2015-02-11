@@ -1,10 +1,3 @@
 {
- "operation":"updateSubscriber",
- "new_imsi":"olool",
- "imsi":"01234567890123",
- "newCtn":"100500",
- "ctn":"0123456789",
- "new_simType":"newSimType1",
- "simType":"GEM",
- "FTRCD_LTEI":"qwerty1"
+    "tralyalya":"topolya" 
 }

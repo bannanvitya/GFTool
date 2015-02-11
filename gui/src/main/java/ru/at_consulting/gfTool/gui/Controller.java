@@ -11,6 +11,8 @@ import javafx.scene.control.*;
 import javafx.fxml.Initializable;
 import javafx.scene.paint.Color;
 
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import ru.at_consulting.gfTool.HTTPClient.HTTPClient;
 import ru.at_consulting.gfTool.HTTPClient.HTTPProfile;
 import ru.at_consulting.gfTool.HTTPClient.HTTPRequest;
@@ -30,6 +32,8 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
+    @FXML public Tab jmsTab;
+
     @FXML public Button jmsButton;
     @FXML public TextField jmsHostField;
     @FXML public TextField jmsPortField;
@@ -41,10 +45,8 @@ public class Controller implements Initializable {
     @FXML public TextField jmsPassField;
     @FXML public TextArea jmsRequestField;
 
-    @FXML public Tab jmsTab;
-    @FXML public Tab httpTab;
-    @FXML public Tab soapTab;
 
+    @FXML public Tab httpTab;
 
     @FXML public Button httpButton;
     @FXML public TextField httpContentTypeField;
@@ -60,24 +62,26 @@ public class Controller implements Initializable {
     @FXML public Button httpAddRow;
     @FXML public TextArea httpRequestField;
     @FXML public TextArea httpResponseField;
+    @FXML public MenuItem jmsProjectOpen;
+    @FXML public MenuItem jmsProjectSave;
+
+
+    @FXML public Tab soapTab;
 
 
 
-
-
-
-    @Override // This method is called by the FXMLLoader when initialization is complete
-    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-        if (!httpGetMethod.isSelected()) {
-            httpParamTable.setVisible(false);
-            httpParamNameField.setVisible(false);
-            httpParamValueField.setVisible(false);
-            httpAddRow.setVisible(false);
+    private void SaveFile(String content, File file){
+        try {
+            FileWriter fileWriter = null;
+            fileWriter = new FileWriter(file);
+            fileWriter.write(content);
+            fileWriter.close();
+            } catch (IOException ex) {
+                System.out.println("IOExcaption, bro");
+            }
         }
 
-        //final ObservableList<Params> data = FXCollections.observableArrayList(); // For TableView in HTTP Tab
-        //httpParamTable.setItems(data);
-
+    private void jmsProjectInitialGet(){
         if ((new File(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects")).length() != 0)
             try {
                 ObjectInputStream ois =
@@ -91,19 +95,6 @@ public class Controller implements Initializable {
                 jmsQueueNameField.setText(ois.readLine());
                 jmsUserIdField.setText(ois.readLine());
                 jmsPassField.setText(ois.readLine());
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-
-        if ((new File(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects")).length() != 0)
-            try {
-                ObjectInputStream ois =
-                        new ObjectInputStream(new FileInputStream(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects"));
-
-                httpUrlField.setText(ois.readLine());
-                httpParamNameField.setText(ois.readLine());
-                httpParamValueField.setText(ois.readLine());
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -124,6 +115,20 @@ public class Controller implements Initializable {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+    }
+
+    private void httpProjectInitialGet(){
+        if ((new File(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects")).length() != 0)
+            try {
+                ObjectInputStream ois =
+                        new ObjectInputStream(new FileInputStream(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects"));
+
+                httpUrlField.setText(ois.readLine());
+                httpParamNameField.setText(ois.readLine());
+                httpParamValueField.setText(ois.readLine());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
 
         if ((new File(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.request")).length() != 0)
             try {
@@ -141,50 +146,102 @@ public class Controller implements Initializable {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+    }
 
+    private void jmsProjectSave(){
+        try {
+
+            FileOutputStream out = new FileOutputStream(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
+            ObjectOutputStream oout = new ObjectOutputStream(out);
+
+            oout.writeChars(jmsHostField.getText() + "\n");
+            oout.writeChars(jmsPortField.getText() + "\n");
+            oout.writeChars(jmsQueueManagerField.getText() + "\n");
+            oout.writeChars(jmsChannelField.getText() + "\n");
+            oout.writeChars(jmsTransportTypeField.getText() + "\n");
+            oout.writeChars(jmsQueueNameField.getText() + "\n");
+            oout.writeChars(jmsUserIdField.getText() + "\n");
+            oout.writeChars(jmsPassField.getText() + "\n");
+            oout.writeChars(jmsRequestField.getText() + "\n");
+            oout.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            File file = new File(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.request");
+            FileOutputStream fop = new FileOutputStream(file);
+
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            // get the content in bytes
+            byte[] contentInBytes = jmsRequestField.getText().getBytes();
+
+            fop.write(contentInBytes);
+            fop.flush();
+            fop.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    private void httpProjectSave(){
+        try {
+            FileOutputStream out = new FileOutputStream(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects");
+            ObjectOutputStream oout = new ObjectOutputStream(out);
+
+            oout.writeChars(httpUrlField.getText() + "\n");
+            oout.writeChars(httpParamNameField.getText() + "\n");
+            oout.writeChars(httpParamValueField.getText() + "\n");
+            oout.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            File file = new File(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.request");
+            FileOutputStream fop = new FileOutputStream(file);
+
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            // get the content in bytes
+            byte[] contentInBytes = httpRequestField.getText().getBytes();
+
+            fop.write(contentInBytes);
+            fop.flush();
+            fop.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    @Override // This method is called by the FXMLLoader when initialization is complete
+    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
+
+        if (!httpGetMethod.isSelected()) {
+            httpParamTable.setVisible(false);
+            httpParamNameField.setVisible(false);
+            httpParamValueField.setVisible(false);
+            httpAddRow.setVisible(false);
+        }
+
+        jmsProjectInitialGet();
+        httpProjectInitialGet();
 
 
         jmsButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                try {
-
-                    FileOutputStream out = new FileOutputStream(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
-                    ObjectOutputStream oout = new ObjectOutputStream(out);
-
-                    oout.writeChars(jmsHostField.getText() + "\n");
-                    oout.writeChars(jmsPortField.getText() + "\n");
-                    oout.writeChars(jmsQueueManagerField.getText() + "\n");
-                    oout.writeChars(jmsChannelField.getText() + "\n");
-                    oout.writeChars(jmsTransportTypeField.getText() + "\n");
-                    oout.writeChars(jmsQueueNameField.getText() + "\n");
-                    oout.writeChars(jmsUserIdField.getText() + "\n");
-                    oout.writeChars(jmsPassField.getText() + "\n");
-                    oout.writeChars(jmsRequestField.getText() + "\n");
-                    oout.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-                try {
-                    File file = new File(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.request");
-                    FileOutputStream fop = new FileOutputStream(file);
-
-
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-
-                    // get the content in bytes
-                    byte[] contentInBytes = jmsRequestField.getText().getBytes();
-
-                    fop.write(contentInBytes);
-                    fop.flush();
-                    fop.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                jmsProjectSave();
 
                 IBMMqProfile profile = new IBMMqProfile();
 
@@ -237,36 +294,7 @@ public class Controller implements Initializable {
             @Override
             public void handle(ActionEvent event) {
 
-                try {
-                    FileOutputStream out = new FileOutputStream(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects");
-                    ObjectOutputStream oout = new ObjectOutputStream(out);
-
-                    oout.writeChars(httpUrlField.getText() + "\n");
-                    oout.writeChars(httpParamNameField.getText() + "\n");
-                    oout.writeChars(httpParamValueField.getText() + "\n");
-                    oout.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-                try {
-                    File file = new File(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.request");
-                    FileOutputStream fop = new FileOutputStream(file);
-
-
-                    if (!file.exists()) {
-                        file.createNewFile();
-                    }
-
-                    // get the content in bytes
-                    byte[] contentInBytes = httpRequestField.getText().getBytes();
-
-                    fop.write(contentInBytes);
-                    fop.flush();
-                    fop.close();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                httpProjectSave();
 
                 HTTPProfile profile = new HTTPProfile();
 
@@ -402,7 +430,39 @@ public class Controller implements Initializable {
         });
 
 
+
+        jmsProjectOpen.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser project = new FileChooser();
+                project.setTitle("Open Project File");
+                Stage stage = new Stage();
+                project.showOpenDialog(stage);
+            }
+        });
+
+
+        jmsProjectSave.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser project = new FileChooser();
+                project.setTitle("Open Project File");
+                Stage stage = new Stage();
+                File file = project.showSaveDialog(stage);
+
+                if(file != null){
+                    SaveFile("some", file);
+                }
+            }
+        });
+
+
+
+
     }
+
+
+
 
     public static class Params {
 
