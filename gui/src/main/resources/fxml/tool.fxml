@@ -22,16 +22,21 @@
             <content>
                   <VBox>
                      <children>
-                        <MenuBar style="-fx-background-color: lightgray;" VBox.vgrow="NEVER">
-                          <menus>
-                            <Menu fx:id="jmsProjectMenu" mnemonicParsing="false" text="Project">
-                              <items>
-                                <MenuItem fx:id="jmsProjectOpen" mnemonicParsing="false" text="Open" />
-                                    <MenuItem fx:id="jmsProjectSave" mnemonicParsing="false" text="Save" />
-                              </items>
-                            </Menu>
-                          </menus>
-                        </MenuBar>
+                        <AnchorPane>
+                           <children>
+                              <Label fx:id="jmsProjectStateLabel" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-background-color: lightgray;" text="Label" textFill="#797979" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <MenuBar style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" VBox.vgrow="NEVER">
+                                <menus>
+                                  <Menu fx:id="jmsProjectMenu" mnemonicParsing="false" text="Project">
+                                    <items>
+                                      <MenuItem fx:id="jmsProjectOpen" mnemonicParsing="false" text="Open" />
+                                          <MenuItem fx:id="jmsProjectSave" mnemonicParsing="false" text="Save" />
+                                    </items>
+                                  </Menu>
+                                </menus>
+                              </MenuBar>
+                           </children>
+                        </AnchorPane>
                         <GridPane VBox.vgrow="ALWAYS">
                            <columnConstraints>
                               <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
@@ -78,16 +83,24 @@
                <content>
                   <VBox>
                      <children>
-                        <MenuBar style="-fx-background-color: lightgray;" VBox.vgrow="NEVER">
-                           <menus>
-                              <Menu fx:id="jmsProjectMenu2" mnemonicParsing="false" text="Project">
-                                 <items>
-                                    <MenuItem fx:id="jmsProjectOpen2" mnemonicParsing="false" text="Open" />
-                                    <MenuItem fx:id="jmsProjectSave2" mnemonicParsing="false" text="Save" />
-                                 </items>
-                              </Menu>
-                           </menus>
-                        </MenuBar>
+                        <AnchorPane VBox.vgrow="NEVER">
+                           <children>
+                              <Label fx:id="httpProjectStateLabel" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-background-color: lightgray;" text="Label" textFill="#797979" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <MenuBar style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" VBox.vgrow="NEVER">
+                                 <menus>
+                                    <Menu fx:id="jmsProjectMenu2" mnemonicParsing="false" text="Project">
+                                       <items>
+                                          <MenuItem fx:id="httpProjectOpen" mnemonicParsing="false" text="Open" />
+                                          <MenuItem fx:id="httpProjectSave" mnemonicParsing="false" text="Save" />
+                                       </items>
+                                    </Menu>
+                                 </menus>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </MenuBar>
+                           </children>
+                        </AnchorPane>
                         <GridPane VBox.vgrow="ALWAYS">
                            <columnConstraints>
                               <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="10.0" />
@@ -159,16 +172,24 @@
             <content>
                   <VBox>
                      <children>
-                        <MenuBar style="-fx-background-color: lightgray;" VBox.vgrow="NEVER">
-                           <menus>
-                              <Menu fx:id="jmsProjectMenu1" mnemonicParsing="false" text="Project">
-                                 <items>
-                                    <MenuItem fx:id="jmsProjectOpen1" mnemonicParsing="false" text="Open" />
-                                    <MenuItem fx:id="jmsProjectSave1" mnemonicParsing="false" text="Save" />
-                                 </items>
-                              </Menu>
-                           </menus>
-                        </MenuBar>
+                        <AnchorPane>
+                           <children>
+                              <Label fx:id="soapProjectStateLabel" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-background-color: lightgray;" text="Label" textFill="#797979" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                              <MenuBar style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" VBox.vgrow="NEVER">
+                                 <menus>
+                                    <Menu fx:id="jmsProjectMenu21" mnemonicParsing="false" text="Project">
+                                       <items>
+                                          <MenuItem fx:id="soapProjectOpen" mnemonicParsing="false" text="Open" />
+                                          <MenuItem fx:id="soapProjectSave" mnemonicParsing="false" text="Save" />
+                                       </items>
+                                    </Menu>
+                                 </menus>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </MenuBar>
+                           </children>
+                        </AnchorPane>
                         <GridPane VBox.vgrow="ALWAYS">
                            <columnConstraints>
                               <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
@@ -180,10 +201,10 @@
                            <children>
                           <AnchorPane GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                  <children>
-                                    <Label layoutY="68.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
+                                    <Label layoutY="68.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
                                     <TextField fx:id="soapUrlField" layoutX="59.0" layoutY="7.0" prefWidth="388.0" promptText="URL" AnchorPane.leftAnchor="59.0" AnchorPane.topAnchor="7.0" />
                                     <TextArea fx:id="soapMessageField" layoutX="14.0" layoutY="84.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
-                                    <Button fx:id="soapButton" mnemonicParsing="false" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                                    <Button fx:id="soapButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
                                  </children>
                               </AnchorPane>
                               <AnchorPane GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
