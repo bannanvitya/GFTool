@@ -30,7 +30,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-        <!-- To use the plugin goals in your POM or parent POM -->
         <plugin>
             <groupId>com.zenjava</groupId>
             <artifactId>javafx-maven-plugin</artifactId>
@@ -41,9 +40,17 @@
             </configuration>
             <executions>
                 <execution>
+                    <id>pack</id>
                     <phase>package</phase>
                     <goals>
                         <goal>native</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>inst</id>
+                    <phase>install</phase>
+                    <goals>
+                        <goal>run</goal>
                     </goals>
                 </execution>
             </executions>
