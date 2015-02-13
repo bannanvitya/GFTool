@@ -7,6 +7,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.fxml.Initializable;
 import javafx.scene.paint.Color;
@@ -74,8 +77,16 @@ public class Controller implements Initializable {
     @FXML public Tab soapTab;
 
     @FXML public Label soapProjectStateLabel;
+    @FXML public MenuItem soapProjectNew;
     @FXML public MenuItem soapProjectOpen;
     @FXML public MenuItem soapProjectSave;
+
+
+    @FXML public Button WSDLBrowseButton;
+    @FXML public Button WSDLOKButton;
+    @FXML public TextField WSDLProjectNameField;
+    @FXML public TextField WSDLBrowseField;
+
 
 
 
@@ -433,6 +444,29 @@ public class Controller implements Initializable {
                     httpProjectSave(file.getPath());
                     httpProjectSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects");
                     httpProjectStateLabel.setText(file.getName() + "  ");
+                }
+            }
+        });
+
+
+        soapProjectNew.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    Parent root = FXMLLoader.load(getClass().getResource("/fxml/wsdl.fxml"), resources);
+
+                    Stage stage = new Stage();
+                    stage.setTitle("Create New Project");
+
+                    stage.setScene(new Scene(root, 500, 140));
+                    stage.setMinHeight(140);
+                    stage.setMinWidth(500);
+                    stage.setMaxHeight(140);
+                    stage.setMaxWidth(500);
+                    stage.show();
+
+                }catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });

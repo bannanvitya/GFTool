@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="120.0" prefWidth="480.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextField fx:id="WSDLProjectNameField" layoutX="183.0" layoutY="41.0" prefHeight="25.0" prefWidth="266.0" promptText="ProjectName" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="7.0" />
+      <TextField fx:id="WSDLBrowseField" layoutX="213.0" layoutY="71.0" prefHeight="25.0" prefWidth="266.0" promptText="WSDL" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="35.0" />
+      <Button fx:id="WSDLBrowseButton" layoutX="116.0" layoutY="35.0" mnemonicParsing="false" text="Browse" AnchorPane.rightAnchor="278.0" AnchorPane.topAnchor="35.0" />
+      <Button fx:id="WSDLOKButton" layoutX="392.0" layoutY="101.0" mnemonicParsing="false" text="OK" AnchorPane.bottomAnchor="7.0" AnchorPane.rightAnchor="7.0" />
+   </children>
+</AnchorPane>
