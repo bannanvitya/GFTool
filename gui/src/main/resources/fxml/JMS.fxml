@@ -3,9 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Tab xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:id="jmsTab" text="JMS" fx:controller="ru.at_consulting.gfTool.gui.JMSTabController">
-    <content>
-        <VBox>
+<VBox minHeight="749.0" minWidth="947.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.JMSTabController">
             <children>
                 <AnchorPane>
                     <children>
@@ -62,5 +60,3 @@
                 </GridPane>
             </children>
         </VBox>
-    </content>
-</Tab>

@@ -26,8 +26,6 @@ import java.util.ResourceBundle;
  */
 public class JMSTabController implements Initializable {
 
-    @FXML public Tab jmsTab;
-
     @FXML public Button jmsButton;
     @FXML public TextField jmsHostField;
     @FXML public TextField jmsPortField;
@@ -41,8 +39,6 @@ public class JMSTabController implements Initializable {
     @FXML public MenuItem jmsProjectOpen;
     @FXML public MenuItem jmsProjectSave;
     @FXML public Label jmsProjectStateLabel;
-
-
 
     private void jmsProjectInitialGet(String path){
         if ((new File(path)).length() != 0)
@@ -116,7 +112,7 @@ public class JMSTabController implements Initializable {
 
 
                 try {
-                    profile.setId(jmsTab.getText(), prop);
+                    profile.setId("jmsTab", prop);
                 } catch (ProfileNotFoundException e) {
                     e.printStackTrace();
                 } catch (ProfileStructureException e) {

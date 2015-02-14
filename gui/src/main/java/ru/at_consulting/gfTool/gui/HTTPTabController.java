@@ -31,8 +31,6 @@ import java.util.ResourceBundle;
  */
 public class HTTPTabController implements Initializable {
 
-    @FXML public Tab httpTab;
-
     @FXML public Button httpButton;
     @FXML public TextField httpContentTypeField;
     @FXML public RadioButton httpAppJson;
@@ -99,9 +97,9 @@ public class HTTPTabController implements Initializable {
 
                 try {
                     if (prop.getProperty("methodType").equals("GET"))
-                        profile.setId(httpTab.getText(), prop, headers);
+                        profile.setId("httpTab", prop, headers);
                     else
-                        profile.setId(httpTab.getText(), prop);
+                        profile.setId("httpTab", prop);
 
                 } catch (ProfileNotFoundException e) {
                     e.printStackTrace();

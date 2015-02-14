@@ -2,8 +2,10 @@ package ru.at_consulting.gfTool.gui;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.fxml.Initializable;
+import javafx.scene.layout.VBox;
 
 
 import java.io.*;
@@ -13,25 +15,28 @@ import java.util.ResourceBundle;
 public class MainAppController implements Initializable {
 
     @FXML public TabPane MainTabPane;
+    @FXML public Tab jmsTab;
+    @FXML public Tab httpTab;
+    @FXML public Tab soapTab;
 
     @Override // This method is called by the FXMLLoader when initialization is complete
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
-        Tab jmsTab = new Tab();
-        Tab httpTab = new Tab();
-        Tab soapTab = new Tab();
+        VBox jmsVbox = new VBox();
+        VBox httpVbox = new VBox();
+        VBox soapVbox = new VBox();
 
         try {
-            jmsTab = FXMLLoader.load(getClass().getResource("/fxml/JMS.fxml"));
-            httpTab = FXMLLoader.load(getClass().getResource("/fxml/HTTP.fxml"));
-            soapTab = FXMLLoader.load(getClass().getResource("/fxml/SOAP.fxml"));
+            jmsVbox = FXMLLoader.load(getClass().getResource("/fxml/JMS.fxml"));
+            httpVbox = FXMLLoader.load(getClass().getResource("/fxml/HTTP.fxml"));
+            soapVbox = FXMLLoader.load(getClass().getResource("/fxml/SOAP.fxml"));
         } catch (IOException e){
             e.printStackTrace();
         }
 
-        MainTabPane.getTabs().add(jmsTab);
-        MainTabPane.getTabs().add(httpTab);
-        MainTabPane.getTabs().add(soapTab);
+        jmsTab.setContent(jmsVbox);
+        httpTab.setContent(httpVbox);
+        soapTab.setContent(soapVbox);
     }
 
 

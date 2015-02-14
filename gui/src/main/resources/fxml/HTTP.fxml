@@ -6,9 +6,7 @@
 <?import javafx.scene.layout.*?>
 
 
-<Tab xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.HTTPTabController" fx:id="httpTab" text="HTTP">
-    <content>
-        <VBox>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.HTTPTabController">
             <children>
                 <AnchorPane VBox.vgrow="NEVER">
                     <children>
@@ -93,5 +91,3 @@
                 </GridPane>
             </children>
         </VBox>
-    </content>
-</Tab>

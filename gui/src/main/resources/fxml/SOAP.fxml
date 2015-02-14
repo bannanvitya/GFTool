@@ -4,9 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<Tab xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.SOAPTabController" fx:id="soapTab" text="HTTP/SOAP">
-    <content>
-        <VBox>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.SOAPTabController">
             <children>
                 <AnchorPane>
                     <children>
@@ -60,5 +58,3 @@
                 </VBox>
             </children>
         </VBox>
-    </content>
-</Tab>

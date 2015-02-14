@@ -6,7 +6,11 @@
 <AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.MainAppController">
    <children>
       <TabPane fx:id="MainTabPane" minWidth="-Infinity" prefWidth="1000.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <tabs/>
+        <tabs>
+            <Tab fx:id="jmsTab" text="JMS"/>
+            <Tab fx:id="httpTab" text="HTTP"/>
+            <Tab fx:id="soapTab" text="HTTP/SOAP"/>
+        </tabs>
       </TabPane>
    </children>
 </AnchorPane>

@@ -18,9 +18,6 @@ import java.util.ResourceBundle;
  * Created by VKhozhaynov on 15.02.2015.
  */
 public class SOAPTabController implements Initializable {
-
-    @FXML public Tab soapTab;
-
     @FXML public Label soapProjectStateLabel;
     @FXML public MenuItem soapProjectNew;
     @FXML public MenuItem soapProjectOpen;
@@ -35,7 +32,7 @@ public class SOAPTabController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    Parent root = FXMLLoader.load(getClass().getResource("/fxml/wsdl.fxml"), resources);
+                    Parent root = FXMLLoader.load(getClass().getResource("/fxml/wsdl.fxml"));
 
                     Stage stage = new Stage();
                     stage.setTitle("Create New Project");
