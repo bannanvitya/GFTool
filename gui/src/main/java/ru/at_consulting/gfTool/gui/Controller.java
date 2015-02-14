@@ -82,10 +82,7 @@ public class Controller implements Initializable {
     @FXML public MenuItem soapProjectSave;
 
 
-    @FXML public Button WSDLBrowseButton;
-    @FXML public Button WSDLOKButton;
-    @FXML public TextField WSDLProjectNameField;
-    @FXML public TextField WSDLBrowseField;
+
 
 
 
@@ -150,7 +147,6 @@ public class Controller implements Initializable {
         }
 
     }
-
 
     private void httpProjectSave(String path){
         try {
@@ -458,18 +454,18 @@ public class Controller implements Initializable {
                     Stage stage = new Stage();
                     stage.setTitle("Create New Project");
 
-                    stage.setScene(new Scene(root, 500, 140));
-                    stage.setMinHeight(140);
-                    stage.setMinWidth(500);
-                    stage.setMaxHeight(140);
-                    stage.setMaxWidth(500);
+                    stage.setScene(new Scene(root, 331, 105));
+                    stage.resizableProperty().setValue(false);
                     stage.show();
+
 
                 }catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
+
+
 
 
 
