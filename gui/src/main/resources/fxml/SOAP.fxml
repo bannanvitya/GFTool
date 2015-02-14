@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Tab xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.SOAPTabController" fx:id="soapTab" text="HTTP/SOAP">
+    <content>
+        <VBox>
+            <children>
+                <AnchorPane>
+                    <children>
+                        <Label fx:id="soapProjectStateLabel" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-background-color: lightgray;" text="Label" textFill="#797979" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <MenuBar style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" VBox.vgrow="NEVER">
+                            <menus>
+                                <Menu fx:id="jmsProjectMenu21" mnemonicParsing="false" text="Project">
+                                    <items>
+                                        <MenuItem fx:id="soapProjectNew" mnemonicParsing="false" text="New" />
+                                        <MenuItem fx:id="soapProjectOpen" mnemonicParsing="false" text="Open" />
+                                        <MenuItem fx:id="soapProjectSave" mnemonicParsing="false" text="Save" />
+                                    </items>
+                                </Menu>
+                            </menus>
+                            <VBox.margin>
+                                <Insets />
+                            </VBox.margin>
+                        </MenuBar>
+                    </children>
+                </AnchorPane>
+                <VBox VBox.vgrow="ALWAYS">
+                    <children>
+                        <AnchorPane VBox.vgrow="NEVER">
+                            <children>
+                                <TextField fx:id="soapUrlField" layoutY="20.0" prefWidth="388.0" promptText="URL" AnchorPane.leftAnchor="53.0" AnchorPane.topAnchor="7.0" />
+                                <Button fx:id="soapButton" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="50.0" />
+                            </children>
+                        </AnchorPane>
+                        <SplitPane dividerPositions="0.3, 0.7" VBox.vgrow="ALWAYS">
+                            <items>
+                                <AnchorPane>
+                                    <children>
+                                        <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                                    <children>
+                                        <TextArea fx:id="soapMessageField" layoutX="14.0" layoutY="84.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
+                                        <Label layoutX="33.0" layoutY="62.0" prefHeight="25.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
+                                    </children>
+                                </AnchorPane>
+                                <AnchorPane>
+                                    <children>
+                                        <TextArea fx:id="soapResponseField" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="88.0" />
+                                        <Label layoutX="14.0" layoutY="73.0" text="Response" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
+                                    </children>
+                                </AnchorPane>
+                            </items>
+                        </SplitPane>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </content>
+</Tab>

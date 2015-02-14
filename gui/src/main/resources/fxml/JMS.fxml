@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Tab xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:id="jmsTab" text="JMS" fx:controller="ru.at_consulting.gfTool.gui.JMSTabController">
+    <content>
+        <VBox>
+            <children>
+                <AnchorPane>
+                    <children>
+                        <Label fx:id="jmsProjectStateLabel" alignment="CENTER_RIGHT" prefWidth="150.0" style="-fx-background-color: lightgray;" text="Label" textFill="#797979" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <MenuBar style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" VBox.vgrow="NEVER">
+                            <menus>
+                                <Menu fx:id="jmsProjectMenu" mnemonicParsing="false" text="Project">
+                                    <items>
+                                        <MenuItem fx:id="jmsProjectOpen" mnemonicParsing="false" text="Open" />
+                                        <MenuItem fx:id="jmsProjectSave" mnemonicParsing="false" text="Save" />
+                                    </items>
+                                </Menu>
+                            </menus>
+                        </MenuBar>
+                    </children>
+                </AnchorPane>
+                <GridPane VBox.vgrow="ALWAYS">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="350.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" valignment="TOP" vgrow="ALWAYS" />
+                    </rowConstraints>
+                    <children>
+                        <AnchorPane GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                            <children>
+                                <TextArea fx:id="jmsRequestField" layoutY="120.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="88.0" />
+                                <Button fx:id="jmsButton" layoutX="8.0" layoutY="58.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                                <Label layoutX="14.0" layoutY="93.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS">
+                            <children>
+                                <Label prefHeight="25.0" text="Host" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="0.0" />
+                                <TextField fx:id="jmsHostField" prefWidth="250.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="0.0" />
+                                <Label prefHeight="25.0" text="Port" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="26.0" />
+                                <TextField fx:id="jmsPortField" prefWidth="250.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="26.0" />
+                                <Label prefHeight="25.0" text="QueueManager" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="52.0" />
+                                <TextField fx:id="jmsQueueManagerField" prefWidth="250.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="52.0" />
+                                <Label prefHeight="25.0" text="Channel" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="78.0" />
+                                <TextField fx:id="jmsChannelField" prefWidth="250.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="78.0" />
+                                <Label prefHeight="25.0" prefWidth="77.0" text="TransportType" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="104.0" />
+                                <TextField fx:id="jmsTransportTypeField" prefWidth="250.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="104.0" />
+                                <Label prefHeight="25.0" text="QueueName" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="130.0" />
+                                <TextField fx:id="jmsQueueNameField" prefWidth="250.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="130.0" />
+                                <Label prefHeight="25.0" text="UserID" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="170.0" />
+                                <TextField fx:id="jmsUserIdField" prefWidth="250.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="170.0" />
+                                <Label prefHeight="25.0" text="Password" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="196.0" />
+                                <TextField fx:id="jmsPassField" prefWidth="250.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="196.0" />
+                            </children>
+                        </AnchorPane>
+                    </children>
+                </GridPane>
+            </children>
+        </VBox>
+    </content>
+</Tab>
