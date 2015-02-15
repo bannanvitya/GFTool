@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -30,6 +31,7 @@ import java.util.ResourceBundle;
  * Created by VKhozhaynov on 15.02.2015.
  */
 public class HTTPTabController implements Initializable {
+    private Node upperElement;
 
     @FXML public Button httpButton;
     @FXML public TextField httpContentTypeField;
@@ -264,6 +266,8 @@ public class HTTPTabController implements Initializable {
         }
     }
 
+
+
     public static class Params {
 
         private final StringProperty paramName = new SimpleStringProperty("");
@@ -299,5 +303,9 @@ public class HTTPTabController implements Initializable {
         }
 
 
+    }
+
+    public void setHttpUpperElement(Node node){
+        upperElement = node;
     }
 }

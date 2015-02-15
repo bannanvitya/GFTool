@@ -15,8 +15,8 @@ public class MainApp extends Application {
 //        FXMLLoader loader = new FXMLLoader();
 //        Parent root = loader.load(getClass().getResourceAsStream(fxmlFile));
 
-
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/tool.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/tool.fxml"));
+        Parent root = loader.load();
 
         primaryStage.setTitle("GFTool");
 
@@ -24,6 +24,7 @@ public class MainApp extends Application {
         primaryStage.setMinHeight(738);
         primaryStage.setMinWidth(1016);
         primaryStage.show();
+
     }
 
 

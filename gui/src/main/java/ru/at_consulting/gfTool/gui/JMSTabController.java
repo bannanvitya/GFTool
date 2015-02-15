@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -25,6 +26,8 @@ import java.util.ResourceBundle;
  * Created by VKhozhaynov on 15.02.2015.
  */
 public class JMSTabController implements Initializable {
+    private Node upperElement;
+
 
     @FXML public Button jmsButton;
     @FXML public TextField jmsHostField;
@@ -177,5 +180,9 @@ public class JMSTabController implements Initializable {
         });
 
 
+    }
+
+    public void setJmsUpperElement(Node node){
+        upperElement = node;
     }
 }
