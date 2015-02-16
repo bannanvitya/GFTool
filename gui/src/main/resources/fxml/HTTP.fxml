@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.HTTPTabController">
             <children>
@@ -26,25 +26,18 @@
                         </MenuBar>
                     </children>
                 </AnchorPane>
-                <GridPane VBox.vgrow="ALWAYS">
-                    <columnConstraints>
-                        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="10.0" />
-                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="350.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                    <children>
-                        <AnchorPane GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+      <SplitPane dividerPositions="0.6" VBox.vgrow="ALWAYS">
+         <items>
+                        <AnchorPane minWidth="200.0">
                             <children>
                                 <Button fx:id="httpButton" layoutX="7.0" layoutY="7.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
-                                <TextArea fx:id="httpRequestField" layoutX="438.0" layoutY="62.0" prefHeight="614.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="88.0" />
+                                <TextArea fx:id="httpRequestField" layoutX="438.0" layoutY="62.0" prefHeight="614.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
                                 <Label layoutX="7.0" layoutY="39.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
                             </children>
                         </AnchorPane>
-                        <AnchorPane minWidth="10.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                        <AnchorPane minWidth="350.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                             <children>
-                                <TableView fx:id="httpParamTable" editable="true" layoutX="-77.0" layoutY="254.0" maxWidth="-Infinity" prefHeight="168.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="254.0">
+                                <TableView fx:id="httpParamTable" editable="true" layoutX="-77.0" layoutY="254.0" maxWidth="-Infinity" prefHeight="168.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="254.0">
                                     <columns>
                                         <TableColumn fx:id="paramName" minWidth="131.0" prefWidth="-1.0" text="HeaderName">
                                             <cellValueFactory>
@@ -52,14 +45,14 @@
                                             </cellValueFactory>
                                         </TableColumn>
 
-                                        <TableColumn fx:id="paramValue" minWidth="268.0" prefWidth="-1.0" text="HeaderValue">
+                                              <TableColumn fx:id="paramValue" minWidth="268.0" prefWidth="-1.0" text="HeaderValue">
                                             <cellValueFactory>
                                                 <PropertyValueFactory property="paramValue" />
                                             </cellValueFactory>
                                         </TableColumn>
                                     </columns>
                                 </TableView>
-                                <AnchorPane layoutX="2.0" layoutY="7.0" prefHeight="250.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="0.0">
+                                <AnchorPane layoutX="2.0" layoutY="7.0" prefHeight="250.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="0.0">
                                     <children>
                                         <Label text="Method:" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                         <RadioButton fx:id="httpGetMethod" alignment="CENTER_LEFT" mnemonicParsing="false" prefWidth="80.0" selected="true" text="GET" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="18.0">
@@ -68,7 +61,7 @@
                                             </toggleGroup>
                                         </RadioButton>
                                         <RadioButton fx:id="httpPostMethod" mnemonicParsing="false" prefWidth="80.0" text="POST" toggleGroup="$request_type" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="36.0" />
-                                        <TextField fx:id="httpUrlField" prefWidth="388.0" promptText="URL" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="58.0" />
+                                        <TextField fx:id="httpUrlField" prefWidth="388.0" promptText="URL" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="58.0" />
                                         <Label prefHeight="25.0" text="ContentType:" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="104.0" />
                                         <RadioButton fx:id="httpAppJson" mnemonicParsing="false" prefWidth="130.0" selected="true" text="application/json" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="130.0">
                                             <toggleGroup>
@@ -77,17 +70,17 @@
                                         </RadioButton>
                                         <RadioButton fx:id="httpTextXml" mnemonicParsing="false" prefWidth="130.0" text="text/xml" toggleGroup="$content_type" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="148.0" />
                                         <RadioButton fx:id="httpOtherContentType" mnemonicParsing="false" prefWidth="130.0" text="or other" toggleGroup="$content_type" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="166.0" />
-                                        <TextField fx:id="httpContentTypeField" prefWidth="388.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="184.0" />
+                                        <TextField fx:id="httpContentTypeField" prefWidth="388.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="184.0" />
                                     </children>
                                 </AnchorPane>
-                                <TextArea fx:id="httpResponseField" layoutX="115.0" layoutY="539.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="539.0" />
+                                <TextArea fx:id="httpResponseField" layoutX="115.0" layoutY="539.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="539.0" />
                                 <Label layoutX="14.0" layoutY="516.0" text="Response" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="516.0" />
-                                <TextField fx:id="httpParamNameField" layoutX="6.0" layoutY="428.0" prefHeight="25.0" prefWidth="131.0" promptText="HeaderName" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="425.0" />
+                                <TextField fx:id="httpParamNameField" layoutX="6.0" layoutY="428.0" prefHeight="25.0" prefWidth="131.0" promptText="HeaderName" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="425.0" />
                                 <TextField fx:id="httpParamValueField" layoutX="160.0" layoutY="428.0" prefHeight="25.0" promptText="HeaderValue" AnchorPane.leftAnchor="135.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="425.0" />
                                 <Button fx:id="httpAddRow" layoutX="321.0" layoutY="459.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="75.0" text="Add" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="453.0" />
                             </children>
                         </AnchorPane>
-                    </children>
-                </GridPane>
+         </items>
+      </SplitPane>
             </children>
         </VBox>

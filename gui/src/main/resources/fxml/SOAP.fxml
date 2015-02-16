@@ -36,18 +36,18 @@
                         </AnchorPane>
                         <SplitPane dividerPositions="0.3, 0.7" VBox.vgrow="ALWAYS">
                             <items>
-                                <AnchorPane>
+                                <AnchorPane minWidth="50.0">
                                     <children>
                                         <Pane prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
                                     </children>
                                 </AnchorPane>
-                                <AnchorPane GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                                <AnchorPane minWidth="100.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                     <children>
                                         <TextArea fx:id="soapMessageField" layoutX="14.0" layoutY="84.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
                                         <Label layoutX="33.0" layoutY="62.0" prefHeight="25.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
                                     </children>
                                 </AnchorPane>
-                                <AnchorPane>
+                                <AnchorPane minWidth="100.0">
                                     <children>
                                         <TextArea fx:id="soapResponseField" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="88.0" />
                                         <Label layoutX="14.0" layoutY="73.0" text="Response" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />

@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -37,8 +38,15 @@ public class SOAPTabController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/wsdl.fxml"));
-                    Parent wsdl = loader.load();
+
+                    FXMLLoader wsdlLoader = new FXMLLoader(getClass().getResource("/fxml/WSDL.fxml"));
+                    AnchorPane wsdlPane = wsdlLoader.load();
+
+                    WSDLNewProjectController wsdlController = (WSDLNewProjectController) wsdlLoader.getController();
+                    wsdlController.setWsdlInitElement(upperElement);
+
+
+                    Parent wsdl = wsdlPane;
 
                     Stage stage = new Stage();
                     stage.setTitle("Create New Project");
@@ -47,15 +55,18 @@ public class SOAPTabController implements Initializable {
                     stage.resizableProperty().setValue(false);
                     stage.setAlwaysOnTop(true);
                     stage.centerOnScreen();
+                    stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+                        public void handle(WindowEvent we) {
+                            upperElement.getScene().getRoot().setDisable(false);
+                        }
+                    });
                     stage.show();
 
-                    Node root = upperElement;
                     upperElement.getScene().getRoot().setDisable(true);
 
-
-                }catch (IOException e) {
-                    e.printStackTrace();
-                }
+                } catch (IOException e) {
+                e.printStackTrace();
+            }
             }
         });
 

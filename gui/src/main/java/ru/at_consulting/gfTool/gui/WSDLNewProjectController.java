@@ -18,6 +18,7 @@ import java.util.ResourceBundle;
  * Created by VKhozhaynov on 15.02.2015.
  */
 public class WSDLNewProjectController implements Initializable {
+    private Node initElement;
 
     @FXML public Button WSDLBrowseButton;
     @FXML public Button WSDLOKButton;
@@ -43,13 +44,27 @@ public class WSDLNewProjectController implements Initializable {
             }
         });
 
+
         WSDLOKButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 Stage stage = (Stage) WSDLOKButton.getScene().getWindow();
-                                stage.close();
+
+
+
+
+                initElement.getScene().getRoot().setDisable(false);
+                stage.close();
             }
         });
+
+
+
+
+    }
+
+    public void setWsdlInitElement(Node node){
+        initElement = node;
     }
 
 
