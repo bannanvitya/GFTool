@@ -1,1 +1,1 @@
-{"httpRequestField":"{\"operation\":\"updateSubscriber\",\"newCtn\": \"9640562676\",\"ctn\": \"9626376314\"}","httpParamValueField":"","httpParamNameField":"","httpUrlField":"http://ms-glass017:9797/cxf/nxp/customer/SBER"}
+{"httpRequestField":"{\"operation\":\"changeBan\",\"newCtn\": \"9640562676\",\"ctn\": \"9626376314\"}","httpParamValueField":"","httpParamNameField":"","httpUrlField":"http://ms-glass017:9797/cxf/nxp/customer/SBER"}

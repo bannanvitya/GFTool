@@ -46,10 +46,13 @@ public class SOAPTabController implements Initializable {
                     wsdlController.setWsdlInitElement(upperElement);
 
 
+
                     Parent wsdl = wsdlPane;
+
 
                     Stage stage = new Stage();
                     stage.setTitle("Create New Project");
+
 
                     stage.setScene(new Scene(wsdl, 331, 105));
                     stage.resizableProperty().setValue(false);

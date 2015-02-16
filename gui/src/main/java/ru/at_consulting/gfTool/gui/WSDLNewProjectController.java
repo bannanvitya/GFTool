@@ -40,6 +40,7 @@ public class WSDLNewProjectController implements Initializable {
                 if (file != null) {
                     WSDLProjectNameField.setText(file.getName());
                     WSDLBrowseField.setText(file.getAbsolutePath());
+                    
                 }
             }
         });
