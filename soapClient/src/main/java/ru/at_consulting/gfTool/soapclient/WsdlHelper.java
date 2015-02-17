@@ -3,13 +3,9 @@ package ru.at_consulting.gfTool.soapclient;
 
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.predic8.wstool.creator.RequestCreator;
-import com.predic8.wstool.creator.RequestTemplateCreator;
 import com.predic8.wstool.creator.SOARequestCreator;
 import groovy.xml.MarkupBuilder;
 import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
@@ -35,9 +31,9 @@ public class WsdlHelper {
 
 
     /* Parses WSDL definitions and identifies endpoints and operations. */
-    public static Map<String, String> parseWSDL(Definitions wsdl){
+    public static Map<String, SoapMsgConfig> parseWSDL(Definitions wsdl){
         List<Service> services = wsdl.getServices();
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, SoapMsgConfig> map = new HashMap<String, SoapMsgConfig>();
         SoapMsgConfig conf;
 
         /* Endpoint identification. */
@@ -60,11 +56,39 @@ public class WsdlHelper {
                     for(BindingOperation bindOp : operations){
 
                         conf = new SoapMsgConfig(wsdl, soapVersion, port, bindOp);
-                        map.put(bindOp.getName(), createSoapRequest(conf));
+                        map.put(bindOp.getName(), conf);
 
                     } //bindingOperations loop
                 } //Binding check if
             }// Ports loop
+        }
+        return map;
+    }
+
+
+    public static List<Binding> parseWSDLforBindings(Definitions wsdl){
+        List<Service> services = wsdl.getServices();
+        List<Binding> list = new ArrayList<Binding>();
+
+        /* Endpoint identification. */
+        for(Service service : services){
+
+            for(Port port: service.getPorts()){
+
+                Binding binding = port.getBinding();
+                list.add(binding);
+
+            }// Ports loop
+        }
+        return list;
+    }
+
+    public static Map<String, String> getMessagesMap(Map<String, SoapMsgConfig> conf){
+        HashMap<String, String> map = new HashMap<String, String>();
+        for(Map.Entry<String, SoapMsgConfig> entry : conf.entrySet()){
+            String key = entry.getKey();
+            SoapMsgConfig value = entry.getValue();
+            map.put(key, createSoapRequest(value));
         }
         return map;
     }

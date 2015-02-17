@@ -14,7 +14,6 @@
                             <menus>
                                 <Menu fx:id="jmsProjectMenu21" mnemonicParsing="false" text="Project">
                                     <items>
-                                        <MenuItem fx:id="soapProjectNew" mnemonicParsing="false" text="New" />
                                         <MenuItem fx:id="soapProjectOpen" mnemonicParsing="false" text="Open" />
                                         <MenuItem fx:id="soapProjectSave" mnemonicParsing="false" text="Save" />
                                     </items>
