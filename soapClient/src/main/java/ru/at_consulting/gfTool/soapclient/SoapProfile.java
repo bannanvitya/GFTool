@@ -1,14 +1,10 @@
 package ru.at_consulting.gfTool.soapclient;
 
 
-import com.predic8.wsdl.BindingOperation;
 import com.predic8.wsdl.Definitions;
-import com.predic8.wsdl.Port;
 import com.predic8.wsdl.WSDLParser;
 import ru.at_consulting.gfTool.api.*;
 
-import java.io.File;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -20,27 +16,26 @@ public class SoapProfile implements Profile {
     private Properties serviceProp;
 
 
- public SoapProfile(SoapProfile another){
-    this.url = another.url;
-    this.messagesMap = another.messagesMap;
-    this.serviceProp = another.serviceProp;
-  }
-
-  public SoapProfile() {
+ public SoapProfile() {
   url = "Profile not init";
   }
 
-    public void setWsdl(){
+    public void setUrl(String url){
+        this.url = url;
+    }
+
+    public void processWsdl() {
         WSDLParser parser = new WSDLParser();
+        this.wsdl = parser.parse(url);
+    }
 
-        wsdl = parser.parse("resources/article/article.wsdl");
-}
+    public void processMessagesMap(){
+      this.messagesMap = WsdlHelper.parseWSDL(wsdl);
+    }
 
-
-  public void setMessagesMap(){
-      Map<String, String> map = WsdlHelper.parseWSDL(wsdl);
-  }
-
+    public Map<String, String> getMessagesMap(){
+        return messagesMap;
+    }
 
   @Override
   public String getId() {

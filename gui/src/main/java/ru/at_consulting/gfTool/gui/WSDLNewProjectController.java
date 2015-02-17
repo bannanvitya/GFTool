@@ -1,5 +1,7 @@
 package ru.at_consulting.gfTool.gui;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -9,9 +11,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import ru.at_consulting.gfTool.soapclient.SoapProfile;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -19,6 +23,8 @@ import java.util.ResourceBundle;
  */
 public class WSDLNewProjectController implements Initializable {
     private Node initElement;
+    private File wsdl;
+    private SoapProfile profile = new SoapProfile();
 
     @FXML public Button WSDLBrowseButton;
     @FXML public Button WSDLOKButton;
@@ -35,15 +41,28 @@ public class WSDLNewProjectController implements Initializable {
                 FileChooser project = new FileChooser();
                 project.setTitle("Open Project File");
                 Stage stage = new Stage();
-                File file = project.showOpenDialog(stage);
+                wsdl = project.showOpenDialog(stage);
+                if (wsdl != null) {
+                    WSDLBrowseField.setText(wsdl.getAbsolutePath());
+                }
 
-                if (file != null) {
-                    WSDLProjectNameField.setText(file.getName());
-                    WSDLBrowseField.setText(file.getAbsolutePath());
-                    
+            }
+        });
+
+        WSDLBrowseField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable,
+                                String oldValue, String newValue) {
+                if (wsdl != null) {
+                    WSDLProjectNameField.setText(wsdl.getName());
+                    profile.setUrl(wsdl.getAbsolutePath());
+                } else if (WSDLBrowseField.getText().contains("?wsdl")){
+                    WSDLProjectNameField.setText(WSDLBrowseField.getText().substring(0, WSDLBrowseField.getText().indexOf("?wsdl")));
+                    profile.setUrl(WSDLBrowseField.getText());
                 }
             }
         });
+
 
 
         WSDLOKButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -51,7 +70,9 @@ public class WSDLNewProjectController implements Initializable {
             public void handle(ActionEvent event) {
                 Stage stage = (Stage) WSDLOKButton.getScene().getWindow();
 
-
+                profile.processWsdl();
+                profile.processMessagesMap();
+                Map<String, String> messagesMap = profile.getMessagesMap();
 
 
                 initElement.getScene().getRoot().setDisable(false);
@@ -67,6 +88,5 @@ public class WSDLNewProjectController implements Initializable {
     public void setWsdlInitElement(Node node){
         initElement = node;
     }
-
 
 }

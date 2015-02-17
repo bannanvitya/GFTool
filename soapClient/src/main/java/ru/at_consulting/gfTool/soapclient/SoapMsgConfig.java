@@ -16,7 +16,6 @@ public class SoapMsgConfig {
 
     private Definitions wsdl;
     private int soapVersion = 0;
-    private HashMap<String, String> params;
     private Port port;
     private BindingOperation bindOp;
 
@@ -25,14 +24,18 @@ public class SoapMsgConfig {
 
     }
 
-    public SoapMsgConfig(Definitions wsdl, int soapVersion, HashMap<String,String> params, Port port, BindingOperation bindOp){
+    public SoapMsgConfig(Definitions wsdl, int soapVersion, Port port, BindingOperation bindOp){
         this.setWsdl(wsdl);
         this.setSoapVersion(soapVersion);
-        this.setParams(params);
         this.setPort(port);
         this.setBindOp(bindOp);
     }
 
+    public boolean isComplete(){
+        if (this.wsdl == null || this.soapVersion < 1 || this.soapVersion > 2 ||
+                this.port == null || this.bindOp == null) return false;
+        else return true;
+    }
     /* Getters and Setters. */
     public Definitions getWsdl() {
         return wsdl;
@@ -50,14 +53,6 @@ public class SoapMsgConfig {
         this.soapVersion = soapVersion;
     }
 
-    public HashMap<String, String> getParams() {
-        return params;
-    }
-
-    public void setParams(HashMap<String, String> params) {
-        this.params = params;
-    }
-
     public Port getPort() {
         return port;
     }
@@ -72,28 +67,5 @@ public class SoapMsgConfig {
 
     public void setBindOp(BindingOperation bindOp) {
         this.bindOp = bindOp;
-    }
-
-    public boolean equals(SoapMsgConfig other){
-        if(this.getHash() == other.getHash()){
-            return true;
-        }else{
-            return false;
-        }
-    }
-
-    private int getHash(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("InitialContent"); // Just in case all parameters are null.
-        if(this.wsdl != null) sb.append(this.wsdl.getAsString());
-        sb.append(this.soapVersion);
-        if(params != null){
-            for(String value : params.values()){
-                sb.append(value);
-            }
-        }
-        if(port != null && port.getAddress() != null) sb.append(this.port.getAddress().getLocation());
-        if(bindOp != null) sb.append(bindOp.getName());
-        return sb.toString().hashCode();
     }
 }

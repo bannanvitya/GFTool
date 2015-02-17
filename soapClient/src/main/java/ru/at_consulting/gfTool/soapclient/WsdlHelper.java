@@ -1,13 +1,14 @@
 package ru.at_consulting.gfTool.soapclient;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.predic8.wstool.creator.RequestCreator;
 import com.predic8.wstool.creator.RequestTemplateCreator;
 import com.predic8.wstool.creator.SOARequestCreator;
 import groovy.xml.MarkupBuilder;
@@ -34,9 +35,10 @@ public class WsdlHelper {
 
 
     /* Parses WSDL definitions and identifies endpoints and operations. */
-    public static HashMap<String, String> parseWSDL(Definitions wsdl){
+    public static Map<String, String> parseWSDL(Definitions wsdl){
         List<Service> services = wsdl.getServices();
-        HashMap<String, String> map = null;
+        HashMap<String, String> map = new HashMap<String, String>();
+        SoapMsgConfig conf;
 
         /* Endpoint identification. */
         for(Service service : services){
@@ -57,22 +59,45 @@ public class WsdlHelper {
 		    	    /* Identifies operations for each endpoint.. */
                     for(BindingOperation bindOp : operations){
 
-                        StringWriter writer = new StringWriter();
+                        conf = new SoapMsgConfig(wsdl, soapVersion, port, bindOp);
+                        map.put(bindOp.getName(), createSoapRequest(conf));
 
-                        //SOAPRequestCreator constructor: SOARequestCreator(Definitions, Creator, MarkupBuilder)
-                        SOARequestCreator creator = new SOARequestCreator(wsdl, new RequestTemplateCreator(), new MarkupBuilder(writer));
-
-                        //creator.createRequest(PortType name, Operation name, Binding name);
-                        creator.createRequest(port.getName(), bindOp.getName(), port.getBinding().getName());
-
-                        String msg = writer.toString();
-
-                        map.put(bindOp.getName(), msg);
                     } //bindingOperations loop
                 } //Binding check if
             }// Ports loop
         }
         return map;
+    }
+
+
+    public static String createSoapRequest(SoapMsgConfig soapConfig){
+        if(soapConfig == null || !soapConfig.isComplete()) return null;
+
+        String requestBody = "";
+
+		/* Retrieving configuration variables. */
+        Definitions wsdl = soapConfig.getWsdl();
+        Port port = soapConfig.getPort();
+        int soapVersion = soapConfig.getSoapVersion();
+        BindingOperation bindOp = soapConfig.getBindOp();
+
+		/* Start message crafting. */
+        StringWriter writerSOAPReq = new StringWriter();
+
+        SOARequestCreator creator = new SOARequestCreator(wsdl, new RequestCreator(), new MarkupBuilder(writerSOAPReq));
+        creator.setBuilder(new MarkupBuilder(writerSOAPReq));
+        creator.setDefinitions(wsdl);
+        creator.setCreator(new RequestCreator());
+
+        try{
+            Binding binding = port.getBinding();
+            creator.createRequest(binding.getPortType().getName(),
+                    bindOp.getName(), binding.getName());
+            requestBody = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n"+ writerSOAPReq.getBuffer().toString();
+        }catch (Exception e){
+            return null;
+        }
+        return requestBody;
     }
 
 
