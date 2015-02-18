@@ -72,7 +72,12 @@ public class SOAPTabController implements Initializable {
             }
         });
 
-        VBox box = new VBox();
+
+
+        TreeView<String> treeView = new TreeView<String>();
+        TreeItem<String> root = new TreeItem<String>();
+        treeView.setRoot(root);
+        root.setExpanded(true);
 
         Button getItButton = new Button();
         getItButton.setText("Get It!");
@@ -90,76 +95,33 @@ public class SOAPTabController implements Initializable {
                     messagesMap = profile.getMessagesMap();
                     bindings = profile.getBindings();
 
+                    root.setValue(wsdlField.getText().substring(wsdlField.getText().lastIndexOf("/") + 1, wsdlField.getText().indexOf("?wsdl")));
+                    tab.setText(wsdlField.getText().substring(wsdlField.getText().lastIndexOf("/") + 1, wsdlField.getText().indexOf("?wsdl")));
 
-                    box.fillWidthProperty().setValue(true);
-                    AnchorPane.setTopAnchor(box, 88.0);
+                    treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+
+                        @Override
+                        public void changed(ObservableValue observable, Object oldValue,
+                                            Object newValue) {
+
+                            TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+                            soapMessageField.setText(messagesMap.get(selectedItem.getValue()));
+                        }
+
+                    });
+
                     for(Binding entry : bindings) {
-
-                        AnchorPane pane = new AnchorPane();
-                        box.getChildren().add(pane);
-
-                        Label binding = new Label();
-                        binding.setText(entry.getName());
-                        binding.setPrefHeight(12.0);
-                        binding.setMaxHeight(12.0);
-
-                        AnchorPane operationsPane = new AnchorPane();
-
-
-                        Button wrap = new Button();
-                        wrap.setText("+");
-                        wrap.setMaxWidth(12.0);
-                        wrap.setMaxHeight(12.0);
-                        wrap.setPrefWidth(12.0);
-                        wrap.setPrefHeight(12.0);
-                        wrap.setPadding(Insets.EMPTY);
-                        wrap.setOnAction(new EventHandler<ActionEvent>() {
-                            @Override
-                            public void handle(ActionEvent event) {
-                                if (wrap.getText().equals("+")) {
-                                    int bind = 0;
-                                    for(Map.Entry<String, SoapMsgConfig> ent : messagesConfigMap.entrySet()){
-                                        SoapMsgConfig forOperation = ent.getValue();
-                                        if (entry.getName() == forOperation.getPort().getBinding().getName()){
-                                            Button op = new Button();
-                                            op.setPrefHeight(10.0);
-                                            op.setMaxHeight(10.0);
-                                            op.setPadding(Insets.EMPTY);
-                                            op.setText(forOperation.getBindOp().getName());
-                                            op.setOnAction(new EventHandler<ActionEvent>() {
-                                                @Override
-                                                public void handle(ActionEvent event) {
-                                                   soapMessageField.setText(messagesMap.get(forOperation.getBindOp().getName()));
-                                                }
-                                            });
-                                            operationsPane.getChildren().add(op);
-                                            AnchorPane.setLeftAnchor(op, 10.0);
-                                            AnchorPane.setTopAnchor(op, 2.0 + bind*18.0);
-                                            bind++;
-                                        }
-                                    }
-                                    wrap.setText("-");
-                                }
-                                else{
-                                    while (!operationsPane.getChildren().isEmpty()) {
-                                        operationsPane.getChildren().remove(operationsPane.getChildren().get(0));
-                                    }
-                                    wrap.setText("+");
-                                }
-
+                        TreeItem<String> bnd = new TreeItem<String>(entry.getName());
+                        bnd.setExpanded(false);
+                        for(Map.Entry<String, SoapMsgConfig> ent : messagesConfigMap.entrySet()){
+                            SoapMsgConfig forOperation = ent.getValue();
+                            if (entry.getName() == forOperation.getPort().getBinding().getName()){
+                                TreeItem<String> op = new TreeItem<String>(forOperation.getBindOp().getName());
+                                bnd.getChildren().add(op);
                             }
-                        });
+                        }
 
-
-
-                        pane.getChildren().addAll(binding, wrap, operationsPane);
-
-                        AnchorPane.setLeftAnchor(binding, 14.0);
-                        AnchorPane.setTopAnchor(binding, 2.0);
-                        AnchorPane.setLeftAnchor(wrap, 2.0);
-                        AnchorPane.setTopAnchor(wrap, 2.0);
-                        AnchorPane.setLeftAnchor(operationsPane, 7.0);
-                        AnchorPane.setTopAnchor(operationsPane, 16.0);
+                    root.getChildren().add(bnd);
                     }
                 }
             }
@@ -185,11 +147,7 @@ public class SOAPTabController implements Initializable {
 
 
 
-
-
-
-
-        tabAnchor.getChildren().addAll(projectNameField, wsdlField, getItButton, box, browseButton);
+        tabAnchor.getChildren().addAll(projectNameField, wsdlField, getItButton, treeView, browseButton);
 
         AnchorPane.setRightAnchor(getItButton, 1.0);
         AnchorPane.setTopAnchor(getItButton, 70.0);
@@ -205,10 +163,10 @@ public class SOAPTabController implements Initializable {
         AnchorPane.setRightAnchor(wsdlField, 0.0);
         AnchorPane.setTopAnchor(wsdlField, 35.0);
 
-        AnchorPane.setBottomAnchor(box, 0.0);
-        AnchorPane.setLeftAnchor(box, 0.0);
-        AnchorPane.setRightAnchor(box, 0.0);
-        AnchorPane.setTopAnchor(box, 88.0);
+        AnchorPane.setBottomAnchor(treeView, 0.0);
+        AnchorPane.setLeftAnchor(treeView, 10.0);
+        AnchorPane.setRightAnchor(treeView, 0.0);
+        AnchorPane.setTopAnchor(treeView, 110.0);
         tp.getTabs().add(tab);
         tab.setText("default");
         return tab;

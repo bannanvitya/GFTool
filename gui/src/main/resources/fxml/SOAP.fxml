@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox minHeight="749.0" minWidth="947.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.SOAPTabController">
+<VBox minHeight="600.0" minWidth="950.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.at_consulting.gfTool.gui.SOAPTabController">
             <children>
                 <AnchorPane>
                     <children>

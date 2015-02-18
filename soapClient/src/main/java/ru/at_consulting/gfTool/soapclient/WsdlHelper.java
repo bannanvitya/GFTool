@@ -5,15 +5,13 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.predic8.schema.*;
 import com.predic8.wstool.creator.RequestCreator;
+import com.predic8.wstool.creator.RequestTemplateCreator;
 import com.predic8.wstool.creator.SOARequestCreator;
 import groovy.xml.MarkupBuilder;
 import org.codehaus.groovy.runtime.metaclass.MissingPropertyExceptionNoStack;
 
-import com.predic8.schema.ComplexType;
-import com.predic8.schema.Element;
-import com.predic8.schema.Schema;
-import com.predic8.schema.SimpleType;
 import com.predic8.schema.restriction.BaseRestriction;
 import com.predic8.schema.restriction.facet.EnumerationFacet;
 import com.predic8.wsdl.AbstractBinding;
@@ -38,7 +36,7 @@ public class WsdlHelper {
 
         /* Endpoint identification. */
         for(Service service : services){
-
+            //System.out.println(service.getName());
             for(Port port: service.getPorts()){
 
                 Binding binding = port.getBinding();
@@ -55,7 +53,15 @@ public class WsdlHelper {
 		    	    /* Identifies operations for each endpoint.. */
                     for(BindingOperation bindOp : operations){
 
-                        conf = new SoapMsgConfig(wsdl, soapVersion, port, bindOp);
+                        List<Part> requestParts = detectParameters(wsdl, bindOp);
+	    	        	/* Set values to parameters. */
+                        HashMap<String, String> formParams = new HashMap<String, String>();
+                        for(Part part : requestParts){
+                            Element element = part.getElement();
+                            formParams.putAll(fillParameters(element, null));
+                        }
+
+                        conf = new SoapMsgConfig(wsdl, soapVersion, formParams, port, bindOp);
                         map.put(bindOp.getName(), conf);
 
                     } //bindingOperations loop
@@ -104,14 +110,19 @@ public class WsdlHelper {
         Port port = soapConfig.getPort();
         int soapVersion = soapConfig.getSoapVersion();
         BindingOperation bindOp = soapConfig.getBindOp();
+        HashMap<String,String> formParams= soapConfig.getParams();
+
 
 		/* Start message crafting. */
         StringWriter writerSOAPReq = new StringWriter();
+        MarkupBuilder builder = new MarkupBuilder(writerSOAPReq);
 
-        SOARequestCreator creator = new SOARequestCreator(wsdl, new RequestCreator(), new MarkupBuilder(writerSOAPReq));
+
+        SOARequestCreator creator = new SOARequestCreator(wsdl, new RequestTemplateCreator(), builder);
         creator.setBuilder(new MarkupBuilder(writerSOAPReq));
         creator.setDefinitions(wsdl);
         creator.setCreator(new RequestCreator());
+        creator.setFormParams(formParams);
 
         try{
             Binding binding = port.getBinding();
@@ -152,6 +163,9 @@ public class WsdlHelper {
         for(PortType pt : wsdl.getPortTypes()){
             for(Operation op : pt.getOperations()){
                 if (op.getName().trim().equals(bindOp.getName().trim())){
+                   //for(Part s : op.getInput().getMessage().getParts()){
+                   //System.out.println(s.getElement().getName());
+                   // }
                     return op.getInput().getMessage().getParts();
                 }
             }
@@ -162,22 +176,29 @@ public class WsdlHelper {
     private static HashMap<String, String> fillParameters(Element element, String parent){
         HashMap<String, String> formParams = new HashMap<String, String>();
         try{
+
 			/* Tries to parse it as a complex type first. */
             String xpath = null;
             if (parent != null) xpath = parent + "/" +element.getName();
             else xpath = element.getName();
             ComplexType ct = (ComplexType) element.getEmbeddedType();
+
+
     		/* Handles when ComplexType is not embedded but referenced by 'type'. */
             if (ct == null){
                 Schema currentSchema = element.getSchema();
                 ct = (ComplexType) currentSchema.getType(element.getType());
                 if (ct == null) throw new ClassCastException("Complex Type is null after cast."); //Hashmap is empty here.
             }
+            //System.out.println(element.getName() + " - " + ct.getSequence().getElements().isEmpty());
+            if (!(element.getName().contains("Fault") || element.getName().contains("fault")))
             for (Element e : ct.getSequence().getElements()) {
     			/* Recursive parsing for nested complex types. */
                 formParams.putAll(fillParameters(e,xpath));
             }
+
         }catch(ClassCastException cce){
+
 			/* Simple element treatment. */
             if(element == null) return formParams;
 			/* Handles simple types. */
@@ -196,6 +217,7 @@ public class WsdlHelper {
                         else return formParams;
                     }
                 }
+
             }catch(ClassCastException cce2){
 				/* It is not simple type, so it is treated as a plain element. */
                 String xpath = "";

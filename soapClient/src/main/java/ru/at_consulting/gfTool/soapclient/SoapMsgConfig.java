@@ -18,17 +18,19 @@ public class SoapMsgConfig {
     private int soapVersion = 0;
     private Port port;
     private BindingOperation bindOp;
+    private HashMap<String, String> params;
 
     /* Constructors. */
     public SoapMsgConfig(){
 
     }
 
-    public SoapMsgConfig(Definitions wsdl, int soapVersion, Port port, BindingOperation bindOp){
+    public SoapMsgConfig(Definitions wsdl, int soapVersion,HashMap<String, String> params, Port port, BindingOperation bindOp){
         this.setWsdl(wsdl);
         this.setSoapVersion(soapVersion);
         this.setPort(port);
         this.setBindOp(bindOp);
+        this.setParams(params);
     }
 
     public boolean isComplete(){
@@ -67,5 +69,13 @@ public class SoapMsgConfig {
 
     public void setBindOp(BindingOperation bindOp) {
         this.bindOp = bindOp;
+    }
+
+    public HashMap<String, String> getParams() {
+        return params;
+    }
+
+    public void setParams(HashMap<String, String> params) {
+        this.params = params;
     }
 }
