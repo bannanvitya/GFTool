@@ -123,9 +123,6 @@ public class SoapClient implements Client {
       } catch (Exception ex) {
           throw new PreconditionsException();
       }
-      if (profile != null){
-          throw new PreconditionsException();
-      }
   }
 
   @Override

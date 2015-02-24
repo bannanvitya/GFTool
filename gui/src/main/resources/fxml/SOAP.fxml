@@ -25,31 +25,13 @@
                         </MenuBar>
                     </children>
                 </AnchorPane>
-                <VBox VBox.vgrow="ALWAYS">
+                <VBox fx:id="soapVBox" VBox.vgrow="ALWAYS">
                     <children>
                         <AnchorPane VBox.vgrow="NEVER">
                             <children>
                                 <Button fx:id="soapButton" layoutY="45.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
                             </children>
                         </AnchorPane>
-                        <SplitPane dividerPositions="0.3, 0.7" VBox.vgrow="ALWAYS">
-                            <items>
-                  <AnchorPane fx:id="soapProjectAnchorPane" minWidth="250.0" />
-                                <AnchorPane minWidth="100.0" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-                                    <children>
-                                        <TextArea fx:id="soapMessageField" layoutX="14.0" layoutY="84.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="110.0" />
-                                        <Label layoutX="33.0" layoutY="62.0" prefHeight="25.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="83.0" />
-                        <TextField fx:id="soapUrlField" layoutX="14.0" layoutY="36.0" promptText="URL" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="36.0" />
-                                    </children>
-                                </AnchorPane>
-                                <AnchorPane minWidth="100.0">
-                                    <children>
-                                        <TextArea fx:id="soapResponseField" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="110.0" />
-                                        <Label layoutX="14.0" layoutY="73.0" text="Response" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="83.0" />
-                                    </children>
-                                </AnchorPane>
-                            </items>
-                        </SplitPane>
                     </children>
                 </VBox>
             </children>

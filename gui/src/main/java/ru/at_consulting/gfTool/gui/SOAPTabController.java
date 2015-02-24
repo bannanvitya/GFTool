@@ -12,13 +12,16 @@ import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import ru.at_consulting.gfTool.api.PostconditionsException;
 import ru.at_consulting.gfTool.api.ProfileNotFoundException;
 import ru.at_consulting.gfTool.api.ProfileStructureException;
-import ru.at_consulting.gfTool.soapclient.SoapClient;
-import ru.at_consulting.gfTool.soapclient.SoapMsgConfig;
-import ru.at_consulting.gfTool.soapclient.SoapProfile;
+import ru.at_consulting.gfTool.api.SendRequestException;
+import ru.at_consulting.gfTool.soapclient.*;
+
 import java.io.File;
 import java.net.URL;
 import java.util.List;
@@ -39,22 +42,80 @@ public class SOAPTabController implements Initializable {
 
 
 
-    TabPane projects = new TabPane();
+    TabPane soapMainTabPane = new TabPane();
     Tab addButtonTab = new Tab();
+    AnchorPane innerPane = new AnchorPane();
     @FXML public Label soapProjectStateLabel;
     @FXML public MenuItem soapProjectOpen;
     @FXML public MenuItem soapProjectSave;
-    @FXML public AnchorPane soapProjectAnchorPane;
-    @FXML public TextArea soapMessageField;
     @FXML public Button soapButton;
-    @FXML public TextField soapUrlField;
+    @FXML public VBox soapVBox;
 
     public Tab addTab(){
         Tab tab = new Tab();
 
-        AnchorPane tabAnchor = new AnchorPane();
-        tabAnchor.setMinWidth(200.0);
-        tab.setContent(tabAnchor);
+
+
+        SplitPane split = new SplitPane();
+        split.setDividerPositions(0.3, 0.4, 0.3);
+        innerPane.getChildren().addAll(split);
+        AnchorPane.setBottomAnchor(split, 0.0);
+        AnchorPane.setLeftAnchor(split, 0.0);
+        AnchorPane.setRightAnchor(split, 0.0);
+        AnchorPane.setTopAnchor(split, 0.0);
+
+        tab.setContent(split);
+
+        AnchorPane projectAnchor = new AnchorPane();
+         projectAnchor.setMinWidth(300.0);
+
+        AnchorPane requestAnchor = new AnchorPane();
+        requestAnchor.setMinWidth(400.0);
+
+        AnchorPane responseAnchor = new AnchorPane();
+        responseAnchor.setMinWidth(200.0);
+
+        TextField requestUrlField = new TextField();
+        requestUrlField.setPromptText("URL");
+
+        Label requestLabel = new Label();
+        requestLabel.setText("Request");
+
+        TextArea requestArea = new TextArea();
+
+        requestAnchor.getChildren().addAll(requestUrlField, requestLabel, requestArea); //requestAnchor elements
+
+        AnchorPane.setLeftAnchor(requestUrlField, 1.0);
+        AnchorPane.setRightAnchor(requestUrlField, 1.0);
+        AnchorPane.setTopAnchor(requestUrlField, 36.0);
+
+        AnchorPane.setLeftAnchor(requestLabel, 1.0);
+        AnchorPane.setTopAnchor(requestLabel, 83.0);
+
+        AnchorPane.setBottomAnchor(requestArea, 7.0);
+        AnchorPane.setLeftAnchor(requestArea, 1.0);
+        AnchorPane.setRightAnchor(requestArea, 1.0);
+        AnchorPane.setTopAnchor(requestArea, 110.0);
+
+
+        Label responseLabel = new Label();
+        responseLabel.setText("Response");
+
+        TextArea responseArea = new TextArea();
+
+        responseAnchor.getChildren().addAll(responseLabel, responseArea); //responseAnchor elements
+
+        AnchorPane.setLeftAnchor(responseLabel, 1.0);
+        AnchorPane.setTopAnchor(responseLabel, 83.0);
+
+        AnchorPane.setBottomAnchor(responseArea, 7.0);
+        AnchorPane.setLeftAnchor(responseArea, 1.0);
+        AnchorPane.setRightAnchor(responseArea, 1.0);
+        AnchorPane.setTopAnchor(responseArea, 110.0);
+
+
+        split.getItems().addAll(projectAnchor, requestAnchor, responseAnchor); // split elements
+
 
         TextField projectNameField = new TextField();
         projectNameField.setPromptText("Project Name");
@@ -111,7 +172,7 @@ public class SOAPTabController implements Initializable {
                                             Object newValue) {
 
                             TreeItem<String> selectedItem = (TreeItem<String>) newValue;
-                            soapMessageField.setText(messagesMap.get(selectedItem.getValue()));
+                            requestArea.setText(messagesMap.get(selectedItem.getValue()));
                         }
 
                     });
@@ -152,7 +213,7 @@ public class SOAPTabController implements Initializable {
 
 
 
-        tabAnchor.getChildren().addAll(projectNameField, wsdlField, getItButton, treeView, browseButton);
+        projectAnchor.getChildren().addAll(projectNameField, wsdlField, getItButton, treeView, browseButton); //projectAnchor elements
 
         AnchorPane.setRightAnchor(getItButton, 1.0);
         AnchorPane.setTopAnchor(getItButton, 70.0);
@@ -168,14 +229,20 @@ public class SOAPTabController implements Initializable {
         AnchorPane.setRightAnchor(wsdlField, 0.0);
         AnchorPane.setTopAnchor(wsdlField, 35.0);
 
-        AnchorPane.setBottomAnchor(treeView, 0.0);
+        AnchorPane.setBottomAnchor(treeView, 7.0);
         AnchorPane.setLeftAnchor(treeView, 10.0);
         AnchorPane.setRightAnchor(treeView, 0.0);
         AnchorPane.setTopAnchor(treeView, 110.0);
-        if (projects.getTabs().size()>1)
-        projects.getTabs().add(projects.getTabs().size()-1, tab);
+
+
+
+
+
+
+        if (soapMainTabPane.getTabs().size()>1)
+        soapMainTabPane.getTabs().add(soapMainTabPane.getTabs().size()-1, tab);
         else
-        projects.getTabs().add(tab);
+        soapMainTabPane.getTabs().add(tab);
         tab.setText("default");
         return tab;
     }
@@ -184,13 +251,13 @@ public class SOAPTabController implements Initializable {
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
 
-        projects.sideProperty().setValue(Side.LEFT);
-        projects.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
+        soapMainTabPane.sideProperty().setValue(Side.LEFT);
+        soapMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
 
         addButtonTab.setText("+");
         addButtonTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
         public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
-            SingleSelectionModel<Tab> selectionModel = projects.getSelectionModel();
+            SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
             if (new_val){
                 Tab tab = addTab();
                 selectionModel.select(tab);
@@ -202,16 +269,36 @@ public class SOAPTabController implements Initializable {
         soapButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+                SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
+                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
+                TextField urlField = (TextField) requestAnchor.getChildren().get(0);
+                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
+
+                AnchorPane responseAnchor = (AnchorPane) split.getItems().get(2);
+                TextArea responseArea = (TextArea) responseAnchor.getChildren().get(1);
+
                 try {
-                    profile.setId(soapUrlField.getText());
-                } catch (ProfileNotFoundException | ProfileStructureException e){
+                    client.preconditions();
+
+                    profile.setId(urlField.getText());
+                    client.setProfile(profile);
+
+
+                    SoapRequest req = new SoapRequest(requestArea.getText());
+                    SoapResponse resp = (SoapResponse) client.sendRequest(req, urlField.getText());
+                    responseArea.setText(resp.getMessage());
+
+                    client.postconditions();
+                }catch(ProfileStructureException | ProfileNotFoundException | SendRequestException | PostconditionsException e){
                     e.printStackTrace();
                 }
+
             }
         });
 
 
-        soapUrlField.textProperty().addListener(new ChangeListener<String>() {
+        /*soapUrlField.textProperty().addListener(new ChangeListener<String>() {
             public void changed(ObservableValue ov, String old_val, String new_val) {
                 SingleSelectionModel<Tab> selectionModel = projects.getSelectionModel();
                 if (!new_val.equals("")){
@@ -220,17 +307,19 @@ public class SOAPTabController implements Initializable {
                 }
             }
         );
+        */
 
 
-        soapProjectAnchorPane.getChildren().addAll(projects);
+        soapVBox.getChildren().addAll(innerPane);
+        VBox.setVgrow(innerPane, Priority.ALWAYS);
         addTab();
-        projects.getTabs().add(addButtonTab);
-        SingleSelectionModel<Tab> selectionModel = projects.getSelectionModel();
-        selectionModel.select(projects.getTabs().indexOf(addButtonTab)-1); // add tab to create new tabs
-        AnchorPane.setTopAnchor(projects, 0.0);
-        AnchorPane.setBottomAnchor(projects, 7.0);
-        AnchorPane.setLeftAnchor(projects, 0.0);
-        AnchorPane.setRightAnchor(projects, 1.0);
+        soapMainTabPane.getTabs().add(addButtonTab);
+        SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+        selectionModel.select(soapMainTabPane.getTabs().indexOf(addButtonTab) - 1); // add tab to create new tabs
+        AnchorPane.setTopAnchor(soapMainTabPane, 0.0);
+        AnchorPane.setBottomAnchor(soapMainTabPane, 7.0);
+        AnchorPane.setLeftAnchor(soapMainTabPane, 0.0);
+        AnchorPane.setRightAnchor(soapMainTabPane, 1.0);
 
         soapProjectStateLabel.setText("");
 
