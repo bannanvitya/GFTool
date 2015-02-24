@@ -1,43 +1,46 @@
 package ru.at_consulting.gfTool.soapclient;
 
 import ru.at_consulting.gfTool.api.Response;
+
 import java.util.Map;
 
+/**
+ * Created by VKHozhaynov on 03.02.2015.
+ */
 public class SoapResponse implements Response {
-  private String message;
+    private String message;
 
-  public SoapResponse(String msg) {
-      message = msg;
-  }
+    public SoapResponse(String mess){
+        message = mess;
+    }
 
-  @Override
-  public byte[] raw() {
-    return message.toString().getBytes();
-  }
+    @Override
+    public byte[] raw() {
+        return null;
+    }
 
-  @Override
-  public Object responseImpl() {
-    return message;
-  }
+    @Override
+    public Object responseImpl() {
+        return null;
+    }
 
-  /**@return soap fault code if response contain fault structure, 200 otherwise. */
-  @Override
-  public int getCode() {
-   return 1;
-  }
+    @Override
+    public int getCode() {
+        return 0;
+    }
 
-  @Override
-  public String getStatus() {
-    return null;
-  }
+    @Override
+    public String getStatus() {
+        return "not supported";
+    }
 
-  @Override
-  public String getMessage() {
-      return null;
-  }
+    @Override
+    public String getMessage() {
+        return message;
+    }
 
-  @Override
-  public Map<String, String> asDict() {
-      return null;
-  }
+    @Override
+    public Map<String, String> asDict() {
+        return null;
+    }
 }

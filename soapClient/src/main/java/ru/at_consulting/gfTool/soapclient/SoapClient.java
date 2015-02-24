@@ -2,9 +2,11 @@ package ru.at_consulting.gfTool.soapclient;
 
 import ru.at_consulting.gfTool.api.*;
 
-import javax.xml.soap.SOAPConnection;
-import javax.xml.soap.SOAPConnectionFactory;
-import javax.xml.soap.SOAPException;
+import javax.xml.soap.*;
+import javax.xml.transform.*;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 import java.util.Map;
 
 public class SoapClient implements Client {
@@ -12,42 +14,92 @@ public class SoapClient implements Client {
   private SOAPConnectionFactory soapConnFactory;
   private SOAPConnection connection = null;
   private SoapProfile profile;
-  private SoapResponse lastResponse;
 
   @Override
   public Request prepareRequest(String requestId) throws PrepareRequestException {
-    prepareConnection();
-
-    String request = "";
-    return new SoapRequest(request);
+      return null;
   }
 
     @Override
-    public Request prepareRequest(String requestId, Map<String, String> values) throws PrepareRequestException {
+  public Request prepareRequest(String requestId, Map<String, String> values) throws PrepareRequestException {
         return null;
     }
 
 
     @Override
-  public Response sendRequest(Request request) throws SendRequestException {
-
-    return lastResponse;
+    public Response sendRequest(Request request) throws SendRequestException {
+        return null;
   }
+
+    public Response sendRequest(Request request, String destination) throws SendRequestException {
+        SoapResponse resp = null;
+        try {
+            SoapRequest req = (SoapRequest)request;
+
+            MimeHeaders hd = new MimeHeaders();
+            hd.addHeader("Content-type", "text/xml");
+
+            InputStream is = new ByteArrayInputStream(req.getId().getBytes());
+            SOAPMessage message = MessageFactory.newInstance().createMessage(hd, is); //create SOAPmessage based on RAW
+            message.saveChanges();
+
+            SOAPMessage reply = connection.call(message, destination); //send message, get reply
+
+            TransformerFactory transformerFactory
+                    = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            Source sourceContent = reply.getSOAPPart().getContent();
+            ByteArrayOutputStream res = new ByteArrayOutputStream();
+            StreamResult result = new StreamResult(res);
+            transformer.transform(sourceContent, result);
+
+            String strReply = new String(res.toByteArray()); //get string reply
+
+            resp = new SoapResponse(strReply);
+        } catch ( SOAPException | IOException | TransformerException ex){
+            throw new SendRequestException();
+        }
+        return resp;
+    }
+
+    public Response sendRequest(Request request, String destination, String username, String password) throws SendRequestException {
+        SoapResponse resp = null;
+        try {
+            SoapRequest req = (SoapRequest)request;
+
+            String authorization = new sun.misc.BASE64Encoder().encode((username + ":" + password).getBytes());
+            MimeHeaders hd = new MimeHeaders();
+            hd.addHeader("Authorization", "Basic " + authorization);
+            hd.addHeader("Content-type", "text/xml");
+
+            InputStream is = new ByteArrayInputStream(req.getId().getBytes());
+            SOAPMessage message = MessageFactory.newInstance().createMessage(hd, is); //create SOAPmessage based on RAW
+            message.saveChanges();
+
+            SOAPMessage reply = connection.call(message, destination); //send message, get reply
+
+            TransformerFactory transformerFactory
+                    = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            Source sourceContent = reply.getSOAPPart().getContent();
+            ByteArrayOutputStream res = new ByteArrayOutputStream();
+            StreamResult result = new StreamResult(res);
+            transformer.transform(sourceContent, result);
+
+            String strReply = new String(res.toByteArray()); //get string reply
+
+            resp = new SoapResponse(strReply);
+        } catch ( SOAPException | IOException | TransformerException ex){
+            throw new SendRequestException();
+        }
+        return resp;
+    }
 
   @Override
   public void newSession() throws SessionException {
-    try {
-      soapConnFactory = SOAPConnectionFactory.newInstance();
-      connection = soapConnFactory.createConnection();
-    } catch (Exception ex) {
-      throw new SessionException();
-    }
+
   }
 
-  /**
-   * TODO SoapConnect.call() not created session number. So uses hashCode.
-   * Default - connect locked before waiting response.
-   */
   @Override
   public String sessionId() {
     return String.valueOf(connection.hashCode());
@@ -65,11 +117,15 @@ public class SoapClient implements Client {
 
   @Override
   public void preconditions() throws PreconditionsException {
-    try {
-      soapConnFactory = SOAPConnectionFactory.newInstance();
-    } catch (SOAPException ex) {
-      throw new PreconditionsException();
-    }
+      try {
+          soapConnFactory = SOAPConnectionFactory.newInstance();
+          connection = soapConnFactory.createConnection();
+      } catch (Exception ex) {
+          throw new PreconditionsException();
+      }
+      if (profile != null){
+          throw new PreconditionsException();
+      }
   }
 
   @Override
@@ -79,19 +135,6 @@ public class SoapClient implements Client {
         connection.close();
     } catch (SOAPException ex) {
       throw new PostconditionsException();
-    }
-  }
-
-  private void prepareConnection(){
-    if(connection == null){
-      try {
-        newSession();
-      } catch (SessionException e) {
-        throw new PrepareRequestException();
-      }
-    }
-    if (profile != null){
-
     }
   }
 }

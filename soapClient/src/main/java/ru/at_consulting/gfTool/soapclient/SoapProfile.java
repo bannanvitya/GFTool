@@ -11,7 +11,8 @@ import java.util.Map;
 
 public class SoapProfile implements Profile {
 
-    private String url;
+    private String urlToWsdl;
+    private String urlToSend;
     private Definitions wsdl;
     private Map<String, String> messagesMap;
     private Map<String, SoapMsgConfig> messagesConfigMap;
@@ -19,16 +20,16 @@ public class SoapProfile implements Profile {
 
 
  public SoapProfile() {
-  url = "Profile not init";
+  urlToWsdl = "Profile not init";
   }
 
-    public void setUrl(String url){
-        this.url = url;
+    public void setUrlToWsdl(String urlToWsdl){
+        this.urlToWsdl = urlToWsdl;
     }
 
     public void processWsdl() {
         WSDLParser parser = new WSDLParser();
-        this.wsdl = parser.parse(url);
+        this.wsdl = parser.parse(urlToWsdl);
     }
 
     public void processMessagesConfigMap(){
@@ -55,15 +56,23 @@ public class SoapProfile implements Profile {
         return messagesConfigMap;
     }
 
+    public String getUrlToSend(){
+        return urlToSend;
+    }
+
+    public void setUrlToSend(String urlToSend){
+        this.urlToSend = urlToSend;
+    }
+
   @Override
   public String getId() {
-    return url;
+    return urlToWsdl;
   }
 
   @Override
   public void setId(String url) throws ProfileNotFoundException,
     ProfileStructureException {
-    this.url = url;
+    this.urlToWsdl = url;
   }
 
   @Override
@@ -76,7 +85,7 @@ public class SoapProfile implements Profile {
 
   @Override
   public String toString() {
-    return url;
+    return urlToWsdl;
   }
 }
 

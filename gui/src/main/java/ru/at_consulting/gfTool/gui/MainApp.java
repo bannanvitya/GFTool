@@ -20,9 +20,9 @@ public class MainApp extends Application {
 
         primaryStage.setTitle("GFTool");
 
-        primaryStage.setScene(new Scene(root, 1366, 768));
-        primaryStage.setMinHeight(758);
-        primaryStage.setMinWidth(1350);
+        primaryStage.setScene(new Scene(root, 1350, 750));
+        primaryStage.setMinHeight(740);
+        primaryStage.setMinWidth(1330);
         primaryStage.show();
 
     }

@@ -3,28 +3,23 @@ package ru.at_consulting.gfTool.soapclient;
 import ru.at_consulting.gfTool.api.Request;
 
 public class SoapRequest implements Request {
+  private String messageId;
 
-  private String message;
-
-
-  public SoapRequest(String rqst){
-      message = rqst;
+  public SoapRequest(String msg){
+      messageId = msg;
   }
 
-  @Override
-  public byte[] raw() {
-      return message.toString().getBytes();
-  }
+    @Override
+    public byte[] raw() {
+        return null;
+    }
 
-//  TODO Actual SOAPMessage
-  @Override
-  public Object requestImpl() {
-      return null;
-  }
+    public String getId() {
+        return messageId;
+    }
 
-//  TODO Вывод в строку тела сообщения
-  @Override
-  public String toString() {
-      return null;
-  }
+    @Override
+    public Object requestImpl() {
+        return null;
+    }
 }

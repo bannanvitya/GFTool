@@ -58,7 +58,9 @@ public class WsdlHelper {
                         HashMap<String, String> formParams = new HashMap<String, String>();
                         for(Part part : requestParts){
                             Element element = part.getElement();
-                            formParams.putAll(fillParameters(element, null));
+                            HashMap<String, String> hash = fillParameters(element, null);
+                            if (hash != null)
+                            formParams.putAll(hash);
                         }
 
                         conf = new SoapMsgConfig(wsdl, soapVersion, formParams, port, bindOp);

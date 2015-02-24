@@ -4,17 +4,19 @@ import com.predic8.wsdl.Binding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import ru.at_consulting.gfTool.api.ProfileNotFoundException;
+import ru.at_consulting.gfTool.api.ProfileStructureException;
+import ru.at_consulting.gfTool.soapclient.SoapClient;
 import ru.at_consulting.gfTool.soapclient.SoapMsgConfig;
 import ru.at_consulting.gfTool.soapclient.SoapProfile;
 import java.io.File;
@@ -33,17 +35,21 @@ public class SOAPTabController implements Initializable {
     private List<Binding> bindings;
     private File wsdl;
     private SoapProfile profile = new SoapProfile();
+    private SoapClient client = new SoapClient();
 
 
 
     TabPane projects = new TabPane();
+    Tab addButtonTab = new Tab();
     @FXML public Label soapProjectStateLabel;
     @FXML public MenuItem soapProjectOpen;
     @FXML public MenuItem soapProjectSave;
     @FXML public AnchorPane soapProjectAnchorPane;
     @FXML public TextArea soapMessageField;
+    @FXML public Button soapButton;
+    @FXML public TextField soapUrlField;
 
-    public Tab addTab(TabPane tp){
+    public Tab addTab(){
         Tab tab = new Tab();
 
         AnchorPane tabAnchor = new AnchorPane();
@@ -64,18 +70,18 @@ public class SOAPTabController implements Initializable {
                                 String oldValue, String newValue) {
                 if (wsdl != null) {
                     projectNameField.setText(wsdl.getName());
-                    profile.setUrl(wsdl.getAbsolutePath());
+                    profile.setUrlToWsdl(wsdl.getAbsolutePath());
                 } else if (wsdlField.getText().contains("?wsdl")){
                     projectNameField.setText(wsdlField.getText().substring(0, wsdlField.getText().indexOf("?wsdl")));
-                    profile.setUrl(wsdlField.getText());
+                    profile.setUrlToWsdl(wsdlField.getText());
                 }
             }
         });
 
 
 
-        TreeView<String> treeView = new TreeView<String>();
-        TreeItem<String> root = new TreeItem<String>();
+        TreeView<String> treeView = new TreeView<String>(); // create empty treeView
+        TreeItem<String> root = new TreeItem<String>(); // root treeItem
         treeView.setRoot(root);
         root.setExpanded(true);
 
@@ -95,8 +101,8 @@ public class SOAPTabController implements Initializable {
                     messagesMap = profile.getMessagesMap();
                     bindings = profile.getBindings();
 
-                    root.setValue(wsdlField.getText().substring(wsdlField.getText().lastIndexOf("/") + 1, wsdlField.getText().indexOf("?wsdl")));
-                    tab.setText(wsdlField.getText().substring(wsdlField.getText().lastIndexOf("/") + 1, wsdlField.getText().indexOf("?wsdl")));
+                    root.setValue(projectNameField.getText());
+                    tab.setText(projectNameField.getText());
 
                     treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
 
@@ -141,7 +147,6 @@ public class SOAPTabController implements Initializable {
                 if (wsdl != null) {
                     wsdlField.setText(wsdl.getAbsolutePath());
                 }
-
             }
         });
 
@@ -167,7 +172,10 @@ public class SOAPTabController implements Initializable {
         AnchorPane.setLeftAnchor(treeView, 10.0);
         AnchorPane.setRightAnchor(treeView, 0.0);
         AnchorPane.setTopAnchor(treeView, 110.0);
-        tp.getTabs().add(tab);
+        if (projects.getTabs().size()>1)
+        projects.getTabs().add(projects.getTabs().size()-1, tab);
+        else
+        projects.getTabs().add(tab);
         tab.setText("default");
         return tab;
     }
@@ -179,29 +187,52 @@ public class SOAPTabController implements Initializable {
         projects.sideProperty().setValue(Side.LEFT);
         projects.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
 
-        Tab addButtonTab = new Tab();
         addButtonTab.setText("+");
         addButtonTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
         public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
-            if (new_val) {
-                Tab tab = addTab(projects);
-                SingleSelectionModel<Tab> selectionModel = projects.getSelectionModel();
+            SingleSelectionModel<Tab> selectionModel = projects.getSelectionModel();
+            if (new_val){
+                Tab tab = addTab();
                 selectionModel.select(tab);
+                }
             }
-        }
         }
         );
 
-        projects.getTabs().add(addButtonTab);       // add tab to create new tabs
+        soapButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    profile.setId(soapUrlField.getText());
+                } catch (ProfileNotFoundException | ProfileStructureException e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        soapUrlField.textProperty().addListener(new ChangeListener<String>() {
+            public void changed(ObservableValue ov, String old_val, String new_val) {
+                SingleSelectionModel<Tab> selectionModel = projects.getSelectionModel();
+                if (!new_val.equals("")){
+                    // handling url changes here
+                }
+                }
+            }
+        );
+
+
         soapProjectAnchorPane.getChildren().addAll(projects);
+        addTab();
+        projects.getTabs().add(addButtonTab);
+        SingleSelectionModel<Tab> selectionModel = projects.getSelectionModel();
+        selectionModel.select(projects.getTabs().indexOf(addButtonTab)-1); // add tab to create new tabs
         AnchorPane.setTopAnchor(projects, 0.0);
         AnchorPane.setBottomAnchor(projects, 7.0);
         AnchorPane.setLeftAnchor(projects, 0.0);
         AnchorPane.setRightAnchor(projects, 1.0);
 
-
-
-         soapProjectStateLabel.setText("");
+        soapProjectStateLabel.setText("");
 
     }
 
