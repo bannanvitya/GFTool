@@ -1,1 +1,1 @@
-{"httpRequestField":"{\"operation\":\"suspendSubscriber\",\"newCtn\": \"9640562676\",\"ctn\": \"9626376315\", \"reason_code\":\"STO\"}","httpParamValueField":"","httpParamNameField":"","httpUrlField":"http://ms-glass017:9797/cxf/nxp/customer/ALFA"}
+{"httpRequestField":"{\"azaza\":\"azaza\"}","httpParamValueField":"","httpParamNameField":"","httpUrlField":"http://ms-glass017:9080/GeoCoderService/suggest/azazas"}

@@ -31,7 +31,7 @@
                         <AnchorPane minWidth="200.0">
                             <children>
                                 <Button fx:id="httpButton" layoutX="7.0" layoutY="7.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
-                                <TextArea fx:id="httpRequestField" layoutX="438.0" layoutY="62.0" prefHeight="614.0" prefWidth="590.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
+                                <TextArea fx:id="httpRequestField" layoutX="438.0" layoutY="62.0" prefHeight="614.0" prefWidth="590.0" wrapText="true" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
                                 <Label layoutX="7.0" layoutY="39.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
                             </children>
                         </AnchorPane>
@@ -73,7 +73,7 @@
                                         <TextField fx:id="httpContentTypeField" prefWidth="388.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="184.0" />
                                     </children>
                                 </AnchorPane>
-                                <TextArea fx:id="httpResponseField" layoutX="115.0" layoutY="539.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="539.0" />
+                                <TextArea fx:id="httpResponseField" layoutX="115.0" layoutY="539.0" wrapText="true" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="539.0" />
                                 <Label layoutX="14.0" layoutY="516.0" text="Response" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="516.0" />
                                 <TextField fx:id="httpParamNameField" layoutX="6.0" layoutY="428.0" prefHeight="25.0" prefWidth="131.0" promptText="HeaderName" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="425.0" />
                                 <TextField fx:id="httpParamValueField" layoutX="160.0" layoutY="428.0" prefHeight="25.0" promptText="HeaderValue" AnchorPane.leftAnchor="135.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="425.0" />

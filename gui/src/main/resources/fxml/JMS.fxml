@@ -21,36 +21,14 @@
                         </MenuBar>
                     </children>
                 </AnchorPane>
-      <SplitPane dividerPositions="0.6" VBox.vgrow="ALWAYS">
-         <items>
-                        <AnchorPane minWidth="200.0">
-                            <children>
-                                <TextArea fx:id="jmsRequestField" layoutY="120.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="88.0" />
-                                <Button fx:id="jmsButton" layoutX="8.0" layoutY="58.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
-                                <Label layoutX="14.0" layoutY="93.0" prefHeight="20.0" prefWidth="43.0" text="Request" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="61.0" />
-                            </children>
-                        </AnchorPane>
-                        <AnchorPane minWidth="350.0" GridPane.columnIndex="1" GridPane.hgrow="NEVER" GridPane.vgrow="ALWAYS">
-                            <children>
-                                <Label prefHeight="25.0" text="Host" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="0.0" />
-                                <TextField fx:id="jmsHostField" prefWidth="250.0" AnchorPane.leftAnchor="87.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="0.0" />
-                                <Label prefHeight="25.0" text="Port" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="26.0" />
-                                <TextField fx:id="jmsPortField" prefWidth="250.0" AnchorPane.leftAnchor="87.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="26.0" />
-                                <Label prefHeight="25.0" text="QueueManager" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="52.0" />
-                                <TextField fx:id="jmsQueueManagerField" prefWidth="250.0" AnchorPane.leftAnchor="87.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="52.0" />
-                                <Label prefHeight="25.0" text="Channel" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="78.0" />
-                                <TextField fx:id="jmsChannelField" prefWidth="250.0" AnchorPane.leftAnchor="87.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="78.0" />
-                                <Label prefHeight="25.0" prefWidth="77.0" text="TransportType" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="104.0" />
-                                <TextField fx:id="jmsTransportTypeField" prefWidth="250.0" AnchorPane.leftAnchor="87.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="104.0" />
-                                <Label prefHeight="25.0" text="QueueName" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="130.0" />
-                                <TextField fx:id="jmsQueueNameField" prefWidth="250.0" AnchorPane.leftAnchor="87.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="130.0" />
-                                <Label prefHeight="25.0" text="UserID" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="170.0" />
-                                <TextField fx:id="jmsUserIdField" prefWidth="250.0" AnchorPane.leftAnchor="87.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="170.0" />
-                                <Label prefHeight="25.0" text="Password" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="196.0" />
-                                <TextField fx:id="jmsPassField" prefWidth="250.0" AnchorPane.leftAnchor="87.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="196.0" />
-                            </children>
-                        </AnchorPane>
-         </items>
-      </SplitPane>
+      <VBox fx:id="jmsVBox" VBox.vgrow="ALWAYS">
+         <children>
+            <AnchorPane>
+               <children>
+                                <Button fx:id="jmsButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="41.0" text="&gt;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
             </children>
         </VBox>

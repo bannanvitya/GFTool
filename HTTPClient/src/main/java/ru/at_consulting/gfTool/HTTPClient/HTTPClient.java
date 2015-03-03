@@ -53,15 +53,19 @@ public class HTTPClient implements Client {
 
                 httpResultCode = con.getResponseCode(); // Code
 
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(con.getInputStream()));
-                String inputLine;
-                StringBuilder sb = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    sb.append(inputLine);
+                if (httpResultCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(con.getInputStream()));
+                    String inputLine;
+                    StringBuilder sb = new StringBuilder();
+                    while ((inputLine = in.readLine()) != null) {
+                        sb.append(inputLine);
+                    }
+                    in.close();
+                    respMessage += sb.toString(); // Message
                 }
-                in.close();
-                respMessage = "" + sb.toString(); // Message
+                else
+                    respMessage += con.getResponseMessage();
             }
             else {
                 OutputStreamWriter wr = new OutputStreamWriter(con.getOutputStream());

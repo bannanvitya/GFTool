@@ -1,26 +1,33 @@
 package ru.at_consulting.gfTool.gui;
 
+import com.predic8.wsdl.Binding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.codehaus.jackson.map.ObjectMapper;
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqClient;
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqProfile;
 import ru.at_consulting.gfTool.IBMMqClient.IBMMqRequest;
+import ru.at_consulting.gfTool.api.PostconditionsException;
 import ru.at_consulting.gfTool.api.ProfileNotFoundException;
 import ru.at_consulting.gfTool.api.ProfileStructureException;
 import ru.at_consulting.gfTool.api.SendRequestException;
 
+import javax.jms.JMSException;
 import java.io.File;
 import java.net.URL;
-import java.util.Date;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  * Created by VKhozhaynov on 15.02.2015.
@@ -29,58 +36,79 @@ public class JMSTabController implements Initializable {
     private Node upperElement;
 
 
+    TabPane jmsMainTabPane = new TabPane();
+    Tab jmsAddButtonTab = new Tab();
+    AnchorPane jmsInnerPane = new AnchorPane();
+
+
     @FXML public Button jmsButton;
-    @FXML public TextField jmsHostField;
-    @FXML public TextField jmsPortField;
-    @FXML public TextField jmsQueueManagerField;
-    @FXML public TextField jmsChannelField;
-    @FXML public TextField jmsTransportTypeField;
-    @FXML public TextField jmsQueueNameField;
-    @FXML public TextField jmsUserIdField;
-    @FXML public TextField jmsPassField;
-    @FXML public TextArea jmsRequestField;
     @FXML public MenuItem jmsProjectOpen;
     @FXML public MenuItem jmsProjectSave;
     @FXML public Label jmsProjectStateLabel;
+
+    @FXML public VBox jmsVBox;
 
     private void jmsProjectInitialGet(String path){
         if ((new File(path)).length() != 0)
             try {
                 ObjectMapper mapper = new ObjectMapper();
-                Properties jmsTabProp = mapper.readValue(new File(path), Properties.class);
+                Map<String, LinkedHashMap<String, String>> map = mapper.readValue(new File(path), Map.class);
 
-                jmsHostField.setText(jmsTabProp.getProperty(jmsHostField.getId()));
-                jmsPortField.setText(jmsTabProp.getProperty(jmsPortField.getId()));
-                jmsQueueManagerField.setText(jmsTabProp.getProperty(jmsQueueManagerField.getId()));
-                jmsChannelField.setText(jmsTabProp.getProperty(jmsChannelField.getId()));
-                jmsTransportTypeField.setText(jmsTabProp.getProperty(jmsTransportTypeField.getId()));
-                jmsQueueNameField.setText(jmsTabProp.getProperty(jmsQueueNameField.getId()));
-                jmsUserIdField.setText(jmsTabProp.getProperty(jmsUserIdField.getId()));
-                jmsPassField.setText(jmsTabProp.getProperty(jmsPassField.getId()));
-                jmsRequestField.setText(jmsTabProp.getProperty(jmsRequestField.getId()));
-
+                for (Map.Entry<String, LinkedHashMap<String, String>> e : map.entrySet()){
+                    LinkedHashMap<String, String> jmsTabProp = e.getValue();
+                    Tab t = addTab(e.getKey());
+                    t.setText(e.getKey());
+                    SplitPane split = (SplitPane)t.getContent();
+                    for (Node n : split.getItems()) {
+                        AnchorPane ap = (AnchorPane) n;
+                        for (Node tf : ap.getChildren()) {
+                            try {
+                                TextField f = (TextField) tf;
+                                f.setText(jmsTabProp.get(f.getId()));
+                            } catch (ClassCastException ex) {
+                                try {
+                                    TextArea ar = (TextArea) tf;
+                                    ar.setText(jmsTabProp.get(ar.getId()));
+                                } catch (ClassCastException er) {
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
     }
     private void jmsProjectSave(String path){
         try {
-            Properties jmsTabProp = new Properties();
-            jmsTabProp.setProperty(jmsHostField.getId(), jmsHostField.getText());
-            jmsTabProp.setProperty(jmsPortField.getId(), jmsPortField.getText());
-            jmsTabProp.setProperty(jmsQueueManagerField.getId(), jmsQueueManagerField.getText());
-            jmsTabProp.setProperty(jmsChannelField.getId(), jmsChannelField.getText());
-            jmsTabProp.setProperty(jmsTransportTypeField.getId(), jmsTransportTypeField.getText());
-            jmsTabProp.setProperty(jmsQueueNameField.getId(), jmsQueueNameField.getText());
-            jmsTabProp.setProperty(jmsUserIdField.getId(), jmsUserIdField.getText());
-            jmsTabProp.setProperty(jmsPassField.getId(), jmsPassField.getText());
-            jmsTabProp.setProperty(jmsRequestField.getId(), jmsRequestField.getText());
-
-
-
+            Map<String, Properties> map = new HashMap<String, Properties>();
+            for (Tab t : jmsMainTabPane.getTabs()) {
+                SplitPane split = (SplitPane)t.getContent();
+                Properties jmsTabProp = new Properties();
+                if (split != null)
+                for (Node ap : split.getItems()) {
+                    AnchorPane pane = (AnchorPane) ap;
+                    for (Node tf : pane.getChildren()) {
+                        try {
+                            TextField f = (TextField) tf;
+                            jmsTabProp.put(f.getId(), f.getText());
+                        } catch (ClassCastException ex) {
+                            try {
+                                TextArea ar = (TextArea) tf;
+                                jmsTabProp.put(ar.getId(), ar.getText());
+                            } catch (ClassCastException er) {
+                                continue;
+                            }
+                        }
+                    }
+                }
+                if (!jmsTabProp.isEmpty())
+                    map.put(t.getId(), jmsTabProp);
+            }
             File resultFile = new File(path);
             ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(resultFile, jmsTabProp);
+            mapper.writeValue(resultFile, map);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -90,8 +118,29 @@ public class JMSTabController implements Initializable {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
-        jmsProjectStateLabel.setText("");
-        jmsProjectInitialGet(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
+        jmsMainTabPane.sideProperty().setValue(Side.LEFT);
+        jmsMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
+
+        jmsInnerPane.getChildren().addAll(jmsMainTabPane);
+
+        AnchorPane.setBottomAnchor(jmsMainTabPane, 0.0);
+        AnchorPane.setLeftAnchor(jmsMainTabPane, 0.0);
+        AnchorPane.setRightAnchor(jmsMainTabPane, 0.0);
+        AnchorPane.setTopAnchor(jmsMainTabPane, 0.0);
+
+        jmsAddButtonTab.setText("+");
+        jmsAddButtonTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                                                            public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
+                                                                SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
+                                                                if (new_val){
+                                                                    Date now = new Date();
+                                                                    Tab tab = addTab(now.toString());
+                                                                    selectionModel.select(tab);
+                                                                }
+                                                            }
+                                                        }
+        );
+
 
 
         jmsButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -104,14 +153,28 @@ public class JMSTabController implements Initializable {
 
                 Properties prop = new Properties();
 
-                prop.setProperty("host", jmsHostField.getText());
-                prop.setProperty("port", jmsPortField.getText());
-                prop.setProperty("queueManager", jmsQueueManagerField.getText());
-                prop.setProperty("channel", jmsChannelField.getText());
-                prop.setProperty("transportType", jmsTransportTypeField.getText());
-                prop.setProperty("queueName", jmsQueueNameField.getText());
-                prop.setProperty("userId", jmsUserIdField.getText());
-                prop.setProperty("password", jmsPassField.getText());
+                SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
+                SplitPane split = (SplitPane)jmsMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
+
+                AnchorPane projectAnchor = (AnchorPane) split.getItems().get(1);
+                TextField hostField = (TextField)projectAnchor.getChildren().get(8);
+                TextField portField = (TextField)projectAnchor.getChildren().get(9);
+                TextField queueField = (TextField)projectAnchor.getChildren().get(10);
+                TextField channelField = (TextField)projectAnchor.getChildren().get(11);
+                TextField transportTypeField = (TextField)projectAnchor.getChildren().get(12);
+                TextField queueNameField = (TextField)projectAnchor.getChildren().get(13);
+                TextField userIdField = (TextField)projectAnchor.getChildren().get(14);
+                TextField passwordField = (TextField)projectAnchor.getChildren().get(15);
+
+                prop.setProperty("host", hostField.getText());
+                prop.setProperty("port", portField.getText());
+                prop.setProperty("queueManager", queueField.getText());
+                prop.setProperty("channel", channelField.getText());
+                prop.setProperty("transportType", transportTypeField.getText());
+                prop.setProperty("queueName", queueNameField.getText());
+                prop.setProperty("userId", userIdField.getText());
+                prop.setProperty("password", passwordField.getText());
+                System.out.println(prop.toString());
 
 
                 try {
@@ -122,7 +185,10 @@ public class JMSTabController implements Initializable {
                     e.printStackTrace();
                 }
 
-                IBMMqRequest request = new IBMMqRequest(jmsRequestField.getText());
+                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
+                TextArea requestArea = (TextArea)requestAnchor.getChildren().get(1);
+
+                IBMMqRequest request = new IBMMqRequest(requestArea.getText());
                 IBMMqClient client = new IBMMqClient();
                 client.setProfile(profile);
 
@@ -140,6 +206,11 @@ public class JMSTabController implements Initializable {
                 } catch (SendRequestException e) {
                     e.printStackTrace();
                 } catch (ProfileStructureException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    client.postconditions();
+                } catch (PostconditionsException e){
                     e.printStackTrace();
                 }
 
@@ -180,6 +251,179 @@ public class JMSTabController implements Initializable {
         });
 
 
+        jmsVBox.getChildren().addAll(jmsInnerPane);
+
+        VBox.setVgrow(jmsInnerPane, Priority.ALWAYS);
+
+        Date now = new Date();
+        addTab(now.toString());
+        jmsMainTabPane.getTabs().add(jmsAddButtonTab);
+        SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
+        selectionModel.select(jmsMainTabPane.getTabs().indexOf(jmsAddButtonTab) - 1); // add tab to create new tabs
+
+
+        jmsProjectInitialGet(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
+
+        jmsProjectStateLabel.setText("");
+
+    }
+
+    public Tab addTab(String id){
+        Tab tab = new Tab();
+        tab.setId(id);
+
+        SplitPane split = new SplitPane();
+        split.setDividerPositions(0.6, 0.4);
+        tab.setContent(split);
+
+        AnchorPane requestAnchor = new AnchorPane();
+        requestAnchor.setMinWidth(350.0);
+
+        AnchorPane projectAnchor = new AnchorPane();
+        projectAnchor.setMinWidth(350.0);
+
+
+
+        Label requestLabel = new Label();
+        requestLabel.setText("Request");
+
+        TextArea requestArea = new TextArea();
+        requestArea.setId("requestArea");
+        requestArea.wrapTextProperty().setValue(true);
+
+        requestAnchor.getChildren().addAll(requestLabel, requestArea); //requestAnchor elements
+
+        AnchorPane.setLeftAnchor(requestLabel, 7.0);
+        AnchorPane.setTopAnchor(requestLabel, 7.0);
+
+        AnchorPane.setBottomAnchor(requestArea, 7.0);
+        AnchorPane.setLeftAnchor(requestArea, 7.0);
+        AnchorPane.setRightAnchor(requestArea, 1.0);
+        AnchorPane.setTopAnchor(requestArea, 30.0);
+
+
+        Label hostLabel = new Label();
+        hostLabel.setPrefHeight(25.0);
+        hostLabel.setText("Host");
+
+        Label portLabel = new Label();
+        portLabel.setPrefHeight(25.0);
+        portLabel.setText("Port");
+
+        Label queueManagerLabel = new Label();
+        queueManagerLabel.setPrefHeight(25.0);
+        queueManagerLabel.setText("Queue Manager");
+
+        Label channelLabel = new Label();
+        channelLabel.setPrefHeight(25.0);
+        channelLabel.setText("Channel");
+
+        Label transportTypeLabel = new Label();
+        transportTypeLabel.setPrefHeight(25.0);
+        transportTypeLabel.setText("Transport Type");
+
+        Label queueNameLabel = new Label();
+        queueNameLabel.setPrefHeight(25.0);
+        queueNameLabel.setText("Queue Name");
+
+        Label userIdLabel = new Label();
+        userIdLabel.setPrefHeight(25.0);
+        userIdLabel.setText("User ID");
+
+        Label passwordLabel = new Label();
+        passwordLabel.setPrefHeight(25.0);
+        passwordLabel.setText("Password");
+
+        TextField hostField = new TextField();
+        hostField.setId("hostField");
+        TextField portField = new TextField();
+        portField.setId("portField");
+        TextField queueManagerField = new TextField();
+        queueManagerField.setId("queueManagerField");
+        TextField channelField = new TextField();
+        channelField.setId("channelField");
+        TextField transportTypeField = new TextField();
+        transportTypeField.setId("transportTypeField");
+        TextField queueNameField = new TextField();
+        queueNameField.setId("queueNameField");
+        TextField userIdField = new TextField();
+        userIdField.setId("userIdField");
+        TextField passwordField = new TextField();
+        passwordField.setId("passwordField");
+
+
+        TextArea responseArea = new TextArea();
+        responseArea.wrapTextProperty().setValue(true);
+        projectAnchor.getChildren().addAll(hostLabel, portLabel, queueManagerLabel, channelLabel, transportTypeLabel, queueNameLabel, userIdLabel, passwordLabel,
+                hostField, portField, queueManagerField, channelField, transportTypeField, queueNameField, userIdField, passwordField); //responseAnchor elements
+
+        AnchorPane.setLeftAnchor(hostLabel, 1.0);
+        AnchorPane.setTopAnchor(hostLabel, 7.0);
+
+        AnchorPane.setLeftAnchor(portLabel, 1.0);
+        AnchorPane.setTopAnchor(portLabel, 33.0);
+
+        AnchorPane.setLeftAnchor(queueManagerLabel, 1.0);
+        AnchorPane.setTopAnchor(queueManagerLabel, 59.0);
+
+        AnchorPane.setLeftAnchor(channelLabel, 1.0);
+        AnchorPane.setTopAnchor(channelLabel, 85.0);
+
+        AnchorPane.setLeftAnchor(transportTypeLabel, 1.0);
+        AnchorPane.setTopAnchor(transportTypeLabel, 111.0);
+
+        AnchorPane.setLeftAnchor(queueNameLabel, 1.0);
+        AnchorPane.setTopAnchor(queueNameLabel, 137.0);
+
+        AnchorPane.setLeftAnchor(userIdLabel, 1.0);
+        AnchorPane.setTopAnchor(userIdLabel, 177.0);
+
+        AnchorPane.setLeftAnchor(passwordLabel, 1.0);
+        AnchorPane.setTopAnchor(passwordLabel, 203.0);
+
+
+        AnchorPane.setLeftAnchor(hostField, 87.0);
+        AnchorPane.setTopAnchor(hostField, 7.0);
+        AnchorPane.setRightAnchor(hostField, 7.0);
+
+        AnchorPane.setLeftAnchor(portField, 87.0);
+        AnchorPane.setTopAnchor(portField, 33.0);
+        AnchorPane.setRightAnchor(portField, 7.0);
+
+        AnchorPane.setLeftAnchor(queueManagerField, 87.0);
+        AnchorPane.setTopAnchor(queueManagerField, 59.0);
+        AnchorPane.setRightAnchor(queueManagerField, 7.0);
+
+        AnchorPane.setLeftAnchor(channelField, 87.0);
+        AnchorPane.setTopAnchor(channelField, 85.0);
+        AnchorPane.setRightAnchor(channelField, 7.0);
+
+        AnchorPane.setLeftAnchor(transportTypeField, 87.0);
+        AnchorPane.setTopAnchor(transportTypeField, 111.0);
+        AnchorPane.setRightAnchor(transportTypeField, 7.0);
+
+        AnchorPane.setLeftAnchor(queueNameField, 87.0);
+        AnchorPane.setTopAnchor(queueNameField, 137.0);
+        AnchorPane.setRightAnchor(queueNameField, 7.0);
+
+        AnchorPane.setLeftAnchor(userIdField, 87.0);
+        AnchorPane.setTopAnchor(userIdField, 177.0);
+        AnchorPane.setRightAnchor(userIdField, 7.0);
+
+        AnchorPane.setLeftAnchor(passwordField, 87.0);
+        AnchorPane.setTopAnchor(passwordField, 203.0);
+        AnchorPane.setRightAnchor(passwordField, 7.0);
+
+
+        split.getItems().addAll(requestAnchor, projectAnchor); // split elements
+
+
+        if (jmsMainTabPane.getTabs().size()>1)
+            jmsMainTabPane.getTabs().add(jmsMainTabPane.getTabs().size()-1, tab);
+        else
+            jmsMainTabPane.getTabs().add(tab);
+        tab.setText("default");
+        return tab;
     }
 
     public void setJmsUpperElement(Node node){
