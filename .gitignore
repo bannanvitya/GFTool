@@ -15,7 +15,6 @@
 # Maven
 log/
 target/
-libs/
 
 # Surefire-Junit
 output
