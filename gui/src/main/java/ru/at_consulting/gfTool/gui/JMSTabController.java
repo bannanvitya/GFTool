@@ -56,7 +56,7 @@ public class JMSTabController implements Initializable {
 
                 for (Map.Entry<String, LinkedHashMap<String, String>> e : map.entrySet()){
                     LinkedHashMap<String, String> jmsTabProp = e.getValue();
-                    Tab t = addTab(e.getKey());
+                    Tab t = addTab(e.getKey(), jmsMainTabPane);
                     t.setText(e.getKey());
                     SplitPane split = (SplitPane)t.getContent();
                     for (Node n : split.getItems()) {
@@ -134,7 +134,7 @@ public class JMSTabController implements Initializable {
                                                                 SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
                                                                 if (new_val){
                                                                     Date now = new Date();
-                                                                    Tab tab = addTab(now.toString());
+                                                                    Tab tab = addTab(now.toString(), jmsMainTabPane);
                                                                     selectionModel.select(tab);
                                                                 }
                                                             }
@@ -251,12 +251,12 @@ public class JMSTabController implements Initializable {
         });
 
 
-        jmsVBox.getChildren().addAll(jmsInnerPane);
+        jmsVBox.getChildren().addAll(jmsInnerPane); // In this VBox 1) AnchorPane for button 2) AnchorPane named "jmsInnerPane" for all inner dynamic elements
 
         VBox.setVgrow(jmsInnerPane, Priority.ALWAYS);
 
         Date now = new Date();
-        addTab(now.toString());
+        addTab(now.toString(), jmsMainTabPane);
         jmsMainTabPane.getTabs().add(jmsAddButtonTab);
         SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
         selectionModel.select(jmsMainTabPane.getTabs().indexOf(jmsAddButtonTab) - 1); // add tab to create new tabs
@@ -268,7 +268,7 @@ public class JMSTabController implements Initializable {
 
     }
 
-    public Tab addTab(String id){
+    public Tab addTab(String id, TabPane someTabPane){
         Tab tab = new Tab();
         tab.setId(id);
 
@@ -418,10 +418,10 @@ public class JMSTabController implements Initializable {
         split.getItems().addAll(requestAnchor, projectAnchor); // split elements
 
 
-        if (jmsMainTabPane.getTabs().size()>1)
-            jmsMainTabPane.getTabs().add(jmsMainTabPane.getTabs().size()-1, tab);
+        if (someTabPane.getTabs().size()>1)
+            someTabPane.getTabs().add(someTabPane.getTabs().size()-1, tab);
         else
-            jmsMainTabPane.getTabs().add(tab);
+            someTabPane.getTabs().add(tab);
         tab.setText("default");
         return tab;
     }
