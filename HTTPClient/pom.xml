@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>gftool</artifactId>
-        <groupId>ru.at_consulting.gfTool</groupId>
+        <groupId>gfTool</groupId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>ru.at_consulting.gfTool</groupId>
+    <groupId>gfTool</groupId>
     <artifactId>HTTPClient</artifactId>
     <version>1.0.0</version>
     <properties>
@@ -18,7 +18,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>ru.at_consulting.gfTool</groupId>
+            <groupId>gfTool</groupId>
             <artifactId>api</artifactId>
             <version>1.0</version>
         </dependency>
