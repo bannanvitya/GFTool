@@ -27,6 +27,7 @@ import gfTool.HTTPClient.HTTPResponse;
 import gfTool.api.ProfileNotFoundException;
 import gfTool.api.ProfileStructureException;
 import gfTool.api.SendRequestException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.net.URL;
@@ -85,7 +86,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             @Override
             public void handle(ActionEvent event) {
 
-                SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane);
+                SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
 
                 HTTPProfile profile = new HTTPProfile();
 
@@ -170,8 +171,8 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
 
 
                 if(file != null){
-                    SaveAndOpen.projectGlobalSave(file.getPath(), httpMainTabPane);
-                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane);
+                    SaveAndOpen.projectGlobalSave(file.getPath(), httpMainTabPane, HTTPTabController.this);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
                     httpProjectStateLabel.setText(file.getName() + "  ");
                 }
             }
@@ -187,7 +188,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
 
                 if (file != null){
                     SaveAndOpen.projectGlobalOpen(file.getPath(), httpMainTabPane, HTTPTabController.this);
-                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
                     httpProjectStateLabel.setText(file.getName() + "  ");
                 }
             }
@@ -199,13 +200,18 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
 
         VBox.setVgrow(httpInnerPane, Priority.ALWAYS);
 
-        Date now = new Date();
-        addTab(now.toString(), httpMainTabPane);
+
+        SaveAndOpen.projectGlobalOpen(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
+        if (httpMainTabPane.getTabs().size() == 0) {
+            Date now = new Date();
+            addTab(now.toString(), httpMainTabPane);
+        }
+
         httpMainTabPane.getTabs().add(httpAddButtonTab);
         SingleSelectionModel<Tab> selectionModel = httpMainTabPane.getSelectionModel();
         selectionModel.select(httpMainTabPane.getTabs().indexOf(httpAddButtonTab) - 1); // add tab to create new tabs
 
-        SaveAndOpen.projectGlobalOpen(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
+
 
         httpProjectStateLabel.setText("");
     }
@@ -478,6 +484,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         tab.setText("default");
         return tab;
     }
+
 
     public static class Params {
 

@@ -22,6 +22,7 @@ import gfTool.api.PostconditionsException;
 import gfTool.api.ProfileNotFoundException;
 import gfTool.api.ProfileStructureException;
 import gfTool.api.SendRequestException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.net.URL;
@@ -117,7 +118,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
             @Override
             public void handle(ActionEvent event) {
-                SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane);
+                SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
 
                 IBMMqProfile profile = new IBMMqProfile();
 
@@ -197,7 +198,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
                 if (file != null){
                     SaveAndOpen.projectGlobalOpen(file.getPath(), jmsMainTabPane, JMSTabController.this);
-                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
                     jmsProjectStateLabel.setText(file.getName() + "  ");
                 }
             }
@@ -213,8 +214,8 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
 
                 if(file != null){
-                    SaveAndOpen.projectGlobalSave(file.getPath(), jmsMainTabPane);
-                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane);
+                    SaveAndOpen.projectGlobalSave(file.getPath(), jmsMainTabPane, JMSTabController.this);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
                     jmsProjectStateLabel.setText(file.getName() + "  ");
                 }
             }
@@ -225,14 +226,21 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
         VBox.setVgrow(jmsInnerPane, Priority.ALWAYS);
 
-        Date now = new Date();
-        addTab(now.toString(), jmsMainTabPane);
+
+
+        SaveAndOpen.projectGlobalOpen(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
+        if (jmsMainTabPane.getTabs().size() == 0) {
+            Date now = new Date();
+            addTab(now.toString(), jmsMainTabPane);
+        }
+
+
         jmsMainTabPane.getTabs().add(jmsAddButtonTab);
         SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
         selectionModel.select(jmsMainTabPane.getTabs().indexOf(jmsAddButtonTab) - 1); // add tab to create new tabs
 
 
-        SaveAndOpen.projectGlobalOpen(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
+
 
         jmsProjectStateLabel.setText("");
 
@@ -396,6 +404,8 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         tab.setText("default");
         return tab;
     }
+
+
 
     public void setJmsUpperElement(Node node){
         upperElement = node;

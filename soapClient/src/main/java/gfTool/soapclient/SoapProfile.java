@@ -56,6 +56,10 @@ public class SoapProfile implements Profile {
         return messagesMap;
     }
 
+    public void setMessagesMap(Map<String, String> x){
+        messagesMap = x;
+    }
+
     public Map<String, SoapMsgConfig> getMessagesConfigMap(){
         return messagesConfigMap;
     }
@@ -63,6 +67,11 @@ public class SoapProfile implements Profile {
     public String getUrlToSend(){
         return urlToSend;
     }
+
+
+
+
+
 
     public void setUrlToSend(String urlToSend){
         this.urlToSend = urlToSend;

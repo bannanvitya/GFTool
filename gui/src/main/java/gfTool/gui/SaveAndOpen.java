@@ -59,7 +59,7 @@ public class SaveAndOpen {
                 ex.printStackTrace();
             }
     }
-    public static void projectGlobalSave(String path, Node root){
+    public static void projectGlobalSave(String path, Node root, ClientTabControllerApi general){
         try {
             Map<String, Properties> map = new HashMap<String, Properties>();
             try {
@@ -83,7 +83,7 @@ public class SaveAndOpen {
                                                 RadioButton rb = (RadioButton) tf;
                                                 tabProp.put(rb.getId(), rb.selectedProperty().getValue().toString());
                                             } catch (ClassCastException et) {
-                                                continue;
+                                                    continue;
                                             }
                                         }
                                 }
@@ -91,6 +91,13 @@ public class SaveAndOpen {
                         }
                     if (!tabProp.isEmpty())
                         map.put(t.getId(), tabProp);
+
+
+                    /*if (general.getClass().equals(SOAPTabController.class)) { // store messagesMap for SOAP protocol
+                        Properties messagesProp = new Properties();
+                        messagesProp.putAll(general.getMessageMap());
+                        map.put(t.getId() + "_messagesMap", messagesProp);
+                    }*/
                 }
             } catch (ClassCastException e) {
                 throw new GlobalSaveException();
@@ -104,7 +111,7 @@ public class SaveAndOpen {
 
     }
 
-    public static void projectActualSave(String path, Node root){
+    public static void projectActualSave(String path, Node root, ClientTabControllerApi general){
         try {
             Properties map = new Properties();
             String tabName = "";
