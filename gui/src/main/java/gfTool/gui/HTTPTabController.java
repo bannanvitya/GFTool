@@ -35,7 +35,7 @@ import java.util.*;
 /**
  * Created by VKhozhaynov on 15.02.2015.
  */
-public class HTTPTabController implements Initializable {
+public class HTTPTabController implements Initializable, ClientTabControllerApi {
     private Node upperElement;
 
     @FXML public Button httpButton;
@@ -85,7 +85,7 @@ public class HTTPTabController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
 
-                httpProjectSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects");
+                SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane);
 
                 HTTPProfile profile = new HTTPProfile();
 
@@ -170,8 +170,8 @@ public class HTTPTabController implements Initializable {
 
 
                 if(file != null){
-                    httpProjectSave(file.getPath());
-                    httpProjectSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects");
+                    SaveAndOpen.projectGlobalSave(file.getPath(), httpMainTabPane);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane);
                     httpProjectStateLabel.setText(file.getName() + "  ");
                 }
             }
@@ -186,8 +186,8 @@ public class HTTPTabController implements Initializable {
                 File file = project.showOpenDialog(stage);
 
                 if (file != null){
-                    httpProjectInitialGet(file.getPath());
-                    httpProjectSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects");
+                    SaveAndOpen.projectGlobalOpen(file.getPath(), httpMainTabPane, HTTPTabController.this);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane);
                     httpProjectStateLabel.setText(file.getName() + "  ");
                 }
             }
@@ -205,12 +205,12 @@ public class HTTPTabController implements Initializable {
         SingleSelectionModel<Tab> selectionModel = httpMainTabPane.getSelectionModel();
         selectionModel.select(httpMainTabPane.getTabs().indexOf(httpAddButtonTab) - 1); // add tab to create new tabs
 
-
-        httpProjectInitialGet(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects"); // initial from file
+        SaveAndOpen.projectGlobalOpen(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
 
         httpProjectStateLabel.setText("");
     }
 
+    @Override
     public Tab addTab(String id, TabPane someTabPane){
         Tab tab = new Tab();
         tab.setId(id);
@@ -478,87 +478,6 @@ public class HTTPTabController implements Initializable {
         tab.setText("default");
         return tab;
     }
-
-    private void httpProjectInitialGet(String path) {
-        if ((new File(path)).length() != 0)
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, LinkedHashMap<String, String>> map = mapper.readValue(new File(path), Map.class);
-
-                for (Map.Entry<String, LinkedHashMap<String, String>> e : map.entrySet()){
-                    LinkedHashMap<String, String> httpTabProp = e.getValue();
-                    Tab t = addTab(e.getKey(), httpMainTabPane);
-                    t.setText(e.getKey());
-                    SplitPane split = (SplitPane)t.getContent();
-                    for (Node n : split.getItems()) {
-                        AnchorPane ap = (AnchorPane) n;
-                        for (Node tf : ap.getChildren()) {
-                            try {
-                                TextField f = (TextField) tf;
-                                f.setText(httpTabProp.get(f.getId()));
-                            } catch (ClassCastException ex) {
-                                try {
-                                    TextArea ar = (TextArea) tf;
-                                    ar.setText(httpTabProp.get(ar.getId()));
-                                } catch (ClassCastException et) {
-                                    try {
-                                        RadioButton rb = (RadioButton) tf;
-                                        rb.setSelected(Boolean.parseBoolean(httpTabProp.get(rb.getId())));
-                                        System.out.println(rb.selectedProperty().getValue().toString());
-                                    }catch (ClassCastException er) {
-                                        continue;
-                                }
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-    }
-
-    private void httpProjectSave(String path)  {
-        try {
-            Map<String, Properties> map = new HashMap<String, Properties>();
-            for (Tab t : httpMainTabPane.getTabs()) {
-                SplitPane split = (SplitPane)t.getContent();
-                Properties httpTabProp = new Properties();
-                if (split != null)
-                    for (Node ap : split.getItems()) {
-                        AnchorPane pane = (AnchorPane) ap;
-                        for (Node tf : pane.getChildren()) {
-                            try {
-                                TextField f = (TextField) tf;
-                                httpTabProp.put(f.getId(), f.getText());
-                            } catch (ClassCastException ex) {
-                                try {
-                                    TextArea ar = (TextArea) tf;
-                                    httpTabProp.put(ar.getId(), ar.getText());
-                                } catch (ClassCastException er) {
-                                  try{
-                                      RadioButton rb = (RadioButton) tf;
-                                      httpTabProp.put(rb.getId(), rb.selectedProperty().getValue().toString());
-                                  } catch (ClassCastException et) {
-                                      continue;
-                                }
-                                }
-                            }
-                        }
-                    }
-                if (!httpTabProp.isEmpty())
-                    map.put(t.getId(), httpTabProp);
-            }
-            File resultFile = new File(path);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(resultFile, map);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-    }
-
-
 
     public static class Params {
 

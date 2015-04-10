@@ -20,10 +20,10 @@ import gfTool.api.PostconditionsException;
 import gfTool.api.ProfileNotFoundException;
 import gfTool.api.ProfileStructureException;
 import gfTool.api.SendRequestException;
-import gfTool.soapclient.*;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
 /**
  * Created by VKhozhaynov on 15.02.2015.
  */
-public class SOAPTabController implements Initializable {
+public class SOAPTabController implements Initializable, ClientTabControllerApi {
     private Node upperElement;
     private Map<String, String> messagesMap;
     private Map<String, SoapMsgConfig> messagesConfigMap;
@@ -52,9 +52,9 @@ public class SOAPTabController implements Initializable {
     @FXML public Button soapButton;
     @FXML public VBox soapVBox;
 
-    public Tab addTab(){
+    public Tab addTab(String id, TabPane someTabPane) {
         Tab tab = new Tab();
-
+        tab.setId(id);
 
 
         SplitPane split = new SplitPane();
@@ -235,10 +235,10 @@ public class SOAPTabController implements Initializable {
 
 
 
-        if (soapMainTabPane.getTabs().size()>1)
-        soapMainTabPane.getTabs().add(soapMainTabPane.getTabs().size()-1, tab);
+        if (someTabPane.getTabs().size()>1)
+            someTabPane.getTabs().add(someTabPane.getTabs().size()-1, tab);
         else
-        soapMainTabPane.getTabs().add(tab);
+            someTabPane.getTabs().add(tab);
         tab.setText("default");
         return tab;
     }
@@ -259,7 +259,8 @@ public class SOAPTabController implements Initializable {
         public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
             SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
             if (new_val){
-                Tab tab = addTab();
+                Date now = new Date();
+                Tab tab = addTab(now.toString(), soapMainTabPane);
                 selectionModel.select(tab);
                 }
             }
@@ -299,7 +300,8 @@ public class SOAPTabController implements Initializable {
 
         soapVBox.getChildren().addAll(soapInnerPane);
         VBox.setVgrow(soapInnerPane, Priority.ALWAYS);
-        addTab();
+        Date now = new Date();
+        Tab tab = addTab(now.toString(), soapMainTabPane);
         soapMainTabPane.getTabs().add(soapAddButtonTab);
 
         SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
@@ -313,6 +315,7 @@ public class SOAPTabController implements Initializable {
     public void setSoapUpperElement(Node node){
         upperElement = node;
     }
+
 
 
 }

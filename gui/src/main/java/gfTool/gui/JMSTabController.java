@@ -30,7 +30,7 @@ import java.util.*;
 /**
  * Created by VKhozhaynov on 15.02.2015.
  */
-public class JMSTabController implements Initializable {
+public class JMSTabController implements Initializable, ClientTabControllerApi {
     private Node upperElement;
 
 
@@ -46,63 +46,35 @@ public class JMSTabController implements Initializable {
 
     @FXML public VBox jmsVBox;
 
-    private void jmsProjectInitialGet(String path){
-        if ((new File(path)).length() != 0)
-            try {
-                ObjectMapper mapper = new ObjectMapper();
-                Map<String, LinkedHashMap<String, String>> map = mapper.readValue(new File(path), Map.class);
 
-                for (Map.Entry<String, LinkedHashMap<String, String>> e : map.entrySet()){
-                    LinkedHashMap<String, String> jmsTabProp = e.getValue();
-                    Tab t = addTab(e.getKey(), jmsMainTabPane);
-                    t.setText(e.getKey());
-                    SplitPane split = (SplitPane)t.getContent();
-                    for (Node n : split.getItems()) {
-                        AnchorPane ap = (AnchorPane) n;
-                        for (Node tf : ap.getChildren()) {
-                            try {
-                                TextField f = (TextField) tf;
-                                f.setText(jmsTabProp.get(f.getId()));
-                            } catch (ClassCastException ex) {
+    private void jmsProjectActualSave(String path){
+        try {
+            Properties map = new Properties();
+            String tabName = "";
+            for (Tab t : jmsMainTabPane.getTabs()) {
+                if (t.isSelected()) {
+                    tabName = t.getText();
+                    SplitPane split = (SplitPane) t.getContent();
+                    if (split != null)
+                        for (Node ap : split.getItems()) {
+                            AnchorPane pane = (AnchorPane) ap;
+                            for (Node tf : pane.getChildren()) {
                                 try {
-                                    TextArea ar = (TextArea) tf;
-                                    ar.setText(jmsTabProp.get(ar.getId()));
-                                } catch (ClassCastException er) {
-                                    continue;
+                                    TextField f = (TextField) tf;
+                                    map.put(f.getId(), f.getText());
+                                } catch (ClassCastException ex) {
+                                    try {
+                                        TextArea ar = (TextArea) tf;
+                                        map.put(ar.getId(), ar.getText());
+                                    } catch (ClassCastException er) {
+                                        continue;
+                                    }
                                 }
                             }
                         }
-                    }
+                    if (!map.isEmpty())
+                        map.put(t.getId(), map);
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-    }
-    private void jmsProjectSave(String path){
-        try {
-            Map<String, Properties> map = new HashMap<String, Properties>();
-            for (Tab t : jmsMainTabPane.getTabs()) {
-                SplitPane split = (SplitPane)t.getContent();
-                Properties jmsTabProp = new Properties();
-                if (split != null)
-                for (Node ap : split.getItems()) {
-                    AnchorPane pane = (AnchorPane) ap;
-                    for (Node tf : pane.getChildren()) {
-                        try {
-                            TextField f = (TextField) tf;
-                            jmsTabProp.put(f.getId(), f.getText());
-                        } catch (ClassCastException ex) {
-                            try {
-                                TextArea ar = (TextArea) tf;
-                                jmsTabProp.put(ar.getId(), ar.getText());
-                            } catch (ClassCastException er) {
-                                continue;
-                            }
-                        }
-                    }
-                }
-                if (!jmsTabProp.isEmpty())
-                    map.put(t.getId(), jmsTabProp);
             }
             File resultFile = new File(path);
             ObjectMapper mapper = new ObjectMapper();
@@ -145,7 +117,7 @@ public class JMSTabController implements Initializable {
 
             @Override
             public void handle(ActionEvent event) {
-                jmsProjectSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
+                SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane);
 
                 IBMMqProfile profile = new IBMMqProfile();
 
@@ -224,8 +196,8 @@ public class JMSTabController implements Initializable {
                 File file = project.showOpenDialog(stage);
 
                 if (file != null){
-                    jmsProjectInitialGet(file.getPath());
-                    jmsProjectSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
+                    SaveAndOpen.projectGlobalOpen(file.getPath(), jmsMainTabPane, JMSTabController.this);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane);
                     jmsProjectStateLabel.setText(file.getName() + "  ");
                 }
             }
@@ -241,8 +213,8 @@ public class JMSTabController implements Initializable {
 
 
                 if(file != null){
-                    jmsProjectSave(file.getPath());
-                    jmsProjectSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
+                    SaveAndOpen.projectGlobalSave(file.getPath(), jmsMainTabPane);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane);
                     jmsProjectStateLabel.setText(file.getName() + "  ");
                 }
             }
@@ -260,12 +232,13 @@ public class JMSTabController implements Initializable {
         selectionModel.select(jmsMainTabPane.getTabs().indexOf(jmsAddButtonTab) - 1); // add tab to create new tabs
 
 
-        jmsProjectInitialGet(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects");
+        SaveAndOpen.projectGlobalOpen(System.getenv("GFTOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
 
         jmsProjectStateLabel.setText("");
 
     }
 
+    @Override
     public Tab addTab(String id, TabPane someTabPane){
         Tab tab = new Tab();
         tab.setId(id);
