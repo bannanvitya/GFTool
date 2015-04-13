@@ -26,7 +26,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -36,16 +38,16 @@ import java.util.List;
  */
 public class SOAPTabController implements Initializable, ClientTabControllerApi {
     private Node upperElement;
-    private static Map<String, SoapClient> projectMap = new HashMap<String, SoapClient>();
-    private static Map<String, File> wsdlsMap = new HashMap<String, File>();;
+    private static Map<String, String> projectMap = new HashMap<String, String>();
+    private static Map<String, SoapProfile> profilesMap = new HashMap<String, SoapProfile>();
 
-    public static Map<String, SoapClient> getProjectMap(){
+    public static Map<String, SoapProfile> getProfilesMap(){
+        return profilesMap;
+    }
+    public static Map<String, String> getProjectMap(){
         return projectMap;
     }
 
-    public static Map<String, File> getWsdlsMap(){
-        return wsdlsMap;
-    }
 
 
     TabPane soapMainTabPane = new TabPane();
@@ -177,7 +179,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 Stage stage = new Stage();
                 File wsdl = project.showOpenDialog(stage);
                 if (wsdl != null) {
-                getWsdlsMap().put(projectNameField.getText(), wsdl);
+                getProjectMap().replace(projectNameField.getText(), wsdl.getAbsolutePath());
                 wsdlField.setText(wsdl.getAbsolutePath());
                 }
             }
@@ -202,26 +204,12 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
             }
         });
 
-        wsdlField.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable,
-                                String oldValue, String newValue) {
-                if (newValue.equals("")){
-                    projectNameField.setPromptText("You HAVE to fill it too!");
-                    getItButton.setDisable(true);
-                } else
-                {
-                    getItButton.setDisable(false);
-                }
-            }
-        });
-
         projectNameButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 browseButton.setDisable(false);
                 wsdlField.setDisable(false);
-                getProjectMap().put(projectNameField.getText(), new SoapClient());
+                getProjectMap().put(projectNameField.getText(), "");
             }
         });
 
@@ -229,72 +217,25 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
             @Override
             public void changed(ObservableValue<? extends String> observable,
                                 String oldValue, String newValue) {
-                if (!newValue.equals(""))
+                if (!newValue.equals("")) {
                     getItButton.setDisable(false);
-                else
+                    if (newValue.contains("?wsdl") || newValue.contains("?WSDL"))
+                        getProjectMap().replace(projectNameField.getText(), newValue);
+                }
+                else {
                     getItButton.setDisable(true);
+                    wsdlField.setPromptText("You HAVE to fill it too!");
+                }
             }
         });
 
         getItButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                File wsdl = getWsdlsMap().get(projectNameField.getText());
-                SoapClient soap = getProjectMap().get(projectNameField.getText());
-                SoapProfile profile = (SoapProfile) soap.getProfile();
-                if (wsdl != null) {
-                    projectNameField.setText(wsdl.getName());
-                    profile.setUrlToWsdl(wsdl.getAbsolutePath());
-                } else if (wsdlField.getText().contains("?wsdl")){
-                    projectNameField.setText(wsdlField.getText().substring(0, wsdlField.getText().indexOf("?wsdl")));
-                    profile.setUrlToWsdl(wsdlField.getText());
-                } else if (wsdlField.getText().contains("?WSDL")) {
-                    projectNameField.setText(wsdlField.getText().substring(0, wsdlField.getText().indexOf("?WSDL")));
-                    profile.setUrlToWsdl(wsdlField.getText());
-                }
-                if (!profile.getId().equals("Profile not init")) {
-                    profile.processWsdl();
-                    profile.processMessagesConfigMap();
-                    profile.processMessagesMap();
-                    profile.processBindings();
-
-                    Map<String, SoapMsgConfig> messagesConfigMap = profile.getMessagesConfigMap();
-                    Map<String, String> messagesMap = profile.getMessagesMap();
-                    List<Binding> bindings = profile.getBindings();
-
-                    root.setValue(wsdlField.getText());
-                    tab.setText(projectNameField.getText());
-
-                    treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
-
-                        @Override
-                        public void changed(ObservableValue observable, Object oldValue,
-                                            Object newValue) {
-
-                            TreeItem<String> selectedItem = (TreeItem<String>) newValue;
-                            requestArea.setText(messagesMap.get(selectedItem.getValue()));
-                        }
-
-                    });
-
-                    for(Binding entry : bindings) {
-                        TreeItem<String> bnd = new TreeItem<String>(entry.getName());
-                        bnd.setExpanded(false);
-                        for(Map.Entry<String, SoapMsgConfig> ent : messagesConfigMap.entrySet()){
-                            SoapMsgConfig forOperation = ent.getValue();
-                            if (entry.getName() == forOperation.getPort().getBinding().getName()){
-
-                                TreeItem<String> op = new TreeItem<String>(forOperation.getBindOp().getName());
-                                bnd.getChildren().add(op);
-                            }
-                        }
-                    root.getChildren().add(bnd);
-                    }
-                }
+                setTreeView(projectNameField.getText(), treeView, tab, requestArea);
             }
         });
         projectAnchor.getChildren().addAll(projectNameField, projectNameButton, wsdlField, getItButton, treeView, browseButton); //projectAnchor elements
-
 
 
         AnchorPane.setRightAnchor(getItButton, 1.0);
@@ -320,10 +261,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         AnchorPane.setTopAnchor(projectNameButton, 7.0);
 
 
-
-
-
-
         if (someTabPane.getTabs().size()>1)
             someTabPane.getTabs().add(someTabPane.getTabs().size()-1, tab);
         else
@@ -331,6 +268,57 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         tab.setText("default");
         return tab;
     }
+
+
+    public void setTreeView(String projectName,TreeView<String> treeView, Tab tab, TextArea requestArea) {
+        String wsdlUrl = getProjectMap().get(projectName);
+
+        SoapProfile profile = new SoapProfile();
+        profile.setUrlToWsdl(wsdlUrl);
+
+        if (!profile.getId().equals("Profile not init")) {
+            profile.processWsdl();
+            profile.processMessagesConfigMap();
+            profile.processMessagesMap();
+            profile.processBindings();
+
+            getProfilesMap().put(projectName, profile);
+
+            Map<String, SoapMsgConfig> messagesConfigMap = profile.getMessagesConfigMap();
+            Map<String, String> messagesMap = profile.getMessagesMap();
+            List<Binding> bindings = profile.getBindings();
+
+            treeView.getRoot().setValue(projectName);
+            tab.setText(projectName);
+
+            treeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener() {
+
+                @Override
+                public void changed(ObservableValue observable, Object oldValue,
+                                    Object newValue) {
+
+                    TreeItem<String> selectedItem = (TreeItem<String>) newValue;
+                    requestArea.setText(messagesMap.get(selectedItem.getValue()));
+                }
+            });
+
+            for (Binding entry : bindings) {
+                TreeItem<String> bnd = new TreeItem<String>(entry.getName());
+                bnd.setExpanded(false);
+                for (Map.Entry<String, SoapMsgConfig> ent : messagesConfigMap.entrySet()) {
+                    SoapMsgConfig forOperation = ent.getValue();
+                    if (entry.getName() == forOperation.getPort().getBinding().getName()) {
+
+                        TreeItem<String> op = new TreeItem<String>(forOperation.getBindOp().getName());
+                        bnd.getChildren().add(op);
+                    }
+                }
+                treeView.getRoot().getChildren().add(bnd);
+            }
+        }
+    }
+
+
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -359,7 +347,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         soapButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                /* SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+                SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
                 SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
                 AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
                 TextField urlField = (TextField) requestAnchor.getChildren().get(0);
@@ -367,6 +355,14 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
 
                 AnchorPane responseAnchor = (AnchorPane) split.getItems().get(2);
                 TextArea responseArea = (TextArea) responseAnchor.getChildren().get(1);
+
+                AnchorPane projectAnchor = (AnchorPane) split.getItems().get(0);
+                TextField projectNameField = (TextField) projectAnchor.getChildren().get(0);
+
+
+                SoapProfile profile = getProfilesMap().get(projectNameField.getText());
+                SoapClient client = new SoapClient();
+                client.setProfile(profile);
 
                 try {
                     client.preconditions();
@@ -382,7 +378,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                     client.postconditions();
                 }catch(ProfileStructureException | ProfileNotFoundException | SendRequestException | PostconditionsException e){
                     e.printStackTrace();
-                } */
+                }
 
             }
         });
@@ -390,23 +386,25 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         soapProjectSave.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                /* FileChooser project = new FileChooser();
+                FileChooser project = new FileChooser();
                 project.setTitle("Open Project File");
                 Stage stage = new Stage();
                 File file = project.showSaveDialog(stage);
+                if (file != null) {
+                    SaveAndOpen.projectGlobalSave(file.getPath(), soapMainTabPane, SOAPTabController.this);
+                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
+                    soapProjectStateLabel.setText(file.getName() + "  ");
 
+                    File resultFile = new File(System.getenv("GFTOOL_ROOT") + "/serz/soap.profiles.objects");
 
-
-                    File resultFile = new File(System.getenv("GFTOOL_ROOT") + "/serz/soap.tab.objects");
                     ObjectMapper mapper = new ObjectMapper();
+
                     try {
-                        mapper.writeValue(resultFile, profile);
+                        mapper.writeValue(resultFile, projectMap);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    SaveAndOpen.projectGlobalSave(file.getPath(), soapMainTabPane, SOAPTabController.this);
-                    soapProjectStateLabel.setText(file.getName() + "  ");
-                } */
+                }
             }
         });
 
@@ -418,11 +416,23 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 project.setTitle("Open Project File");
                 Stage stage = new Stage();
                 File file = project.showOpenDialog(stage);
+                ObjectMapper mapper = new ObjectMapper();
 
                 if (file != null){
                     SaveAndOpen.projectGlobalOpen(file.getPath(), soapMainTabPane, SOAPTabController.this);
                     SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
                     soapProjectStateLabel.setText(file.getName() + "  ");
+
+                    File resultFile = new File(System.getenv("GFTOOL_ROOT") + "/serz/soap.profiles.objects");
+                    try {
+                        projectMap = (Map<String, String>) mapper.readValue(resultFile, Map.class);
+
+                        for (Map.Entry<String, String> e: projectMap.entrySet()){
+                            System.out.println("Project Name: " + e.getKey() + " Wsdl: " + e.getValue());
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -433,12 +443,37 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         SaveAndOpen.projectGlobalOpen(System.getenv("GFTOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
 
 
+
+        File resultFile = new File(System.getenv("GFTOOL_ROOT") + "/serz/soap.profiles.objects");
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            projectMap = (Map<String, String>) mapper.readValue(resultFile, Map.class);
+            Integer i = 0;
+            for (Map.Entry<String, String> e: projectMap.entrySet()){
+                Tab currentTab = soapMainTabPane.getTabs().get(i);
+                SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(i).getContent();
+                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
+                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
+
+                AnchorPane projectAnchor = (AnchorPane) split.getItems().get(0);
+                TreeView<String> treeView = (TreeView<String>) projectAnchor.getChildren().get(4);
+                setTreeView(e.getKey(), treeView, currentTab, requestArea);
+                System.out.println("Project Name: " + e.getKey() + " Wsdl: " + e.getValue());
+                i++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
         if (soapMainTabPane.getTabs().size() == 0) {
             Date now = new Date();
             Tab tab = addTab(now.toString(), soapMainTabPane);
         }
         soapMainTabPane.getTabs().add(soapAddButtonTab);
-
 
         SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
         selectionModel.select(soapMainTabPane.getTabs().indexOf(soapAddButtonTab) - 1); // add tab to create new tabs
@@ -451,9 +486,5 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     public void setSoapUpperElement(Node node){
         upperElement = node;
     }
-
-
-
-
 
 }

@@ -1,6 +1,7 @@
 package gfTool.soapclient;
 
 
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -24,7 +25,7 @@ import com.predic8.wsdl.Port;
 import com.predic8.wsdl.PortType;
 import com.predic8.wsdl.Service;
 
-public class WsdlHelper {
+public class WsdlHelper implements Serializable {
 
 
 

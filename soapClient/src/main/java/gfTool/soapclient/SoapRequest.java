@@ -2,7 +2,9 @@ package gfTool.soapclient;
 
 import gfTool.api.Request;
 
-public class SoapRequest implements Request {
+import java.io.Serializable;
+
+public class SoapRequest implements Request, Serializable {
   private String messageId;
 
   public SoapRequest(String msg){

@@ -9,7 +9,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.Map;
 
-public class SoapClient implements Client {
+public class SoapClient implements Client, Serializable {
 
   private SOAPConnectionFactory soapConnFactory;
   private SOAPConnection connection = null;

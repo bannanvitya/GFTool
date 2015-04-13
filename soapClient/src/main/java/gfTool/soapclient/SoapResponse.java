@@ -2,12 +2,13 @@ package gfTool.soapclient;
 
 import gfTool.api.Response;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by VKHozhaynov on 03.02.2015.
  */
-public class SoapResponse implements Response {
+public class SoapResponse implements Response, Serializable {
     private String message;
 
     public SoapResponse(String mess){

@@ -1,5 +1,6 @@
 package gfTool.soapclient;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ import com.predic8.wsdl.Port;
  * @author Albertov91
  *
  */
-public class SoapMsgConfig {
+public class SoapMsgConfig implements Serializable {
 
     private Definitions wsdl;
     private int soapVersion = 0;

@@ -23,9 +23,9 @@ public class SoapProfile implements Profile {
     private List<Binding> bindings;
 
 
- public SoapProfile() {
-  urlToWsdl = "Profile not init";
-  }
+    public SoapProfile() {
+        urlToWsdl = "Profile not init";
+    }
 
     public void setUrlToWsdl(String urlToWsdl){
         this.urlToWsdl = urlToWsdl;
@@ -37,15 +37,15 @@ public class SoapProfile implements Profile {
     }
 
     public void processMessagesConfigMap(){
-      this.messagesConfigMap = WsdlHelper.parseWSDL(wsdl);
+        this.messagesConfigMap = WsdlHelper.parseWSDL(wsdl);
     }
 
     public void processMessagesMap(){
-      this.messagesMap = WsdlHelper.getMessagesMap(messagesConfigMap);
+        this.messagesMap = WsdlHelper.getMessagesMap(messagesConfigMap);
     }
 
     public void processBindings(){
-      this.bindings = WsdlHelper.parseWSDLforBindings(wsdl);
+        this.bindings = WsdlHelper.parseWSDLforBindings(wsdl);
     }
 
     public List<Binding> getBindings(){
@@ -77,29 +77,27 @@ public class SoapProfile implements Profile {
         this.urlToSend = urlToSend;
     }
 
-  @Override
-  public String getId() {
-    return urlToWsdl;
-  }
+    @Override
+    public String getId() {
+        return urlToWsdl;
+    }
 
-  @Override
-  public void setId(String url) throws ProfileNotFoundException,
-          ProfileStructureException {
-    this.urlToWsdl = url;
-  }
+    @Override
+    public void setId(String url) throws ProfileNotFoundException,
+            ProfileStructureException {
+        this.urlToWsdl = url;
+    }
 
-  @Override
-  public void updateValue(String key, String newValue) throws ProfileUpdateException {
-  }
+    @Override
+    public void updateValue(String key, String newValue) throws ProfileUpdateException {
+    }
 
-  @Override
-  public void reset() throws ProfileUpdateException {
-  }
+    @Override
+    public void reset() throws ProfileUpdateException {
+    }
 
-  @Override
-  public String toString() {
-    return urlToWsdl;
-  }
+    @Override
+    public String toString() {
+        return urlToWsdl;
+    }
 }
-
-
