@@ -199,6 +199,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                     getItButton.setDisable(true);
                 } else
                 {
+                    projectNameField.setDisable(true);
                     projectNameButton.setDisable(false);
                 }
             }
@@ -210,6 +211,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 browseButton.setDisable(false);
                 wsdlField.setDisable(false);
                 getProjectMap().put(projectNameField.getText(), "");
+                projectNameField.setDisable(true);
             }
         });
 
@@ -275,6 +277,14 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
 
         SoapProfile profile = new SoapProfile();
         profile.setUrlToWsdl(wsdlUrl);
+        try {
+            profile.setId(wsdlUrl);
+        } catch (ProfileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ProfileStructureException e) {
+            e.printStackTrace();
+        }
+
 
         if (!profile.getId().equals("Profile not init")) {
             profile.processWsdl();
@@ -448,18 +458,18 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         ObjectMapper mapper = new ObjectMapper();
         try {
             projectMap = (Map<String, String>) mapper.readValue(resultFile, Map.class);
-            Integer i = 0;
-            for (Map.Entry<String, String> e: projectMap.entrySet()){
-                Tab currentTab = soapMainTabPane.getTabs().get(i);
-                SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(i).getContent();
+            for (Tab currentTab : soapMainTabPane.getTabs()){
+                SplitPane split = (SplitPane)currentTab.getContent();
+
                 AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
                 TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
 
                 AnchorPane projectAnchor = (AnchorPane) split.getItems().get(0);
+                String projectName = ((TextField) projectAnchor.getChildren().get(0)).getText();
                 TreeView<String> treeView = (TreeView<String>) projectAnchor.getChildren().get(4);
-                setTreeView(e.getKey(), treeView, currentTab, requestArea);
-                System.out.println("Project Name: " + e.getKey() + " Wsdl: " + e.getValue());
-                i++;
+
+                setTreeView(projectName, treeView, currentTab, requestArea);
+                System.out.println("Project Name: " + projectName + " Wsdl: " + projectMap.get(projectName));
             }
         } catch (IOException e) {
             e.printStackTrace();
