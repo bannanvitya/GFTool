@@ -14,6 +14,7 @@
         <module>soapClient</module>
         <module>IBMMqClient</module>
         <module>HTTPClient</module>
+        <module>SMTPClient</module>
     </modules>
 
     <build>

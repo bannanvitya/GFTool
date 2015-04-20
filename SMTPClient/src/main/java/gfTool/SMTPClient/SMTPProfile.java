@@ -1,16 +1,14 @@
-package gfTool.IBMMqClient;
+package gfTool.SMTPClient;
 
 import gfTool.api.Profile;
 import gfTool.api.ProfileNotFoundException;
 import gfTool.api.ProfileStructureException;
 import gfTool.api.ProfileUpdateException;
-import gfTool.api.*;
 
 import java.util.Properties;
 
-public class IBMMqProfile implements Profile {
+public class SMTPProfile implements Profile {
     private Properties serviceProp;
-
     private String profileId = null;
 
 

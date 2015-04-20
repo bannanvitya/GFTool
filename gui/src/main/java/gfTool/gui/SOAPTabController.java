@@ -3,7 +3,6 @@ package gfTool.gui;
 import com.predic8.wsdl.Binding;
 import gfTool.api.*;
 import gfTool.soapclient.*;
-import groovy.util.MapEntry;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -15,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
@@ -24,11 +22,8 @@ import javafx.stage.Stage;
 import org.codehaus.jackson.map.ObjectMapper;
 
 
-import java.awt.*;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -54,10 +49,8 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     Tab soapAddButtonTab = new Tab();
     AnchorPane soapInnerPane = new AnchorPane();
 
-    @FXML public Label soapProjectStateLabel;
-    @FXML public MenuItem soapProjectOpen;
-    @FXML public MenuItem soapProjectSave;
     @FXML public Button soapButton;
+    @FXML public Button saveButton;
     @FXML public VBox soapVBox;
 
     public Tab addTab(String id, TabPane someTabPane) {
@@ -199,7 +192,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                     getItButton.setDisable(true);
                 } else
                 {
-                    projectNameField.setDisable(true);
                     projectNameButton.setDisable(false);
                 }
             }
@@ -333,6 +325,8 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
+
+
         soapMainTabPane.sideProperty().setValue(Side.LEFT);
         soapMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
         soapInnerPane.getChildren().addAll(soapMainTabPane);
@@ -393,20 +387,11 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
             }
         });
 
-        soapProjectSave.setOnAction(new EventHandler<ActionEvent>() {
+        saveButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                FileChooser project = new FileChooser();
-                project.setTitle("Open Project File");
-                Stage stage = new Stage();
-                File file = project.showSaveDialog(stage);
-                if (file != null) {
-                    SaveAndOpen.projectGlobalSave(file.getPath(), soapMainTabPane, SOAPTabController.this);
                     SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
-                    soapProjectStateLabel.setText(file.getName() + "  ");
-
                     File resultFile = new File(System.getenv("GFTOOL_ROOT") + "/serz/soap.profiles.objects");
-
                     ObjectMapper mapper = new ObjectMapper();
 
                     try {
@@ -415,46 +400,31 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                         e.printStackTrace();
                     }
                 }
-            }
-        });
-
-
-        soapProjectOpen.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                FileChooser project = new FileChooser();
-                project.setTitle("Open Project File");
-                Stage stage = new Stage();
-                File file = project.showOpenDialog(stage);
-                ObjectMapper mapper = new ObjectMapper();
-
-                if (file != null){
-                    SaveAndOpen.projectGlobalOpen(file.getPath(), soapMainTabPane, SOAPTabController.this);
-                    SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
-                    soapProjectStateLabel.setText(file.getName() + "  ");
-
-                    File resultFile = new File(System.getenv("GFTOOL_ROOT") + "/serz/soap.profiles.objects");
-                    try {
-                        projectMap = (Map<String, String>) mapper.readValue(resultFile, Map.class);
-
-                        for (Map.Entry<String, String> e: projectMap.entrySet()){
-                            System.out.println("Project Name: " + e.getKey() + " Wsdl: " + e.getValue());
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
         });
 
 
         soapVBox.getChildren().addAll(soapInnerPane);
         VBox.setVgrow(soapInnerPane, Priority.ALWAYS);
+
+        globalOpen(System.getenv("GFTOOL_ROOT") + "/serz/soap.profiles.objects");
+
+
+        if (soapMainTabPane.getTabs().size() == 0) {
+            Date now = new Date();
+            Tab tab = addTab(now.toString(), soapMainTabPane);
+        }
+
+
+        soapMainTabPane.getTabs().add(soapAddButtonTab);
+
+        SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+        selectionModel.select(soapMainTabPane.getTabs().indexOf(soapAddButtonTab) - 1); // add tab to create new tabs
+    }
+
+    public void globalOpen(String path){
         SaveAndOpen.projectGlobalOpen(System.getenv("GFTOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
 
-
-
-        File resultFile = new File(System.getenv("GFTOOL_ROOT") + "/serz/soap.profiles.objects");
+        File resultFile = new File(path);
         ObjectMapper mapper = new ObjectMapper();
         try {
             projectMap = (Map<String, String>) mapper.readValue(resultFile, Map.class);
@@ -475,23 +445,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
             e.printStackTrace();
         }
 
-
-
-
-
-        if (soapMainTabPane.getTabs().size() == 0) {
-            Date now = new Date();
-            Tab tab = addTab(now.toString(), soapMainTabPane);
-        }
-        soapMainTabPane.getTabs().add(soapAddButtonTab);
-
-        SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
-        selectionModel.select(soapMainTabPane.getTabs().indexOf(soapAddButtonTab) - 1); // add tab to create new tabs
-
-        soapProjectStateLabel.setText("");
-
     }
-
 
     public void setSoapUpperElement(Node node){
         upperElement = node;
