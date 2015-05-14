@@ -222,7 +222,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         tab.setId(id);
 
         SplitPane split = new SplitPane();
-        split.setDividerPositions(0.6, 0.4);
+        split.setDividerPositions(0.75f);
         tab.setContent(split);
 
         AnchorPane requestAnchor = new AnchorPane(); //requestAnchor

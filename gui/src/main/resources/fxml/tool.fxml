@@ -10,6 +10,7 @@
             <Tab fx:id="jmsTab" text="JMS"/>
             <Tab fx:id="httpTab" text="HTTP"/>
             <Tab fx:id="soapTab" text="HTTP/SOAP"/>
+            <Tab fx:id="smtpTab" text="SMTP"/>
         </tabs>
       </TabPane>
    </children>

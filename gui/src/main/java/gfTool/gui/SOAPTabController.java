@@ -58,11 +58,11 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         tab.setId(id);
 
         SplitPane split = new SplitPane();
-        split.setDividerPositions(0.3, 0.4, 0.3);
+        split.setDividerPositions(0.25f, 0.7333f);
         tab.setContent(split);
 
         AnchorPane projectAnchor = new AnchorPane();
-         projectAnchor.setMinWidth(300.0);
+        projectAnchor.setMinWidth(300.0);
 
         AnchorPane requestAnchor = new AnchorPane();
         requestAnchor.setMinWidth(400.0);

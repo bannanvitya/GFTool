@@ -3,26 +3,24 @@ package gfTool.SMTPClient;
 import gfTool.api.Request;
 
 public class SMTPRequest implements Request {
-  private String message;
-    private String requestId;
+    public String message;
+    public String subj;
+    public String[] sendTo;
 
 
-  public SMTPRequest(String msg){
-    message = msg;
+  public SMTPRequest(String message, String subj, String[] sendTo){
+      this.message = message;
+      this.subj = subj;
+      this.sendTo = sendTo;
   }
-
 
     @Override
     public byte[] raw() {
-        return null;
-    }
-
-    public String getMessage() {
-        return message;
+        return ("Subj: " + subj + "\nTo: " + sendTo + "\nMessage: " + message).getBytes();
     }
 
     @Override
     public Object requestImpl() {
-        return null;
+        return message;
     }
 }

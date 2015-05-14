@@ -135,7 +135,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                 TextField transportTypeField = (TextField)projectAnchor.getChildren().get(12);
                 TextField queueNameField = (TextField)projectAnchor.getChildren().get(13);
                 TextField userIdField = (TextField)projectAnchor.getChildren().get(14);
-                TextField passwordField = (TextField)projectAnchor.getChildren().get(15);
+                PasswordField passwordField = (PasswordField)projectAnchor.getChildren().get(15);
 
                 prop.setProperty("host", hostField.getText());
                 prop.setProperty("port", portField.getText());
@@ -252,7 +252,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         tab.setId(id);
 
         SplitPane split = new SplitPane();
-        split.setDividerPositions(0.6, 0.4);
+        split.setDividerPositions(0.75f);
         tab.setContent(split);
 
         AnchorPane requestAnchor = new AnchorPane();
@@ -327,7 +327,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         queueNameField.setId("queueNameField");
         TextField userIdField = new TextField();
         userIdField.setId("userIdField");
-        TextField passwordField = new TextField();
+        PasswordField passwordField = new PasswordField();
         passwordField.setId("passwordField");
 
 
