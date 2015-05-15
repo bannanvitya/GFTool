@@ -42,6 +42,13 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     @FXML public Button httpButton;
     @FXML public MenuItem httpProjectOpen;
     @FXML public MenuItem httpProjectSave;
+    @FXML public Button httpLoadStartButton;
+    @FXML public Button httpLoadStopButton;
+    @FXML public TextField httpLoadNeededTpsField;
+    @FXML public MenuButton httpLoadWhenToStop;
+    @FXML public TextField httpLoadWhenToStopField;
+    @FXML public Label httpLoadTpsLabel;
+    @FXML public Label httpLoadCountLabel;
     @FXML public Label httpProjectStateLabel;
 
     @FXML public VBox httpVBox;
@@ -158,6 +165,14 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                     TextArea httpResponseField = (TextArea) projectAnchor.getChildren().get(14);
                     httpResponseField.setText("Code: " + resp.getStatus() + "\n" + "Message: " + resp.getMessage());
                 }
+            }
+        });
+
+
+        httpLoadStartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
             }
         });
 
