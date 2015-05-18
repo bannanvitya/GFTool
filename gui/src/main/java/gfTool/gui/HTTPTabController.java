@@ -31,6 +31,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.File;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -42,22 +45,26 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     @FXML public Button httpButton;
     @FXML public MenuItem httpProjectOpen;
     @FXML public MenuItem httpProjectSave;
+    @FXML public Label httpProjectStateLabel;
+    @FXML public VBox httpVBox;
+
     @FXML public Button httpLoadStartButton;
     @FXML public Button httpLoadStopButton;
     @FXML public TextField httpLoadNeededTpsField;
-    @FXML public MenuButton httpLoadWhenToStop;
+    @FXML public RadioButton httpLoadByCountRadioButton;
+    @FXML public RadioButton httpLoadByDateTimeRadioButton;
     @FXML public TextField httpLoadWhenToStopField;
     @FXML public Label httpLoadTpsLabel;
     @FXML public Label httpLoadCountLabel;
-    @FXML public Label httpProjectStateLabel;
-
-    @FXML public VBox httpVBox;
 
     TabPane httpMainTabPane = new TabPane();
     Tab httpAddButtonTab = new Tab();
     AnchorPane httpInnerPane = new AnchorPane();
 
 
+    private boolean httpLoadKeyToStop = false;
+
+    private static Object lockObject = new Object();
 
 
     @Override
@@ -88,90 +95,55 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                                                        }
         );
 
+        httpLoadStopButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                httpLoadKeyToStop = true;
+            }
+        });
+
+
+        httpLoadByCountRadioButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                httpLoadWhenToStopField.setPromptText("count");
+            }
+        });
+
+        httpLoadByDateTimeRadioButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                httpLoadWhenToStopField.setPromptText("date time");
+            }
+        });
 
         httpButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
 
                 SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
-
-                HTTPProfile profile = new HTTPProfile();
-
-                Properties prop = new Properties();
-                Properties headers = new Properties();
-
-
-                SingleSelectionModel<Tab> selectionModel = httpMainTabPane.getSelectionModel();
-                SplitPane split = (SplitPane)httpMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
-
-                AnchorPane projectAnchor = (AnchorPane) split.getItems().get(1);
-
-                TableView<Params> table = (TableView) projectAnchor.getChildren().get(9);
-                for (Params param : table.getItems()) {
-                    headers.setProperty(param.getParamName(), param.getParamValue());
-                }
-
-
-                TextField httpUrlField = (TextField) projectAnchor.getChildren().get(3);
-                prop.setProperty("url", httpUrlField.getText());
-
-
-                RadioButton httpGetMethod = (RadioButton) projectAnchor.getChildren().get(1);
-                if (httpGetMethod.isSelected())
-                    prop.setProperty("methodType", "GET");
-                else
-                    prop.setProperty("methodType", "POST");
-
-                RadioButton httpAppJson = (RadioButton) projectAnchor.getChildren().get(5);
-                RadioButton httpTextXml = (RadioButton) projectAnchor.getChildren().get(6);
-                RadioButton httpOtherContentType = (RadioButton) projectAnchor.getChildren().get(7);
-                TextField httpContentTypeField = (TextField) projectAnchor.getChildren().get(8);
-                if (httpAppJson.isSelected())
-                    prop.setProperty("contentType", "application/json");
-                else if (httpTextXml.isSelected())
-                    prop.setProperty("contentType", "text/xml");
-                else if (httpOtherContentType.isSelected())
-                    prop.setProperty("contentType", httpContentTypeField.getText());
-
-
-                try {
-                    if (prop.getProperty("methodType").equals("GET"))
-                        profile.setId("httpTab", prop, headers);
-                    else
-                        profile.setId("httpTab", prop);
-
-                } catch (ProfileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (ProfileStructureException e) {
-                    e.printStackTrace();
-                }
-
-                HTTPClient client = new HTTPClient();
-
-                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
-                TextArea httpRequestField = (TextArea) requestAnchor.getChildren().get(1);
-                HTTPRequest req = new HTTPRequest(httpRequestField.getText());
-                client.setProfile(profile);
-                HTTPResponse resp = null;
-                try {
-                    resp = (HTTPResponse) client.sendRequest(req);
-                }catch (ProfileStructureException e) {
-                    e.printStackTrace();
-                } catch (SendRequestException e) {
-                    e.printStackTrace();
-                }
-
-                if (resp != null) {
-                    TextArea httpResponseField = (TextArea) projectAnchor.getChildren().get(14);
-                    httpResponseField.setText("Code: " + resp.getStatus() + "\n" + "Message: " + resp.getMessage());
-                }
+                sendHttpRequest();
             }
         });
 
 
         httpLoadStartButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            private volatile double globalTps = 0.0;
+            private volatile long globalCount = 0;
+
             @Override
             public void handle(ActionEvent event) {
+
+                SaveAndOpen.projectGlobalSave(System.getenv("GFTOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
+
+                Thread loadThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        httpLoad(globalCount, globalTps);
+                    }
+                });
+                loadThread.start();
 
             }
         });
@@ -541,4 +513,204 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     public void setHttpUpperElement(Node node){
         upperElement = node;
     }
+
+    public void sendHttpRequest(){
+        HTTPProfile profile = new HTTPProfile();
+
+        Properties prop = new Properties();
+        Properties headers = new Properties();
+
+
+        SingleSelectionModel<Tab> selectionModel = httpMainTabPane.getSelectionModel();
+        SplitPane split = (SplitPane)httpMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
+
+        AnchorPane projectAnchor = (AnchorPane) split.getItems().get(1);
+
+        TableView<Params> table = (TableView) projectAnchor.getChildren().get(9);
+        for (Params param : table.getItems()) {
+            headers.setProperty(param.getParamName(), param.getParamValue());
+        }
+
+
+        TextField httpUrlField = (TextField) projectAnchor.getChildren().get(3);
+        prop.setProperty("url", httpUrlField.getText());
+
+
+        RadioButton httpGetMethod = (RadioButton) projectAnchor.getChildren().get(1);
+        if (httpGetMethod.isSelected())
+            prop.setProperty("methodType", "GET");
+        else
+            prop.setProperty("methodType", "POST");
+
+        RadioButton httpAppJson = (RadioButton) projectAnchor.getChildren().get(5);
+        RadioButton httpTextXml = (RadioButton) projectAnchor.getChildren().get(6);
+        RadioButton httpOtherContentType = (RadioButton) projectAnchor.getChildren().get(7);
+        TextField httpContentTypeField = (TextField) projectAnchor.getChildren().get(8);
+        if (httpAppJson.isSelected())
+            prop.setProperty("contentType", "application/json");
+        else if (httpTextXml.isSelected())
+            prop.setProperty("contentType", "text/xml");
+        else if (httpOtherContentType.isSelected())
+            prop.setProperty("contentType", httpContentTypeField.getText());
+
+
+        try {
+            if (prop.getProperty("methodType").equals("GET"))
+                profile.setId("httpTab", prop, headers);
+            else
+                profile.setId("httpTab", prop);
+
+        } catch (ProfileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ProfileStructureException e) {
+            e.printStackTrace();
+        }
+
+        HTTPClient client = new HTTPClient();
+
+        AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
+        TextArea httpRequestField = (TextArea) requestAnchor.getChildren().get(1);
+        HTTPRequest req = new HTTPRequest(httpRequestField.getText());
+        client.setProfile(profile);
+        HTTPResponse resp = null;
+        try {
+            resp = (HTTPResponse) client.sendRequest(req);
+        }catch (ProfileStructureException e) {
+            e.printStackTrace();
+        } catch (SendRequestException e) {
+            e.printStackTrace();
+        }
+
+        if (resp != null) {
+            TextArea httpResponseField = (TextArea) projectAnchor.getChildren().get(14);
+            synchronized (lockObject) {
+                httpResponseField.setText("Code: " + resp.getStatus() + "\n" + "Message: " + resp.getMessage());
+            }
+        }
+    }
+
+    public void httpLoad(long globalIterations, double tps){
+        System.out.println(Thread.currentThread().getName() + "  -- Start.");
+
+        long duration;
+        long i = 0;
+        double neededTps = Double.parseDouble(httpLoadNeededTpsField.getText());
+
+        Date now = new Date();
+        System.out.println(Thread.currentThread().getName() + now);
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+
+        if (httpLoadByDateTimeRadioButton.isSelected()) {
+
+            Date globalEnd = null;
+            Date localBegin = new Date();
+            try {
+                globalEnd = df.parse(httpLoadWhenToStopField.getText());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+            while (now.getTime() < globalEnd.getTime() && !httpLoadKeyToStop) {
+                now = new Date();
+
+
+                if (i == 0) {
+                    localBegin = now;
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                } else {
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                    if (duration / 1000 > 60.0) {
+                        localBegin = now;
+                        duration = Math.abs(now.getTime() - localBegin.getTime());
+                        i = 0;
+                    } else {
+                        tps = (i / (duration / 1000));
+                    }
+                    //System.out.println(Thread.currentThread().getName() + tps);
+                }
+
+                synchronized (lockObject) {
+                    i++;
+                    globalIterations++;
+                }
+                System.out.println(Thread.currentThread().getName() + globalIterations);
+                if (tps > neededTps) {
+                    double temp = (i / neededTps - duration / 1000) * 1000;
+                    //System.out.println(temp);
+                    long s = (long) temp;
+                    //System.out.println("yep!");
+                    try {
+                        Thread.sleep(s);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+
+                    sendHttpRequest();
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+
+            Date localBegin = new Date();
+            long neededCount = Long.parseLong(httpLoadWhenToStopField.getText());
+
+            while (globalIterations < neededCount && !httpLoadKeyToStop) {
+                now = new Date();
+
+                if (i == 0) {
+                    localBegin = now;
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                } else {
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                    if (duration / 1000 > 60.0) {
+                        localBegin = now;
+                        duration = Math.abs(now.getTime() - localBegin.getTime());
+                        i = 0;
+                    } else {
+
+                        tps = (i / (((double) duration )/ 1000));
+                    }
+                    //System.out.println(tps);
+                }
+
+                synchronized (lockObject) {
+                    i++;
+                    globalIterations++;
+                }
+                System.out.println(Thread.currentThread().getName() + "  --  " + globalIterations);
+                //httpLoadTpsLabel.setText(Double.toString(tps));
+                //httpLoadCountLabel.setText(Long.toString(globalIterations));
+
+                if (tps > neededTps) {
+                    double temp = (i / neededTps - duration / 1000) * 1000;
+                    //System.out.println(temp);
+                    long s = (long) temp;
+                    //System.out.println("yep!");
+                    try {
+                        Thread.sleep(s);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    sendHttpRequest();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        httpLoadKeyToStop = false;
+        i = 0;
+        tps = 0.0;
+        System.out.println(Thread.currentThread().getName() + "  -- Done.");
+    }
+
 }

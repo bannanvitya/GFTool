@@ -30,24 +30,25 @@
                     <children>
                         <AnchorPane>
                             <children>
-                                <Button fx:id="httpButton" mnemonicParsing="false" opacity="0.7" prefHeight="25.0" prefWidth="41.0" style="-fx-background-color: #11CC11;" text="&gt;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
+                                <Button fx:id="httpButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" opacity="0.7" prefHeight="29.0" prefWidth="41.0" style="-fx-background-color: #11CC11; -fx-background-radius: 10; -fx-border-width: 2; -fx-border-color: #116611; -fx-border-radius: 8;" text="&gt;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
                   <Separator layoutX="65.0" layoutY="-75.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="60.0" AnchorPane.topAnchor="0.0" />
-                  <Button fx:id="httpLoadStartButton" blendMode="SRC_ATOP" layoutX="66.0" layoutY="7.0" mnemonicParsing="false" opacity="0.7" prefHeight="25.0" prefWidth="41.0" style="-fx-background-color: #11CC11;" text="&gt;&gt;&gt;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="75.0" AnchorPane.topAnchor="7.0" />
-                  <Button fx:id="httpLoadStopButton" layoutX="116.0" layoutY="9.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" opacity="0.7" prefHeight="25.0" prefWidth="25.0" style="-fx-border-color: #FFFFBB; -fx-border-width: 6; -fx-background-color: #FF5555;" textAlignment="CENTER" textFill="#f80101" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="7.0" />
-                  <TextField fx:id="httpLoadNeededTpsField" layoutX="126.0" layoutY="7.0" prefWidth="100.0" promptText="Needed TPS" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="149.0" AnchorPane.topAnchor="7.0" />
-                  <MenuButton fx:id="httpLoadWhenToStop" layoutX="228.0" layoutY="7.0" mnemonicParsing="false" prefWidth="105.0" text="When to stop" textOverrun="CLIP" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="276.0" AnchorPane.topAnchor="7.0">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="By Count" />
-                      <MenuItem mnemonicParsing="false" text="By DateTime" />
-                    </items>
-                  </MenuButton>
-                  <TextField fx:id="httpLoadWhenToStopField" layoutX="329.0" layoutY="7.0" prefWidth="70.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="385.0" AnchorPane.topAnchor="7.0" />
-                  <Separator layoutX="231.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="261.0" AnchorPane.topAnchor="0.0" />
-                  <Separator layoutX="436.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="467.0" AnchorPane.topAnchor="0.0" />
-                  <Label layoutX="447.0" layoutY="11.0" text="Tps:" AnchorPane.leftAnchor="482.0" AnchorPane.topAnchor="1.0" />
-                  <Label layoutX="457.0" layoutY="21.0" text="Count:" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="482.0" />
-                  <Label fx:id="httpLoadTpsLabel" layoutX="467.0" layoutY="31.0" text="Label" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="529.0" />
-                  <Label fx:id="httpLoadCountLabel" layoutX="457.0" layoutY="21.0" text="Label" AnchorPane.leftAnchor="529.0" AnchorPane.topAnchor="1.0" />
+                  <Button fx:id="httpLoadStartButton" blendMode="SRC_ATOP" layoutX="66.0" layoutY="7.0" mnemonicParsing="false" opacity="0.7" prefHeight="29.0" prefWidth="41.0" style="-fx-background-color: #11CC11; -fx-border-color: #116611; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 10;" text="&gt;&gt;&gt;" textOverrun="CLIP" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="75.0" AnchorPane.topAnchor="7.0" />
+                  <Button fx:id="httpLoadStopButton" layoutX="116.0" layoutY="9.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" opacity="0.7" prefHeight="29.0" prefWidth="29.0" style="-fx-border-color: #FFFFFF; -fx-background-radius: 14; -fx-border-radius: 8; -fx-border-width: 6; -fx-background-color: #FF5555; -fx-background-insets: 0;" textAlignment="CENTER" textFill="#f80101" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="7.0" />
+                  <TextField fx:id="httpLoadNeededTpsField" layoutX="126.0" layoutY="7.0" prefWidth="100.0" promptText="Needed TPS" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="157.0" AnchorPane.topAnchor="7.0" />
+                  <TextField fx:id="httpLoadWhenToStopField" layoutX="329.0" layoutY="7.0" prefWidth="120.0" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="459.0" AnchorPane.topAnchor="7.0" />
+                  <Separator layoutX="231.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="265.0" AnchorPane.topAnchor="0.0" />
+                  <Separator layoutX="436.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="587.0" AnchorPane.topAnchor="0.0" />
+                  <Label layoutX="447.0" layoutY="11.0" text="Tps:" AnchorPane.leftAnchor="602.0" AnchorPane.topAnchor="1.0" />
+                  <Label layoutX="457.0" layoutY="21.0" text="Count:" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="602.0" />
+                  <Label fx:id="httpLoadTpsLabel" layoutX="467.0" layoutY="31.0" text="Label" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="645.0" />
+                  <Label fx:id="httpLoadCountLabel" layoutX="457.0" layoutY="21.0" text="Label" AnchorPane.leftAnchor="645.0" AnchorPane.topAnchor="1.0" />
+                  <RadioButton fx:id="httpLoadByCountRadioButton" layoutX="360.0" layoutY="6.0" mnemonicParsing="false" selected="true" text="By Count" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="3.0">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="howToStopGroup" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <Label layoutX="268.0" layoutY="13.0" text="How to stop:" AnchorPane.leftAnchor="280.0" />
+                  <RadioButton fx:id="httpLoadByDateTimeRadioButton" layoutX="360.0" layoutY="22.0" mnemonicParsing="false" text="By DateTime" toggleGroup="$howToStopGroup" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="360.0" />
                             </children>
                         </AnchorPane>
                     </children>
