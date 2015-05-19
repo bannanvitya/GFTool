@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox minHeight="600.0" minWidth="950.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gfTool.gui.SMTPTabController">
+<VBox minHeight="600.0" minWidth="950.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SOATestTool.gui.SMTPTabController">
             <children>
                 <AnchorPane VBox.vgrow="NEVER">
                     <children>

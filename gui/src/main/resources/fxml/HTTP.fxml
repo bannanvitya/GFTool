@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox minHeight="600.0" minWidth="950.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gfTool.gui.HTTPTabController">
+<VBox minHeight="600.0" minWidth="950.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SOATestTool.gui.HTTPTabController">
             <children>
                 <AnchorPane VBox.vgrow="NEVER">
                     <children>
@@ -51,8 +51,8 @@
                   <Separator layoutX="436.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="587.0" AnchorPane.topAnchor="0.0" />
                   <Label layoutX="447.0" layoutY="11.0" text="Tps:" AnchorPane.leftAnchor="735.0" AnchorPane.topAnchor="1.0" />
                   <Label layoutX="457.0" layoutY="21.0" text="Count:" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="735.0" />
-                  <Label fx:id="httpLoadTpsLabel" layoutX="467.0" layoutY="31.0" text="Label" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="775.0" />
-                  <Label fx:id="httpLoadCountLabel" layoutX="457.0" layoutY="21.0" text="Label" AnchorPane.leftAnchor="775.0" AnchorPane.topAnchor="1.0" />
+                  <Label fx:id="httpLoadTpsLabel" layoutX="467.0" layoutY="31.0" text="Label" AnchorPane.leftAnchor="775.0" AnchorPane.topAnchor="1.0" />
+                  <Label fx:id="httpLoadCountLabel" layoutX="457.0" layoutY="21.0" text="Label" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="775.0" />
                   <RadioButton fx:id="httpLoadByCountRadioButton" layoutX="360.0" layoutY="6.0" mnemonicParsing="false" selected="true" text="By Count" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="3.0">
                      <toggleGroup>
                         <ToggleGroup fx:id="howToStopGroup" />
