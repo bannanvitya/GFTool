@@ -6,6 +6,11 @@ import SOATestTool.api.ProfileStructureException;
 import SOATestTool.api.SendRequestException;
 import SOATestTool.soapclient.*;
 import com.predic8.wsdl.Binding;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -28,6 +33,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -55,6 +63,364 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     @FXML public Button soapButton;
     @FXML public Button saveButton;
     @FXML public VBox soapVBox;
+
+
+    // elements for load
+    @FXML public Button soapLoadStartButton;
+    @FXML public Button soapLoadStopButton;
+    @FXML public TextField soapLoadNeededTpsField;
+    @FXML public RadioButton soapLoadByCountRadioButton;
+    @FXML public RadioButton soapLoadByDateTimeRadioButton;
+    @FXML public TextField soapLoadWhenToStopField;
+    @FXML public TextField soapLoadThreadsField;
+    @FXML public TextField soapLoadCurrentTpsField;
+    @FXML public TextField soapLoadCurrentCountField;
+    @FXML public volatile ProgressIndicator soapLoadProgressIndicator;
+
+
+    // non volatile elements of load
+    private boolean soapLoadKeyToStop = false;
+    private static Object lockObject = new Object();
+
+
+    // volatile elements of load
+    private volatile DoubleProperty globalTps = new SimpleDoubleProperty(0.0);
+    private volatile LongProperty globalCount = new SimpleLongProperty(0);
+    private volatile LongProperty localCount = new SimpleLongProperty(0);
+    private volatile int numberOfThreads = 0;
+    private volatile long duration;
+    private volatile long globalDuration = 0;
+    private volatile double neededTps;
+    private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+    private volatile Date globalEnd;
+    private volatile Date globalBegin;
+    private volatile Date now;
+    private volatile long neededCount;
+    private volatile Date localBegin;
+
+
+
+
+
+    @Override
+    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
+
+
+
+        soapMainTabPane.sideProperty().setValue(Side.LEFT);
+        soapMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
+        soapInnerPane.getChildren().addAll(soapMainTabPane);
+        AnchorPane.setBottomAnchor(soapMainTabPane, 0.0);
+        AnchorPane.setLeftAnchor(soapMainTabPane, 0.0);
+        AnchorPane.setRightAnchor(soapMainTabPane, 0.0);
+        AnchorPane.setTopAnchor(soapMainTabPane, 0.0);
+
+        soapAddButtonTab.setText("+");
+        soapAddButtonTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+        public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
+            SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+            if (new_val){
+                Date now = new Date();
+                Tab tab = addTab(now.toString(), soapMainTabPane);
+                selectionModel.select(tab);
+                }
+            }
+        }
+        );
+
+        soapLoadStopButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                soapLoadKeyToStop = true;
+            }
+        });
+
+
+        soapLoadByCountRadioButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                soapLoadWhenToStopField.setPromptText("count");
+            }
+        });
+
+        soapLoadByDateTimeRadioButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                soapLoadWhenToStopField.setPromptText("date time");
+            }
+        });
+        
+        soapButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                sendSoapRequest(false);
+            }
+        });
+
+        soapLoadStartButton.setOnAction(new EventHandler<ActionEvent>() {
+
+
+            @Override
+            public void handle(ActionEvent event) {
+
+                SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
+                soapLoadCurrentCountField.setText("0.0");
+                soapLoadCurrentTpsField.setText("0.0");
+
+                globalCount.setValue(0);
+                globalTps.setValue(0.0);
+                numberOfThreads = Integer.parseInt(soapLoadThreadsField.getText());
+                for (int j = 0; j< numberOfThreads; j++) {
+                    Thread loadThread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            soapLoad(soapLoadProgressIndicator, soapLoadCurrentTpsField, soapLoadCurrentCountField);
+                        }
+                    });
+                    loadThread.setDaemon(true);
+                    loadThread.start();
+                }
+                soapLoadKeyToStop = false;
+                localCount.setValue(0);
+            }
+        });
+
+        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                    SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
+                    File resultFile = new File(System.getenv("SOATOOL_ROOT") + "/serz/soap.profiles.objects");
+                    ObjectMapper mapper = new ObjectMapper();
+
+                    try {
+                        mapper.writeValue(resultFile, projectMap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+        });
+
+
+        soapVBox.getChildren().addAll(soapInnerPane);
+        VBox.setVgrow(soapInnerPane, Priority.ALWAYS);
+
+        globalOpen(System.getenv("SOATOOL_ROOT") + "/serz/soap.profiles.objects");
+
+
+        if (soapMainTabPane.getTabs().size() == 0) {
+            Date now = new Date();
+            Tab tab = addTab(now.toString(), soapMainTabPane);
+        }
+
+
+        soapMainTabPane.getTabs().add(soapAddButtonTab);
+
+        SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+        selectionModel.select(soapMainTabPane.getTabs().indexOf(soapAddButtonTab) - 1); // add tab to create new tabs
+    }
+
+    public void globalOpen(String path){
+        SaveAndOpen.projectGlobalOpen(System.getenv("SOATOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
+
+        File resultFile = new File(path);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            projectMap = (Map<String, String>) mapper.readValue(resultFile, Map.class);
+            for (Tab currentTab : soapMainTabPane.getTabs()){
+                SplitPane split = (SplitPane)currentTab.getContent();
+
+                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
+                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
+
+                AnchorPane projectAnchor = (AnchorPane) split.getItems().get(0);
+                String projectName = ((TextField) projectAnchor.getChildren().get(0)).getText();
+                TreeView<String> treeView = (TreeView<String>) projectAnchor.getChildren().get(4);
+
+                setTreeView(projectName, treeView, currentTab, requestArea);
+                System.out.println("Project Name: " + projectName + " Wsdl: " + projectMap.get(projectName));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    
+    private void soapLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
+        System.out.println(Thread.currentThread().getName() + "  -- Start.");
+
+        try {
+            neededTps = Double.parseDouble(soapLoadNeededTpsField.getText());
+        } catch (Exception e){
+            System.out.println("Fill neededTps Field correctly!");
+        }
+        now = new Date();
+        globalBegin = now;
+        System.out.println(Thread.currentThread().getName() + now);
+
+        if (soapLoadByDateTimeRadioButton.isSelected()) {
+            try {
+                globalEnd = df.parse(soapLoadWhenToStopField.getText());
+                globalDuration = Math.abs(now.getTime() - globalEnd.getTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            localBegin = new Date();
+            while (now.getTime() < globalEnd.getTime() && !soapLoadKeyToStop) {
+                now = new Date();
+                if (localCount.getValue() == 0) {
+                    localBegin = now;
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                } else {
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                    if (duration / 1000 > 60.0) {
+                        localBegin = now;
+                        duration = Math.abs(now.getTime() - localBegin.getTime());
+                        synchronized (lockObject) {
+                            localCount.setValue(0);
+                        }
+                    } else {
+                        synchronized (lockObject) {
+                            globalTps.setValue((localCount.getValue() / (duration / 1000)));
+                        }
+                    }
+                }
+
+                synchronized (lockObject) {
+                    localCount.setValue(localCount.getValue() + 1);
+                    globalCount.setValue(globalCount.getValue() + 1);
+
+
+                    Platform.runLater(() -> {
+                        progressIndicator.setProgress((double)Math.abs(globalBegin.getTime() - now.getTime())/(double)globalDuration);
+
+                        tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
+                        countField.setText(Long.toString(globalCount.getValue()));
+                    });
+                }
+                double temp = 0.0;
+                if (globalTps.getValue() > neededTps) {
+                    temp = (localCount.getValue() / neededTps - duration / 1000) * 1000;
+                    synchronized (lockObject) {
+                        globalTps.setValue(neededTps);
+                    }
+                    long s = (long) temp;
+                    try {
+                        Thread.sleep(s);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + temp);
+                try {
+                        sendSoapRequest(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+
+            neededCount = Long.parseLong(soapLoadWhenToStopField.getText());
+
+            while (globalCount.getValue() < neededCount && !soapLoadKeyToStop) {
+                now = new Date();
+                if (localCount.getValue() == 0) {
+                    localBegin = now;
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                } else {
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                    if (duration / 1000 > 10.0) {
+                        localBegin = now;
+                        duration = Math.abs(now.getTime() - localBegin.getTime());
+                        synchronized (lockObject) {
+                            localCount.setValue(0);
+                        }
+                    } else {
+                        synchronized (lockObject) {
+                            globalTps.setValue (localCount.getValue() / (((double) duration) / 1000));
+                        }
+                    }
+                    //System.out.println(tps);
+                }
+
+                synchronized (lockObject) {
+                    localCount.setValue(localCount.getValue() + 1);
+                    globalCount.setValue(globalCount.getValue() + 1);
+                    progressIndicator.setProgress((double)globalCount.getValue()/(double)neededCount);
+
+
+                    Platform.runLater(() -> {
+                        tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
+                        countField.setText(Long.toString(globalCount.getValue()));
+                    });
+                }
+
+
+                double tempSleep = 0.0;
+                //System.out.println(Thread.currentThread().getName() + "  --  " + globalIterations);
+                if (globalTps.getValue() > neededTps) {
+                    tempSleep = (localCount.getValue() / neededTps - duration / 1000) * 1000;
+                    synchronized (lockObject) {
+                        globalTps.setValue(neededTps);
+                    }
+                    long s = (long) tempSleep;
+                    try {
+                        Thread.sleep(s);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + tempSleep);
+                try {
+                        sendSoapRequest(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println(Thread.currentThread().getName() + "  -- Done.");
+    }
+    
+    
+    private void sendSoapRequest(boolean isLoad){
+        SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+        SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
+        AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
+        TextField urlField = (TextField) requestAnchor.getChildren().get(0);
+        TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
+
+        AnchorPane responseAnchor = (AnchorPane) split.getItems().get(2);
+        TextArea responseArea = (TextArea) responseAnchor.getChildren().get(1);
+
+        AnchorPane projectAnchor = (AnchorPane) split.getItems().get(0);
+        TextField projectNameField = (TextField) projectAnchor.getChildren().get(0);
+
+
+        SoapProfile profile = getProfilesMap().get(projectNameField.getText());
+        SoapClient client = new SoapClient();
+        client.setProfile(profile);
+
+        try {
+            synchronized (lockObject) {
+                client.preconditions();
+
+                profile.setId(urlField.getText());
+                client.setProfile(profile);
+
+
+                SoapRequest req = new SoapRequest(requestArea.getText());
+                SoapResponse resp = (SoapResponse) client.sendRequest(req, urlField.getText());
+
+                if (!isLoad)
+                    responseArea.setText(resp.getMessage());
+                client.postconditions();
+            }
+        }catch(ProfileStructureException | ProfileNotFoundException | SendRequestException | PostconditionsException e){
+            e.printStackTrace();
+        }
+
+    }
 
     public Tab addTab(String id, TabPane someTabPane) {
         Tab tab = new Tab();
@@ -170,13 +536,13 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         browseButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-               FileChooser project = new FileChooser();
+                FileChooser project = new FileChooser();
                 project.setTitle("Open Project File");
                 Stage stage = new Stage();
                 File wsdl = project.showOpenDialog(stage);
                 if (wsdl != null) {
-                getProjectMap().replace(projectNameField.getText(), wsdl.getAbsolutePath());
-                wsdlField.setText(wsdl.getAbsolutePath());
+                    getProjectMap().replace(projectNameField.getText(), wsdl.getAbsolutePath());
+                    wsdlField.setText(wsdl.getAbsolutePath());
                 }
             }
         });
@@ -321,133 +687,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 treeView.getRoot().getChildren().add(bnd);
             }
         }
-    }
-
-
-
-    @Override
-    public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-
-
-
-        soapMainTabPane.sideProperty().setValue(Side.LEFT);
-        soapMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
-        soapInnerPane.getChildren().addAll(soapMainTabPane);
-        AnchorPane.setBottomAnchor(soapMainTabPane, 0.0);
-        AnchorPane.setLeftAnchor(soapMainTabPane, 0.0);
-        AnchorPane.setRightAnchor(soapMainTabPane, 0.0);
-        AnchorPane.setTopAnchor(soapMainTabPane, 0.0);
-
-        soapAddButtonTab.setText("+");
-        soapAddButtonTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
-        public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
-            SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
-            if (new_val){
-                Date now = new Date();
-                Tab tab = addTab(now.toString(), soapMainTabPane);
-                selectionModel.select(tab);
-                }
-            }
-        }
-        );
-
-        soapButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
-                SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
-                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
-                TextField urlField = (TextField) requestAnchor.getChildren().get(0);
-                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
-
-                AnchorPane responseAnchor = (AnchorPane) split.getItems().get(2);
-                TextArea responseArea = (TextArea) responseAnchor.getChildren().get(1);
-
-                AnchorPane projectAnchor = (AnchorPane) split.getItems().get(0);
-                TextField projectNameField = (TextField) projectAnchor.getChildren().get(0);
-
-
-                SoapProfile profile = getProfilesMap().get(projectNameField.getText());
-                SoapClient client = new SoapClient();
-                client.setProfile(profile);
-
-                try {
-                    client.preconditions();
-
-                    profile.setId(urlField.getText());
-                    client.setProfile(profile);
-
-
-                    SoapRequest req = new SoapRequest(requestArea.getText());
-                    SoapResponse resp = (SoapResponse) client.sendRequest(req, urlField.getText());
-                    responseArea.setText(resp.getMessage());
-
-                    client.postconditions();
-                }catch(ProfileStructureException | ProfileNotFoundException | SendRequestException | PostconditionsException e){
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-        saveButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                    SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
-                    File resultFile = new File(System.getenv("SOATOOL_ROOT") + "/serz/soap.profiles.objects");
-                    ObjectMapper mapper = new ObjectMapper();
-
-                    try {
-                        mapper.writeValue(resultFile, projectMap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-        });
-
-
-        soapVBox.getChildren().addAll(soapInnerPane);
-        VBox.setVgrow(soapInnerPane, Priority.ALWAYS);
-
-        globalOpen(System.getenv("SOATOOL_ROOT") + "/serz/soap.profiles.objects");
-
-
-        if (soapMainTabPane.getTabs().size() == 0) {
-            Date now = new Date();
-            Tab tab = addTab(now.toString(), soapMainTabPane);
-        }
-
-
-        soapMainTabPane.getTabs().add(soapAddButtonTab);
-
-        SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
-        selectionModel.select(soapMainTabPane.getTabs().indexOf(soapAddButtonTab) - 1); // add tab to create new tabs
-    }
-
-    public void globalOpen(String path){
-        SaveAndOpen.projectGlobalOpen(System.getenv("SOATOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
-
-        File resultFile = new File(path);
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            projectMap = (Map<String, String>) mapper.readValue(resultFile, Map.class);
-            for (Tab currentTab : soapMainTabPane.getTabs()){
-                SplitPane split = (SplitPane)currentTab.getContent();
-
-                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
-                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
-
-                AnchorPane projectAnchor = (AnchorPane) split.getItems().get(0);
-                String projectName = ((TextField) projectAnchor.getChildren().get(0)).getText();
-                TreeView<String> treeView = (TreeView<String>) projectAnchor.getChildren().get(4);
-
-                setTreeView(projectName, treeView, currentTab, requestArea);
-                System.out.println("Project Name: " + projectName + " Wsdl: " + projectMap.get(projectName));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public void setSoapUpperElement(Node node){

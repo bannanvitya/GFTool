@@ -14,17 +14,20 @@
                     <children>
             <AnchorPane prefHeight="25.0" style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Button fx:id="saveButton" layoutX="16.0" minHeight="23.0" mnemonicParsing="false" opacity="0.7" prefWidth="41.0" style="-fx-background-color: #55AA99; -fx-border-width: 2; -fx-border-color: #117799; -fx-border-radius: 6; -fx-background-radius: 10;" text="save" textOverrun="CLIP" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="1.0">
+                  <Button fx:id="saveButton" layoutX="16.0" minHeight="23.0" mnemonicParsing="false" opacity="0.7" prefWidth="41.0" style="-fx-background-color: #d3d3d9; -fx-border-width: 1; -fx-border-color: #33AA99; -fx-border-radius: 0; -fx-background-radius: 0;" text="save" textOverrun="CLIP" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font name="System Bold" size="9.0" />
-                     </font></Button>
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
                </children>
             </AnchorPane>
                     </children>
                 </AnchorPane>
                 <VBox fx:id="soapVBox" VBox.vgrow="ALWAYS">
                     <children>
-                        <AnchorPane VBox.vgrow="NEVER">
+                        <AnchorPane style="-fx-background-color: #d3d3d9;" VBox.vgrow="NEVER">
                             <children>
                                 <Button fx:id="soapButton" alignment="CENTER" defaultButton="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" opacity="0.7" prefHeight="29.0" prefWidth="41.0" style="-fx-background-color: #11CC11; -fx-background-radius: 10; -fx-border-width: 2; -fx-border-color: #116611; -fx-border-radius: 8;" text="&gt;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0">
                                     <cursor>
@@ -45,8 +48,6 @@
                                 <Separator layoutX="436.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="587.0" AnchorPane.topAnchor="0.0" />
                                 <Label layoutX="447.0" layoutY="11.0" text="Tps:" AnchorPane.leftAnchor="735.0" AnchorPane.topAnchor="1.0" />
                                 <Label layoutX="457.0" layoutY="21.0" text="Count:" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="735.0" />
-                                <Label fx:id="soapLoadTpsLabel" layoutX="467.0" layoutY="31.0" text="Label" AnchorPane.leftAnchor="775.0" AnchorPane.topAnchor="1.0" />
-                                <Label fx:id="soapLoadCountLabel" layoutX="457.0" layoutY="21.0" text="Label" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="775.0" />
                                 <RadioButton fx:id="soapLoadByCountRadioButton" layoutX="360.0" layoutY="6.0" mnemonicParsing="false" selected="true" text="By Count" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="3.0">
                                     <toggleGroup>
                                         <ToggleGroup fx:id="howToStopGroup" />
@@ -56,6 +57,9 @@
                                 <RadioButton fx:id="soapLoadByDateTimeRadioButton" layoutX="360.0" layoutY="22.0" mnemonicParsing="false" text="By DateTime" toggleGroup="$howToStopGroup" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="360.0" />
                                 <Separator layoutX="446.0" layoutY="25.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="710.0" AnchorPane.topAnchor="0.0" />
                                 <TextField fx:id="soapLoadThreadsField" layoutX="587.0" layoutY="11.0" prefWidth="100.0" promptText="threads" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="602.0" AnchorPane.topAnchor="7.0" />
+                  <ProgressIndicator fx:id="soapLoadProgressIndicator" layoutX="848.0" layoutY="-2.0" prefWidth="34.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="0.0" />
+                  <TextField fx:id="soapLoadCurrentTpsField" editable="false" layoutX="789.0" layoutY="-1.0" minHeight="21.0" prefHeight="20.0" prefWidth="70.0" AnchorPane.leftAnchor="775.0" AnchorPane.topAnchor="0.0" />
+                  <TextField fx:id="soapLoadCurrentCountField" editable="false" layoutX="799.0" layoutY="9.0" minHeight="21.0" prefHeight="20.0" prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="775.0" />
                             </children>
                         </AnchorPane>
                     </children>

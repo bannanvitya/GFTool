@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -26,7 +27,7 @@
                 </AnchorPane>
                 <VBox fx:id="smtpVBox" VBox.vgrow="ALWAYS">
                     <children>
-                        <AnchorPane>
+                        <AnchorPane style="-fx-background-color: #d3d3d9;">
                             <children>
                                 <Button fx:id="smtpButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" opacity="0.7" prefHeight="29.0" prefWidth="41.0" style="-fx-background-color: #11CC11; -fx-background-radius: 10; -fx-border-width: 2; -fx-border-color: #116611; -fx-border-radius: 8;" text="&gt;" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="7.0" />
                             </children>

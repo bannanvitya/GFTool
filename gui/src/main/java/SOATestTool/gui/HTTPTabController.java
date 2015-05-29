@@ -1,5 +1,6 @@
 package SOATestTool.gui;
 
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -39,12 +40,15 @@ import java.util.*;
 public class HTTPTabController implements Initializable, ClientTabControllerApi {
     private Node upperElement;
 
+
+    // elements for sequence requests
     @FXML public Button httpButton;
     @FXML public MenuItem httpProjectOpen;
     @FXML public MenuItem httpProjectSave;
     @FXML public Label httpProjectStateLabel;
     @FXML public VBox httpVBox;
 
+    // elements for load
     @FXML public Button httpLoadStartButton;
     @FXML public Button httpLoadStopButton;
     @FXML public TextField httpLoadNeededTpsField;
@@ -52,18 +56,23 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     @FXML public RadioButton httpLoadByDateTimeRadioButton;
     @FXML public TextField httpLoadWhenToStopField;
     @FXML public TextField httpLoadThreadsField;
-    @FXML public volatile Label httpLoadTpsLabel;
-    @FXML public volatile Label httpLoadCountLabel;
+    @FXML public volatile TextField httpLoadCurrentTpsField;
+    @FXML public volatile TextField httpLoadCurrentCountField;
+    @FXML public volatile ProgressIndicator httpLoadProgressIndicator;
 
+
+    // main elements of tabs
     TabPane httpMainTabPane = new TabPane();
     Tab httpAddButtonTab = new Tab();
     AnchorPane httpInnerPane = new AnchorPane();
 
 
+    // non volatile elements of load
     private boolean httpLoadKeyToStop = false;
     private static Object lockObject = new Object();
 
 
+    // volatile elements of load
     private volatile DoubleProperty globalTps = new SimpleDoubleProperty(0.0);
     private volatile LongProperty globalCount = new SimpleLongProperty(0);
     private volatile LongProperty localCount = new SimpleLongProperty(0);
@@ -72,6 +81,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     private volatile double neededTps;
     private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
     private volatile Date globalEnd;
+    private volatile Date globalBegin;
     private volatile long neededCount;
     private volatile Date localBegin;
 
@@ -135,7 +145,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             public void handle(ActionEvent event) {
 
                 SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
-                sendHttpRequest();
+                sendHttpRequest(false);
             }
         });
 
@@ -155,7 +165,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                     Thread loadThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                           httpLoad();
+                           httpLoad(httpLoadProgressIndicator, httpLoadCurrentTpsField, httpLoadCurrentCountField);
                         }
                     });
                     loadThread.setDaemon(true);
@@ -532,7 +542,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         upperElement = node;
     }
 
-    public void sendHttpRequest(){
+    public void sendHttpRequest(boolean isLoad){
         HTTPProfile profile = new HTTPProfile();
 
         Properties prop = new Properties();
@@ -601,13 +611,12 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
 
         if (resp != null) {
             TextArea httpResponseField = (TextArea) projectAnchor.getChildren().get(14);
-            synchronized (lockObject) {
+            if (!isLoad)
                 httpResponseField.setText("Code: " + resp.getStatus() + "\n" + "Message: " + resp.getMessage());
-            }
         }
     }
 
-    public void httpLoad(){
+    public void httpLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
         System.out.println(Thread.currentThread().getName() + "  -- Start.");
 
         //long duration;
@@ -617,12 +626,15 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             System.out.println("Fill neededTps Field correctly!");
         }
         Date now = new Date();
+        globalBegin = now;
         System.out.println(Thread.currentThread().getName() + now);
 
         if (httpLoadByDateTimeRadioButton.isSelected()) {
 
+            long globalDuration = 0;
             try {
                 globalEnd = df.parse(httpLoadWhenToStopField.getText());
+                globalDuration = Math.abs(now.getTime() - globalEnd.getTime());
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -650,6 +662,12 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                 synchronized (lockObject) {
                     localCount.setValue(localCount.getValue() + 1);
                     globalCount.setValue(globalCount.getValue() + 1);
+                    progressIndicator.setProgress((double)Math.abs(globalBegin.getTime() - now.getTime())/(double)globalDuration);
+
+                    Platform.runLater(() -> {
+                        tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
+                        countField.setText(Long.toString(globalCount.getValue()));
+                    });
                 }
                 double temp = 0.0;
                 if (globalTps.getValue() > neededTps) {
@@ -666,9 +684,9 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                 }
                 System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + temp);
                 try {
-
-                    sendHttpRequest();
-
+                    synchronized (lockObject) {
+                        sendHttpRequest(true);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -702,6 +720,12 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                 synchronized (lockObject) {
                     localCount.setValue(localCount.getValue() + 1);
                     globalCount.setValue(globalCount.getValue() + 1);
+                    progressIndicator.setProgress((double) globalCount.getValue() / (double) neededCount);
+
+                    Platform.runLater(() -> {
+                        tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
+                        countField.setText(Long.toString(globalCount.getValue()));
+                    });
                 }
                 double temp = 0.0;
                 //System.out.println(Thread.currentThread().getName() + "  --  " + globalIterations);
@@ -719,7 +743,9 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                 }
                 System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + temp);
                 try {
-                    sendHttpRequest();
+                    synchronized (lockObject) {
+                    sendHttpRequest(true);
+                }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -727,7 +753,5 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         }
         System.out.println(Thread.currentThread().getName() + "  -- Done.");
     }
-
-
 
 }
