@@ -24,6 +24,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -61,7 +64,9 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     AnchorPane soapInnerPane = new AnchorPane();
 
     @FXML public Button soapButton;
-    @FXML public Button saveButton;
+    @FXML public MenuItem soapProjectSave;
+    @FXML public MenuItem soapRandomInt;
+    @FXML public MenuItem soapRandomString;
     @FXML public VBox soapVBox;
 
 
@@ -106,6 +111,8 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
 
+        soapRandomInt.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
+        soapRandomString.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
 
         soapMainTabPane.sideProperty().setValue(Side.LEFT);
         soapMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
@@ -157,6 +164,21 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
             }
         });
 
+        soapProjectSave.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
+                File resultFile = new File(System.getenv("SOATOOL_ROOT") + "/serz/soap.profiles.objects");
+                ObjectMapper mapper = new ObjectMapper();
+
+                try {
+                    mapper.writeValue(resultFile, projectMap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         soapLoadStartButton.setOnAction(new EventHandler<ActionEvent>() {
 
 
@@ -185,7 +207,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
             }
         });
 
-        saveButton.setOnAction(new EventHandler<ActionEvent>() {
+        soapProjectSave.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                     SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/soap.tab.objects", soapMainTabPane, SOAPTabController.this);
@@ -197,6 +219,30 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }
+        });
+
+        soapRandomInt.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+                SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
+                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
+                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
+
+                requestArea.insertText(requestArea.getCaretPosition(), "${rnd_int}");
+                }
+        });
+
+        soapRandomString.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
+                SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
+                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
+                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
+
+                requestArea.insertText(requestArea.getCaretPosition(), "${rnd_str}");
                 }
         });
 
@@ -390,6 +436,20 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         TextField urlField = (TextField) requestAnchor.getChildren().get(0);
         TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
 
+
+        String request_text = requestArea.getText();
+
+        while (request_text.contains("${rnd_int}")){
+            request_text = request_text.replace("${rnd_int}", "121212");
+        }
+
+
+        while (request_text.contains("${rnd_str}")){
+            request_text = request_text.replace("${rnd_str}", "abzabzabz");
+        }
+
+
+
         AnchorPane responseAnchor = (AnchorPane) split.getItems().get(2);
         TextArea responseArea = (TextArea) responseAnchor.getChildren().get(1);
 
@@ -409,7 +469,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 client.setProfile(profile);
 
 
-                SoapRequest req = new SoapRequest(requestArea.getText());
+                SoapRequest req = new SoapRequest(request_text);
                 SoapResponse resp = (SoapResponse) client.sendRequest(req, urlField.getText());
 
                 if (!isLoad)

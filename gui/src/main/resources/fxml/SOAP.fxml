@@ -10,21 +10,22 @@
 
 <VBox minHeight="600.0" minWidth="950.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SOATestTool.gui.SOAPTabController">
             <children>
-                <AnchorPane>
-                    <children>
-            <AnchorPane prefHeight="25.0" style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <Button fx:id="saveButton" layoutX="16.0" minHeight="23.0" mnemonicParsing="false" opacity="0.7" prefWidth="41.0" style="-fx-background-color: #d3d3d9; -fx-border-width: 1; -fx-border-color: #33AA99; -fx-border-radius: 0; -fx-background-radius: 0;" text="save" textOverrun="CLIP" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="0.0">
-                     <font>
-                        <Font name="System Bold" size="9.0" />
-                     </font>
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor></Button>
-               </children>
-            </AnchorPane>
-                    </children>
-                </AnchorPane>
+      <MenuBar style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" VBox.vgrow="NEVER">
+        <menus>
+          <Menu mnemonicParsing="false" text="Project">
+            <items>
+              <MenuItem fx:id="soapProjectSave" mnemonicParsing="false" text="Save" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Hotkeys">
+                <items>
+                    <MenuItem fx:id="soapRandomInt" mnemonicParsing="false" text="Random int: " />
+                    <MenuItem fx:id="soapRandomString" mnemonicParsing="false" text="Random string: " />
+                </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+                <AnchorPane />
                 <VBox fx:id="soapVBox" VBox.vgrow="ALWAYS">
                     <children>
                         <AnchorPane style="-fx-background-color: #d3d3d9;" VBox.vgrow="NEVER">

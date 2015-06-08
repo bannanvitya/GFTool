@@ -18,7 +18,7 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/tool.fxml"));
         Parent root = loader.load();
 
-        primaryStage.setTitle("GFTool");
+        primaryStage.setTitle("SOATestTool");
 
         primaryStage.setScene(new Scene(root, 1350, 750));
         primaryStage.setMinHeight(740);
