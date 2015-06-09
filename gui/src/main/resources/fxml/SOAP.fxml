@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox minHeight="600.0" minWidth="950.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SOATestTool.gui.SOAPTabController">
+<VBox minHeight="600.0" minWidth="950.0" prefHeight="750.0" prefWidth="1350.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SOATestTool.gui.SOAPTabController">
             <children>
       <MenuBar style="-fx-background-color: lightgray;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0" VBox.vgrow="NEVER">
         <menus>
@@ -55,6 +55,10 @@
                   <ProgressIndicator fx:id="soapLoadProgressIndicator" layoutX="848.0" layoutY="-2.0" prefWidth="34.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="0.0" />
                   <TextField fx:id="soapLoadCurrentTpsField" editable="false" layoutX="789.0" layoutY="-1.0" minHeight="21.0" prefHeight="20.0" prefWidth="70.0" AnchorPane.leftAnchor="775.0" AnchorPane.topAnchor="0.0" />
                   <TextField fx:id="soapLoadCurrentCountField" editable="false" layoutX="799.0" layoutY="9.0" minHeight="21.0" prefHeight="20.0" prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="775.0" />
+                  <TextField fx:id="soapLoadThinkTimeField" layoutX="948.0" layoutY="10.0" prefWidth="100.0" promptText="think time" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="975.0" AnchorPane.topAnchor="7.0" />
+                  <Separator layoutX="856.0" layoutY="30.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="853.0" AnchorPane.topAnchor="0.0" />
+                  <CheckBox fx:id="soapLoadThinkTimeCkeckBox" layoutX="859.0" layoutY="15.0" mnemonicParsing="false" text="Use Think Time" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="868.0" AnchorPane.topAnchor="7.0" />
+                  <CheckBox fx:id="soapLoadNormalDistributionCkeckBox" layoutX="1083.0" layoutY="13.0" mnemonicParsing="false" text="Use Normal Distribution" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="1083.0" AnchorPane.topAnchor="7.0" />
                             </children>
                         </AnchorPane>
                     </children>

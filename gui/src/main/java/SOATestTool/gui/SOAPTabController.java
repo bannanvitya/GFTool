@@ -81,6 +81,9 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     @FXML public TextField soapLoadThreadsField;
     @FXML public TextField soapLoadCurrentTpsField;
     @FXML public TextField soapLoadCurrentCountField;
+    @FXML public CheckBox soapLoadThinkTimeCkeckBox;
+    @FXML public TextField soapLoadThinkTimeField;
+    @FXML public CheckBox soapLoadNormalDistributionCkeckBox;
     @FXML public volatile ProgressIndicator soapLoadProgressIndicator;
 
 
@@ -273,6 +276,8 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     private void soapLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
         System.out.println(Thread.currentThread().getName() + "  -- Start.");
 
+        Long thinkTime = Long.parseLong(soapLoadThinkTimeField.getText());
+
         try {
             neededTps = Double.parseDouble(soapLoadNeededTpsField.getText());
         } catch (Exception e){
@@ -291,6 +296,17 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
             }
             localBegin = new Date();
             while (now.getTime() < globalEnd.getTime() && !soapLoadKeyToStop) {
+
+                if (soapLoadThinkTimeCkeckBox.isSelected())
+                    try {
+                        if (soapLoadNormalDistributionCkeckBox.isSelected())
+                            Thread.sleep(thinkTime);
+                        else
+                            Thread.sleep(thinkTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 now = new Date();
                 if (localCount.getValue() == 0) {
                     localBegin = now;
