@@ -22,6 +22,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -30,6 +34,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.codehaus.jackson.map.ObjectMapper;
 
 
@@ -186,6 +191,47 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 soapLoadCurrentCountField.setText("0.0");
                 soapLoadCurrentTpsField.setText("0.0");
 
+                final Stage stage = new Stage(StageStyle.UNIFIED);
+                stage.setTitle("Transactions per second");
+
+                final NumberAxis xAxis;
+                if (soapLoadByCountRadioButton.isSelected()){
+                    xAxis = new NumberAxis(0, Long.parseLong(soapLoadWhenToStopField.getText()), 10);
+                    Long tempAxisWidth = Long.parseLong(soapLoadWhenToStopField.getText());
+                    Double axisWidth = tempAxisWidth.doubleValue();
+                    xAxis.setMinWidth(2000);
+
+                }
+                else
+                {
+                    xAxis = new NumberAxis();
+                }
+
+                xAxis.setAutoRanging(false);
+
+
+                final NumberAxis yAxis = new NumberAxis(0, Long.parseLong(soapLoadNeededTpsField.getText()), 10);
+                yAxis.setAutoRanging(false);
+                xAxis.setLabel("Count");
+                final LineChart<Number,Number> lineChart =
+                        new LineChart<Number,Number>(xAxis,yAxis);
+
+                lineChart.setTitle("Tps");
+                lineChart.setAnimated(false);
+
+                XYChart.Series series = new XYChart.Series();
+                series.setName("Transactions per second");
+                series.getData().add(new XYChart.Data(0, 0));
+
+
+                Scene scene  = new Scene(lineChart,800,600);
+                lineChart.getData().add(series);
+                series.getNode().setStyle("-fx-stroke-width: 2px; -fx-effect: null;");
+                //series.getData().add(new XYChart.Data(1, 24));
+
+                stage.setScene(scene);
+                stage.show();
+
                 globalCount.setValue(0);
                 globalTps.setValue(0.0);
                 numberOfThreads = Integer.parseInt(soapLoadThreadsField.getText());
@@ -193,7 +239,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                     Thread loadThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            soapLoad(soapLoadProgressIndicator, soapLoadCurrentTpsField, soapLoadCurrentCountField);
+                            soapLoad(series, soapLoadProgressIndicator, soapLoadCurrentTpsField, soapLoadCurrentCountField);
                         }
                     });
                     loadThread.setDaemon(true);
@@ -267,10 +313,12 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     }
 
     
-    private void soapLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
+    private void soapLoad(XYChart.Series series, ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
         System.out.println(Thread.currentThread().getName() + "  -- Start.");
 
         NormalDistribution a = new NormalDistribution();
+
+
 
         Long thinkTime = Long.valueOf(0);
         if (soapLoadThinkTimeCkeckBox.isSelected())
@@ -338,6 +386,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
 
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
+                        series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
                     });
                 }
                 double temp = 0.0;
@@ -411,6 +460,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                     Platform.runLater(() -> {
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
+                        series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
                     });
                 }
 
