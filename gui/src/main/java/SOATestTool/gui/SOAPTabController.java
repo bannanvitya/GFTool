@@ -2,6 +2,7 @@ package SOATestTool.gui;
 
 import SOATestTool.Common.LinearRandomInt;
 import SOATestTool.Common.LinearRandomString;
+import SOATestTool.Common.NormalDistribution;
 import SOATestTool.api.PostconditionsException;
 import SOATestTool.api.ProfileNotFoundException;
 import SOATestTool.api.ProfileStructureException;
@@ -276,6 +277,8 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     private void soapLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
         System.out.println(Thread.currentThread().getName() + "  -- Start.");
 
+        NormalDistribution a = new NormalDistribution();
+
         Long thinkTime = Long.parseLong(soapLoadThinkTimeField.getText());
 
         try {
@@ -299,8 +302,12 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
 
                 if (soapLoadThinkTimeCkeckBox.isSelected())
                     try {
-                        if (soapLoadNormalDistributionCkeckBox.isSelected())
-                            Thread.sleep(thinkTime);
+                        if (soapLoadNormalDistributionCkeckBox.isSelected()) {
+                            Double tmpSleep = a.getGaussian(thinkTime, 5000);
+                            Long sleepTime = Long.parseLong(tmpSleep.toString().substring(0, tmpSleep.toString().indexOf('.')));
+                            System.out.println(sleepTime.toString());
+                            Thread.sleep(sleepTime);
+                        }
                         else
                             Thread.sleep(thinkTime);
                     } catch (InterruptedException e) {
@@ -351,7 +358,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                         e.printStackTrace();
                     }
                 }
-                System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + temp);
+                //System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + temp);
                 try {
                         sendSoapRequest(true);
                 } catch (Exception e) {
@@ -364,6 +371,22 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
             neededCount = Long.parseLong(soapLoadWhenToStopField.getText());
 
             while (globalCount.getValue() < neededCount && !soapLoadKeyToStop) {
+
+                if (soapLoadThinkTimeCkeckBox.isSelected())
+                    try {
+                        if (soapLoadNormalDistributionCkeckBox.isSelected()) {
+                            Double tmpSleep = a.getGaussian(thinkTime, 500);
+                            Long sleepTime = Long.parseLong(tmpSleep.toString().substring(0, tmpSleep.toString().indexOf('.')));
+                            System.out.println(sleepTime.toString());
+                            Thread.sleep(sleepTime);
+                        }
+                        else
+                            Thread.sleep(thinkTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
                 now = new Date();
                 if (localCount.getValue() == 0) {
                     localBegin = now;
@@ -411,7 +434,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                         e.printStackTrace();
                     }
                 }
-                System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + tempSleep);
+                //System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + tempSleep);
                 try {
                         sendSoapRequest(true);
                 } catch (Exception e) {
