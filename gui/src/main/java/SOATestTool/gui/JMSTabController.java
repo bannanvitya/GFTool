@@ -2,6 +2,12 @@ package SOATestTool.gui;
 
 import SOATestTool.Common.LinearRandomInt;
 import SOATestTool.Common.LinearRandomString;
+import SOATestTool.Common.NormalDistribution;
+import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -11,9 +17,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -31,6 +34,9 @@ import SOATestTool.api.SendRequestException;
 import java.io.File;
 import java.math.BigInteger;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -49,6 +55,44 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
     @FXML public MenuItem jmsProjectOpen;
     @FXML public MenuItem jmsProjectSave;
     @FXML public Label jmsProjectStateLabel;
+
+    // elements for load
+    @FXML public Button jmsLoadStartButton;
+    @FXML public Button jmsLoadStopButton;
+    @FXML public TextField jmsLoadNeededTpsField;
+    @FXML public RadioButton jmsLoadByCountRadioButton;
+    @FXML public RadioButton jmsLoadByDateTimeRadioButton;
+    @FXML public TextField jmsLoadWhenToStopField;
+    @FXML public TextField jmsLoadThreadsField;
+    @FXML public TextField jmsLoadCurrentTpsField;
+    @FXML public TextField jmsLoadCurrentCountField;
+    @FXML public CheckBox jmsLoadThinkTimeCkeckBox;
+    @FXML public TextField jmsLoadThinkTimeField;
+    @FXML public TextField jmsLoadDeviationField;
+    @FXML public CheckBox jmsLoadNormalDistributionCkeckBox;
+    @FXML public volatile ProgressIndicator jmsLoadProgressIndicator;
+
+
+    // non volatile elements of load
+    private boolean jmsLoadKeyToStop = false;
+    private static Object lockObject = new Object();
+
+
+    // volatile elements of load
+    private volatile DoubleProperty globalTps = new SimpleDoubleProperty(0.0);
+    private volatile LongProperty globalCount = new SimpleLongProperty(0);
+    private volatile LongProperty localCount = new SimpleLongProperty(0);
+    private volatile int numberOfThreads = 0;
+    private volatile long duration;
+    private volatile long globalDuration = 0;
+    private volatile double neededTps;
+    private static DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+    private volatile Date globalEnd;
+    private volatile Date globalBegin;
+    private volatile Date now;
+    private volatile long neededCount;
+    private volatile Date localBegin;
+
 
     @FXML public VBox jmsVBox;
 
@@ -91,6 +135,264 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
     }
 
+    private void jmsLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
+        System.out.println(Thread.currentThread().getName() + "  -- Start.");
+
+        NormalDistribution a = new NormalDistribution();
+
+        Long thinkTime = Long.valueOf(0);
+        if (jmsLoadThinkTimeCkeckBox.isSelected())
+            thinkTime  = Long.parseLong(jmsLoadThinkTimeField.getText());
+
+        try {
+            neededTps = Double.parseDouble(jmsLoadNeededTpsField.getText());
+        } catch (Exception e){
+            System.out.println("Fill neededTps Field correctly!");
+        }
+        now = new Date();
+        globalBegin = now;
+        System.out.println(Thread.currentThread().getName() + now);
+
+        if (jmsLoadByDateTimeRadioButton.isSelected()) {
+            try {
+                globalEnd = df.parse(jmsLoadWhenToStopField.getText());
+                globalDuration = Math.abs(now.getTime() - globalEnd.getTime());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            localBegin = new Date();
+            while (now.getTime() < globalEnd.getTime() && !jmsLoadKeyToStop) {
+
+                if (jmsLoadThinkTimeCkeckBox.isSelected())
+                    try {
+                        if (jmsLoadNormalDistributionCkeckBox.isSelected()) {
+                            Double tmpSleep = a.getGaussian(thinkTime, Long.parseLong(jmsLoadDeviationField.getText()));
+                            Long sleepTime = Long.parseLong(tmpSleep.toString().substring(0, tmpSleep.toString().indexOf('.')));
+                            System.out.println(sleepTime.toString());
+                            Thread.sleep(Math.abs(sleepTime));
+                        }
+                        else
+                            Thread.sleep(thinkTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                now = new Date();
+                if (localCount.getValue() == 0) {
+                    localBegin = now;
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                } else {
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                    if (duration / 1000 > 60.0) {
+                        localBegin = now;
+                        duration = Math.abs(now.getTime() - localBegin.getTime());
+                        synchronized (lockObject) {
+                            localCount.setValue(0);
+                        }
+                    } else {
+                        synchronized (lockObject) {
+                            globalTps.setValue((localCount.getValue() / (duration / 1000)));
+                        }
+                    }
+                }
+
+                synchronized (lockObject) {
+                    localCount.setValue(localCount.getValue() + 1);
+                    globalCount.setValue(globalCount.getValue() + 1);
+
+
+                    Platform.runLater(() -> {
+                        progressIndicator.setProgress((double) Math.abs(globalBegin.getTime() - now.getTime()) / (double) globalDuration);
+
+                        tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
+                        countField.setText(Long.toString(globalCount.getValue()));
+                    });
+                }
+                double temp = 0.0;
+                if (globalTps.getValue() > neededTps) {
+                    temp = (localCount.getValue() / neededTps - duration / 1000) * 1000;
+                    synchronized (lockObject) {
+                        globalTps.setValue(neededTps);
+                    }
+                    long s = (long) temp;
+                    try {
+                        Thread.sleep(s);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + temp);
+                try {
+                    sendJmsRequest();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        else {
+
+            neededCount = Long.parseLong(jmsLoadWhenToStopField.getText());
+
+            while (globalCount.getValue() < neededCount && !jmsLoadKeyToStop) {
+
+                if (jmsLoadThinkTimeCkeckBox.isSelected())
+                    try {
+                        if (jmsLoadNormalDistributionCkeckBox.isSelected()) {
+                            Double tmpSleep = a.getGaussian(thinkTime, Long.parseLong(jmsLoadDeviationField.getText()));
+                            Long sleepTime = Long.parseLong(tmpSleep.toString().substring(0, tmpSleep.toString().indexOf('.')));
+                            System.out.println(sleepTime.toString());
+                            Thread.sleep(Math.abs(sleepTime));
+                        }
+                        else
+                            Thread.sleep(thinkTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+
+                now = new Date();
+                if (localCount.getValue() == 0) {
+                    localBegin = now;
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                } else {
+                    duration = Math.abs(now.getTime() - localBegin.getTime());
+                    if (duration / 1000 > 10.0) {
+                        localBegin = now;
+                        duration = Math.abs(now.getTime() - localBegin.getTime());
+                        synchronized (lockObject) {
+                            localCount.setValue(0);
+                        }
+                    } else {
+                        synchronized (lockObject) {
+                            globalTps.setValue (localCount.getValue() / (((double) duration) / 1000));
+                        }
+                    }
+                    //System.out.println(tps);
+                }
+
+                synchronized (lockObject) {
+                    localCount.setValue(localCount.getValue() + 1);
+                    globalCount.setValue(globalCount.getValue() + 1);
+                    progressIndicator.setProgress((double)globalCount.getValue()/(double)neededCount);
+
+
+                    Platform.runLater(() -> {
+                        tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
+                        countField.setText(Long.toString(globalCount.getValue()));
+                    });
+                }
+
+
+                double tempSleep = 0.0;
+                //System.out.println(Thread.currentThread().getName() + "  --  " + globalIterations);
+                if (globalTps.getValue() > neededTps) {
+                    tempSleep = (localCount.getValue() / neededTps - duration / 1000) * 1000;
+                    synchronized (lockObject) {
+                        globalTps.setValue(neededTps);
+                    }
+                    long s = (long) tempSleep;
+                    try {
+                        Thread.sleep(s);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //System.out.println(Thread.currentThread().getName() + "  -- globalCount: " + globalCount.getValue() + " globalTps: " + globalTps.getValue() + " localCount: " + localCount.getValue() + " Sleep for: " + tempSleep);
+                try {
+                    sendJmsRequest();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println(Thread.currentThread().getName() + "  -- Done.");
+    }
+
+
+    private void sendJmsRequest(){
+        SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
+
+        IBMMqProfile profile = new IBMMqProfile();
+
+        Properties prop = new Properties();
+
+        SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
+        SplitPane split = (SplitPane)jmsMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
+
+        AnchorPane projectAnchor = (AnchorPane) split.getItems().get(1);
+        TextField hostField = (TextField)projectAnchor.getChildren().get(8);
+        TextField portField = (TextField)projectAnchor.getChildren().get(9);
+        TextField queueField = (TextField)projectAnchor.getChildren().get(10);
+        TextField channelField = (TextField)projectAnchor.getChildren().get(11);
+        TextField transportTypeField = (TextField)projectAnchor.getChildren().get(12);
+        TextField queueNameField = (TextField)projectAnchor.getChildren().get(13);
+        TextField userIdField = (TextField)projectAnchor.getChildren().get(14);
+        PasswordField passwordField = (PasswordField)projectAnchor.getChildren().get(15);
+
+        prop.setProperty("host", hostField.getText());
+        prop.setProperty("port", portField.getText());
+        prop.setProperty("queueManager", queueField.getText());
+        prop.setProperty("channel", channelField.getText());
+        prop.setProperty("transportType", transportTypeField.getText());
+        prop.setProperty("queueName", queueNameField.getText());
+        prop.setProperty("userId", userIdField.getText());
+        prop.setProperty("password", passwordField.getText());
+        System.out.println(prop.toString());
+
+
+        try {
+            profile.setId("jmsTab", prop);
+        } catch (ProfileNotFoundException e) {
+            e.printStackTrace();
+        } catch (ProfileStructureException e) {
+            e.printStackTrace();
+        }
+
+        AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
+        TextArea requestArea = (TextArea)requestAnchor.getChildren().get(1);
+
+        String request_text = requestArea.getText();
+        LinearRandomInt rInt = new LinearRandomInt( BigInteger.valueOf(System.currentTimeMillis()));
+        LinearRandomString rStr = new LinearRandomString(7);
+
+
+        while (request_text.contains("${rnd_int}")){
+            rInt.next();
+            request_text = request_text.replaceFirst("(?:\\$\\{rnd_int})+", rInt.getState().toString());
+        }
+
+
+        while (request_text.contains("${rnd_str}")){
+            request_text = request_text.replaceFirst("(?:\\$\\{rnd_str})+", rStr.nextString());
+        }
+
+        IBMMqRequest request = new IBMMqRequest(request_text);
+        IBMMqClient client = new IBMMqClient();
+        client.setProfile(profile);
+
+        Date now = new Date();
+
+        try {
+            client.prepareRequest("request." + now.toString());
+
+        } catch (ProfileStructureException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            client.sendRequest(request);
+        } catch (SendRequestException e) {
+            e.printStackTrace();
+        } catch (ProfileStructureException e) {
+            e.printStackTrace();
+        }
+        try {
+            client.postconditions();
+        } catch (PostconditionsException e){
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
@@ -107,6 +409,54 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         AnchorPane.setTopAnchor(jmsMainTabPane, 0.0);
 
         jmsAddButtonTab.setText("+");
+
+        jmsLoadStopButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                jmsLoadKeyToStop = true;
+            }
+        });
+
+        jmsLoadByCountRadioButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                jmsLoadWhenToStopField.setPromptText("count");
+            }
+        });
+
+        jmsLoadByDateTimeRadioButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                jmsLoadWhenToStopField.setPromptText("date time");
+            }
+        });
+
+        jmsLoadStartButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+                SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
+                jmsLoadCurrentCountField.setText("0.0");
+                jmsLoadCurrentTpsField.setText("0.0");
+
+                globalCount.setValue(0);
+                globalTps.setValue(0.0);
+                numberOfThreads = Integer.parseInt(jmsLoadThreadsField.getText());
+                for (int j = 0; j< numberOfThreads; j++) {
+                    Thread loadThread = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            jmsLoad(jmsLoadProgressIndicator, jmsLoadCurrentTpsField, jmsLoadCurrentCountField);
+                        }
+                    });
+                    loadThread.setDaemon(true);
+                    loadThread.start();
+                }
+                jmsLoadKeyToStop = false;
+                localCount.setValue(0);
+            }
+        });
+        
         jmsAddButtonTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
                                                             public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
                                                                 SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
@@ -116,95 +466,13 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                                                                     selectionModel.select(tab);
                                                                 }
                                                             }
-                                                        }
-        );
+                                                        });
 
         jmsButton.setOnAction(new EventHandler<ActionEvent>() {
 
             @Override
             public void handle(ActionEvent event) {
-                SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
-
-                IBMMqProfile profile = new IBMMqProfile();
-
-                Properties prop = new Properties();
-
-                SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
-                SplitPane split = (SplitPane)jmsMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
-
-                AnchorPane projectAnchor = (AnchorPane) split.getItems().get(1);
-                TextField hostField = (TextField)projectAnchor.getChildren().get(8);
-                TextField portField = (TextField)projectAnchor.getChildren().get(9);
-                TextField queueField = (TextField)projectAnchor.getChildren().get(10);
-                TextField channelField = (TextField)projectAnchor.getChildren().get(11);
-                TextField transportTypeField = (TextField)projectAnchor.getChildren().get(12);
-                TextField queueNameField = (TextField)projectAnchor.getChildren().get(13);
-                TextField userIdField = (TextField)projectAnchor.getChildren().get(14);
-                PasswordField passwordField = (PasswordField)projectAnchor.getChildren().get(15);
-
-                prop.setProperty("host", hostField.getText());
-                prop.setProperty("port", portField.getText());
-                prop.setProperty("queueManager", queueField.getText());
-                prop.setProperty("channel", channelField.getText());
-                prop.setProperty("transportType", transportTypeField.getText());
-                prop.setProperty("queueName", queueNameField.getText());
-                prop.setProperty("userId", userIdField.getText());
-                prop.setProperty("password", passwordField.getText());
-                System.out.println(prop.toString());
-
-
-                try {
-                    profile.setId("jmsTab", prop);
-                } catch (ProfileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (ProfileStructureException e) {
-                    e.printStackTrace();
-                }
-
-                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
-                TextArea requestArea = (TextArea)requestAnchor.getChildren().get(1);
-
-                String request_text = requestArea.getText();
-                LinearRandomInt rInt = new LinearRandomInt( BigInteger.valueOf(System.currentTimeMillis()));
-                LinearRandomString rStr = new LinearRandomString(7);
-
-
-                while (request_text.contains("${rnd_int}")){
-                    rInt.next();
-                    request_text = request_text.replaceFirst("(?:\\$\\{rnd_int})+", rInt.getState().toString());
-                }
-
-
-                while (request_text.contains("${rnd_str}")){
-                    request_text = request_text.replaceFirst("(?:\\$\\{rnd_str})+", rStr.nextString());
-                }
-
-                IBMMqRequest request = new IBMMqRequest(request_text);
-                IBMMqClient client = new IBMMqClient();
-                client.setProfile(profile);
-
-                Date now = new Date();
-
-                try {
-                    client.prepareRequest("request." + now.toString());
-
-                } catch (ProfileStructureException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    client.sendRequest(request);
-                } catch (SendRequestException e) {
-                    e.printStackTrace();
-                } catch (ProfileStructureException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    client.postconditions();
-                } catch (PostconditionsException e){
-                    e.printStackTrace();
-                }
-
+                sendJmsRequest();
             }
         });
 
@@ -246,24 +514,16 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
         VBox.setVgrow(jmsInnerPane, Priority.ALWAYS);
 
-
-
         SaveAndOpen.projectGlobalOpen(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
         if (jmsMainTabPane.getTabs().size() == 0) {
             Date now = new Date();
             addTab(now.toString(), jmsMainTabPane);
         }
 
-
         jmsMainTabPane.getTabs().add(jmsAddButtonTab);
         SingleSelectionModel<Tab> selectionModel = jmsMainTabPane.getSelectionModel();
         selectionModel.select(jmsMainTabPane.getTabs().indexOf(jmsAddButtonTab) - 1); // add tab to create new tabs
-
-
-
-
         jmsProjectStateLabel.setText("");
-
     }
 
     @Override

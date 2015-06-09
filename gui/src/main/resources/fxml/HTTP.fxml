@@ -45,24 +45,27 @@
                                     <cursor>
                                         <Cursor fx:constant="HAND" />
                                     </cursor></Button>
-                                <TextField fx:id="httpLoadNeededTpsField" layoutX="126.0" layoutY="7.0" prefWidth="100.0" promptText="tps" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="157.0" AnchorPane.topAnchor="7.0" />
-                                <TextField fx:id="httpLoadWhenToStopField" layoutX="329.0" layoutY="7.0" prefWidth="120.0" promptText="how to stop" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="459.0" AnchorPane.topAnchor="7.0" />
-                                <Separator layoutX="231.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="265.0" AnchorPane.topAnchor="0.0" />
-                                <Separator layoutX="436.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="587.0" AnchorPane.topAnchor="0.0" />
-                                <Label layoutX="447.0" layoutY="11.0" text="Tps:" AnchorPane.leftAnchor="735.0" AnchorPane.topAnchor="1.0" />
-                                <Label layoutX="457.0" layoutY="21.0" text="Count:" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="735.0" />
-                                <RadioButton fx:id="httpLoadByCountRadioButton" layoutX="360.0" layoutY="6.0" mnemonicParsing="false" selected="true" text="By Count" AnchorPane.leftAnchor="360.0" AnchorPane.topAnchor="3.0">
+                                <TextField fx:id="httpLoadNeededTpsField" layoutX="126.0" layoutY="7.0" minHeight="21.0" prefHeight="20.0" prefWidth="60.0" promptText="tps" AnchorPane.leftAnchor="157.0" AnchorPane.topAnchor="0.0" />
+                                <TextField fx:id="httpLoadWhenToStopField" layoutX="329.0" layoutY="7.0" prefWidth="100.0" promptText="how to stop" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="409.0" AnchorPane.topAnchor="7.0" />
+                                <Separator layoutX="231.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="225.0" AnchorPane.topAnchor="0.0" />
+                                <Separator layoutX="436.0" layoutY="15.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="517.0" AnchorPane.topAnchor="0.0" />
+                                <Label layoutX="447.0" layoutY="11.0" text="Tps:" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="1.0" />
+                                <Label layoutX="457.0" layoutY="21.0" text="Count:" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="120.0" />
+                                <RadioButton fx:id="httpLoadByCountRadioButton" layoutX="360.0" layoutY="6.0" mnemonicParsing="false" selected="true" text="By Count" AnchorPane.leftAnchor="310.0" AnchorPane.topAnchor="3.0">
                                     <toggleGroup>
                                         <ToggleGroup fx:id="howToStopGroup" />
                                     </toggleGroup>
                                 </RadioButton>
-                                <Label layoutX="268.0" layoutY="13.0" text="How to stop:" AnchorPane.leftAnchor="280.0" />
-                                <RadioButton fx:id="httpLoadByDateTimeRadioButton" layoutX="360.0" layoutY="22.0" mnemonicParsing="false" text="By DateTime" toggleGroup="$howToStopGroup" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="360.0" />
-                                <Separator layoutX="446.0" layoutY="25.0" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="710.0" AnchorPane.topAnchor="0.0" />
-                                <TextField fx:id="httpLoadThreadsField" layoutX="587.0" layoutY="11.0" prefWidth="100.0" promptText="threads" AnchorPane.bottomAnchor="7.0" AnchorPane.leftAnchor="602.0" AnchorPane.topAnchor="7.0" />
+                                <Label layoutX="268.0" layoutY="13.0" text="How to stop:" AnchorPane.leftAnchor="235.0" />
+                                <RadioButton fx:id="httpLoadByDateTimeRadioButton" layoutX="360.0" layoutY="22.0" mnemonicParsing="false" text="By DateTime" toggleGroup="$howToStopGroup" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="310.0" />
+                                <TextField fx:id="httpLoadThreadsField" layoutX="587.0" layoutY="11.0" minHeight="21.0" prefHeight="20.0" prefWidth="60.0" promptText="threads" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="157.0" />
                                 <ProgressIndicator fx:id="httpLoadProgressIndicator" layoutX="848.0" layoutY="-2.0" prefWidth="34.0" progress="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="0.0" />
-                                <TextField fx:id="httpLoadCurrentTpsField" editable="false" layoutX="789.0" layoutY="-1.0" minHeight="21.0" prefHeight="20.0" prefWidth="70.0" AnchorPane.leftAnchor="775.0" AnchorPane.topAnchor="0.0" />
-                                <TextField fx:id="httpLoadCurrentCountField" editable="false" layoutX="799.0" layoutY="9.0" minHeight="21.0" prefHeight="20.0" prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="775.0" />
+                                <TextField fx:id="httpLoadCurrentTpsField" editable="false" layoutX="789.0" layoutY="-1.0" minHeight="21.0" prefHeight="20.0" prefWidth="70.0" AnchorPane.rightAnchor="45.0" AnchorPane.topAnchor="0.0" />
+                                <TextField fx:id="httpLoadCurrentCountField" editable="false" layoutX="799.0" layoutY="9.0" minHeight="21.0" prefHeight="20.0" prefWidth="70.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="45.0" />
+                                <TextField fx:id="httpLoadThinkTimeField" layoutX="948.0" layoutY="10.0" minHeight="21.0" prefHeight="20.0" prefWidth="80.0" promptText="think time" AnchorPane.leftAnchor="680.0" AnchorPane.topAnchor="0.0" />
+                                <CheckBox fx:id="httpLoadThinkTimeCkeckBox" layoutX="859.0" layoutY="15.0" mnemonicParsing="false" text="Use Think Time" AnchorPane.leftAnchor="526.0" AnchorPane.topAnchor="2.0" />
+                                <CheckBox fx:id="httpLoadNormalDistributionCkeckBox" layoutX="1083.0" layoutY="13.0" mnemonicParsing="false" text="Use Normal Distribution" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="526.0" />
+                                <TextField fx:id="httpLoadDeviationField" layoutX="767.0" layoutY="9.0" minHeight="21.0" prefHeight="20.0" prefWidth="80.0" promptText="deviation" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="680.0" />
                             </children>
                         </AnchorPane>
                     </children>

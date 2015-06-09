@@ -2,6 +2,7 @@ package SOATestTool.gui;
 
 import SOATestTool.Common.LinearRandomInt;
 import SOATestTool.Common.LinearRandomString;
+import SOATestTool.Common.NormalDistribution;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -15,9 +16,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -62,6 +60,10 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     @FXML public RadioButton httpLoadByDateTimeRadioButton;
     @FXML public TextField httpLoadWhenToStopField;
     @FXML public TextField httpLoadThreadsField;
+    @FXML public CheckBox httpLoadThinkTimeCkeckBox;
+    @FXML public TextField httpLoadThinkTimeField;
+    @FXML public TextField httpLoadDeviationField;
+    @FXML public CheckBox httpLoadNormalDistributionCkeckBox;
     @FXML public volatile TextField httpLoadCurrentTpsField;
     @FXML public volatile TextField httpLoadCurrentCountField;
     @FXML public volatile ProgressIndicator httpLoadProgressIndicator;
@@ -649,6 +651,12 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     public void httpLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
         System.out.println(Thread.currentThread().getName() + "  -- Start.");
 
+        NormalDistribution a = new NormalDistribution();
+
+        Long thinkTime = Long.valueOf(0);
+        if (httpLoadThinkTimeCkeckBox.isSelected())
+            thinkTime  = Long.parseLong(httpLoadThinkTimeField.getText());
+
         //long duration;
         try {
             neededTps = Double.parseDouble(httpLoadNeededTpsField.getText());
@@ -670,6 +678,21 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             }
             localBegin = new Date();
             while (now.getTime() < globalEnd.getTime() && !httpLoadKeyToStop) {
+
+                if (httpLoadThinkTimeCkeckBox.isSelected())
+                    try {
+                        if (httpLoadNormalDistributionCkeckBox.isSelected()) {
+                            Double tmpSleep = a.getGaussian(thinkTime, Long.parseLong(httpLoadDeviationField.getText()));
+                            Long sleepTime = Long.parseLong(tmpSleep.toString().substring(0, tmpSleep.toString().indexOf('.')));
+                            System.out.println(sleepTime.toString());
+                            Thread.sleep(Math.abs(sleepTime));
+                        }
+                        else
+                            Thread.sleep(thinkTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                
                 now = new Date();
                 if (localCount.getValue() == 0) {
                     localBegin = now;
@@ -727,6 +750,21 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             neededCount = Long.parseLong(httpLoadWhenToStopField.getText());
 
             while (globalCount.getValue() < neededCount && !httpLoadKeyToStop) {
+
+                if (httpLoadThinkTimeCkeckBox.isSelected())
+                    try {
+                        if (httpLoadNormalDistributionCkeckBox.isSelected()) {
+                            Double tmpSleep = a.getGaussian(thinkTime, Long.parseLong(httpLoadDeviationField.getText()));
+                            Long sleepTime = Long.parseLong(tmpSleep.toString().substring(0, tmpSleep.toString().indexOf('.')));
+                            System.out.println(sleepTime.toString());
+                            Thread.sleep(Math.abs(sleepTime));
+                        }
+                        else
+                            Thread.sleep(thinkTime);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                 now = new Date();
                 if (localCount.getValue() == 0) {
                     localBegin = now;

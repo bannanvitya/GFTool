@@ -27,9 +27,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -84,6 +81,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     @FXML public TextField soapLoadCurrentCountField;
     @FXML public CheckBox soapLoadThinkTimeCkeckBox;
     @FXML public TextField soapLoadThinkTimeField;
+    @FXML public TextField soapLoadDeviationField;
     @FXML public CheckBox soapLoadNormalDistributionCkeckBox;
     @FXML public volatile ProgressIndicator soapLoadProgressIndicator;
 
@@ -114,10 +112,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-
-
-
-
         soapMainTabPane.sideProperty().setValue(Side.LEFT);
         soapMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
         soapInnerPane.getChildren().addAll(soapMainTabPane);
@@ -127,6 +121,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         AnchorPane.setTopAnchor(soapMainTabPane, 0.0);
 
         soapAddButtonTab.setText("+");
+
         soapAddButtonTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
         public void changed(ObservableValue ov, Boolean old_val, Boolean new_val) {
             SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
@@ -136,8 +131,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 selectionModel.select(tab);
                 }
             }
-        }
-        );
+        });
 
         soapLoadStopButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -145,7 +139,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 soapLoadKeyToStop = true;
             }
         });
-
 
         soapLoadByCountRadioButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -279,7 +272,9 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
 
         NormalDistribution a = new NormalDistribution();
 
-        Long thinkTime = Long.parseLong(soapLoadThinkTimeField.getText());
+        Long thinkTime = Long.valueOf(0);
+        if (soapLoadThinkTimeCkeckBox.isSelected())
+            thinkTime  = Long.parseLong(soapLoadThinkTimeField.getText());
 
         try {
             neededTps = Double.parseDouble(soapLoadNeededTpsField.getText());
@@ -303,10 +298,10 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 if (soapLoadThinkTimeCkeckBox.isSelected())
                     try {
                         if (soapLoadNormalDistributionCkeckBox.isSelected()) {
-                            Double tmpSleep = a.getGaussian(thinkTime, 5000);
+                            Double tmpSleep = a.getGaussian(thinkTime, Long.parseLong(soapLoadDeviationField.getText()));
                             Long sleepTime = Long.parseLong(tmpSleep.toString().substring(0, tmpSleep.toString().indexOf('.')));
                             System.out.println(sleepTime.toString());
-                            Thread.sleep(sleepTime);
+                            Thread.sleep(Math.abs(sleepTime));
                         }
                         else
                             Thread.sleep(thinkTime);
@@ -375,10 +370,10 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 if (soapLoadThinkTimeCkeckBox.isSelected())
                     try {
                         if (soapLoadNormalDistributionCkeckBox.isSelected()) {
-                            Double tmpSleep = a.getGaussian(thinkTime, 500);
+                            Double tmpSleep = a.getGaussian(thinkTime, Long.parseLong(soapLoadDeviationField.getText()));
                             Long sleepTime = Long.parseLong(tmpSleep.toString().substring(0, tmpSleep.toString().indexOf('.')));
                             System.out.println(sleepTime.toString());
-                            Thread.sleep(sleepTime);
+                            Thread.sleep(Math.abs(sleepTime));
                         }
                         else
                             Thread.sleep(thinkTime);
