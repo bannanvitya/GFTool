@@ -1,5 +1,7 @@
 package SOATestTool.gui;
 
+import SOATestTool.Common.LinearRandomInt;
+import SOATestTool.Common.LinearRandomString;
 import SOATestTool.SMTPClient.SMTPClient;
 import SOATestTool.SMTPClient.SMTPProfile;
 import SOATestTool.SMTPClient.SMTPRequest;
@@ -16,6 +18,10 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -24,6 +30,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.Date;
 import java.util.ResourceBundle;
@@ -51,7 +58,6 @@ public class SMTPTabController implements Initializable, ClientTabControllerApi 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
-
         smtpMainTabPane.sideProperty().setValue(Side.LEFT);
         smtpMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
 
@@ -77,8 +83,6 @@ public class SMTPTabController implements Initializable, ClientTabControllerApi 
         );
 
 
-
-
         smtpButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -93,7 +97,22 @@ public class SMTPTabController implements Initializable, ClientTabControllerApi 
                 AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
                 String[] to = {((TextField)requestAnchor.getChildren().get(1)).getText()};
                 String subj = ((TextField)requestAnchor.getChildren().get(3)).getText();
-                String message = ((TextArea)requestAnchor.getChildren().get(5)).getText();
+                TextArea requestArea = (TextArea)requestAnchor.getChildren().get(5);
+
+                String request_text = requestArea.getText();
+                LinearRandomInt rInt = new LinearRandomInt( BigInteger.valueOf(System.currentTimeMillis()));
+                LinearRandomString rStr = new LinearRandomString(7);
+
+
+                while (request_text.contains("${rnd_int}")){
+                    rInt.next();
+                    request_text = request_text.replaceFirst("(?:\\$\\{rnd_int})+", rInt.getState().toString());
+                }
+
+
+                while (request_text.contains("${rnd_str}")){
+                    request_text = request_text.replaceFirst("(?:\\$\\{rnd_str})+", rStr.nextString());
+                }
 
                 AnchorPane projectAnchor = (AnchorPane) split.getItems().get(1);
                 RadioButton mail = (RadioButton)projectAnchor.getChildren().get(1);
@@ -127,7 +146,7 @@ public class SMTPTabController implements Initializable, ClientTabControllerApi 
                 }
 
 
-                SMTPRequest req = new SMTPRequest(message, subj, to);
+                SMTPRequest req = new SMTPRequest(request_text, subj, to);
 
                 SMTPClient client = new SMTPClient();
                 client.setProfile(profile);

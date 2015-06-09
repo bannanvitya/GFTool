@@ -84,6 +84,11 @@
         </dependency>
         <dependency>
             <groupId>SOATestTool</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>SOATestTool</groupId>
             <artifactId>HTTPClient</artifactId>
             <version>1.0.0</version>
         </dependency>

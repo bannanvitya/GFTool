@@ -5,74 +5,21 @@ import java.math.BigInteger;
 
 public class LinearRandomInt {
 
-	/* The main method, which runs a correctness check */
-
-    public static void main(String[] args) {
-        // Use the parameters from Java's LCG RNG
-        final BigInteger A = BigInteger.valueOf(25214903917L);
-        final BigInteger B = BigInteger.valueOf(11);
-        final BigInteger M = BigInteger.ONE.shiftLeft(48);  // 2^48
-
-        // Choose seed and create LCG RNG
-        BigInteger seed = BigInteger.valueOf(System.currentTimeMillis());
-        LinearRandomInt randSlow = new LinearRandomInt(A, B, M, seed);
-
-        // Start testing
-        final int N = 1000;
-
-        // Check that skipping forward is correct
-        for (int i = 0; i < N; i++) {
-            LinearRandomInt randFast = new LinearRandomInt(A, B, M, seed);
-            randFast.skip(i);
-            if (!randSlow.getState().equals(randFast.getState()))
-                throw new AssertionError();
-            randSlow.next();
-        }
-
-        // Check that backward iteration is correct
-        for (int i = N - 1; i >= 0; i--) {
-            randSlow.previous();
-            LinearRandomInt randFast = new LinearRandomInt(A, B, M, seed);
-            randFast.skip(i);
-            if (!randSlow.getState().equals(randFast.getState()))
-                throw new AssertionError();
-        }
-
-        // Check that backward skipping is correct
-        for (int i = 0; i < N; i++) {
-            LinearRandomInt randFast = new LinearRandomInt(A, B, M, seed);
-            randFast.skip(-i);
-            if (!randSlow.getState().equals(randFast.getState()))
-                throw new AssertionError();
-            randSlow.previous();
-        }
-
-        System.out.printf("Test passed (n=%d)%n", N);
-        System.out.printf(randSlow.getState().toString());
-    }
-
-
-
-	/* Code for LCG RNG instances */
-
-    private final BigInteger a;  // Multiplier
-    private final BigInteger b;  // Increment
-    private final BigInteger m;  // Modulus
+    private final BigInteger a = BigInteger.valueOf(25214903917L);;  // Multiplier
+    private final BigInteger b = BigInteger.valueOf(11);  // Increment
+    private final BigInteger m = BigInteger.ONE.shiftLeft(48);  // 2^48
     private final BigInteger aInv;  // Multiplicative inverse of 'a' modulo m
 
     private BigInteger x;  // State
 
 
-    public LinearRandomInt(BigInteger a, BigInteger b, BigInteger m, BigInteger seed) {
+    public LinearRandomInt(BigInteger seed) {
         if (a == null || b == null || m == null || seed == null)
             throw new NullPointerException();
-        if (a.signum() != 1 || b.signum() == -1 || m.signum() != 1 || seed.signum() == -1 || seed.compareTo(m) >= 0)
+        if (seed.signum() == -1 || seed.compareTo(m) >= 0)
             throw new IllegalArgumentException("Arguments out of range");
 
-        this.a = a;
         this.aInv = a.modInverse(m);
-        this.b = b;
-        this.m = m;
         this.x = seed;
     }
 
@@ -88,7 +35,6 @@ public class LinearRandomInt {
 
 
     public void previous() {
-        // The intermediate result after subtracting 'b' may be negative, but the modular arithmetic is correct
         x = x.subtract(b).multiply(aInv).mod(m);  // x = (a^-1 * (x - b)) mod m
     }
 

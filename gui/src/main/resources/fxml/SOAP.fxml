@@ -17,12 +17,6 @@
               <MenuItem fx:id="soapProjectSave" mnemonicParsing="false" text="Save" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Hotkeys">
-                <items>
-                    <MenuItem fx:id="soapRandomInt" mnemonicParsing="false" text="Random int: " />
-                    <MenuItem fx:id="soapRandomString" mnemonicParsing="false" text="Random string: " />
-                </items>
-            </Menu>
         </menus>
       </MenuBar>
                 <AnchorPane />

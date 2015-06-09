@@ -1,5 +1,7 @@
 package SOATestTool.gui;
 
+import SOATestTool.Common.LinearRandomInt;
+import SOATestTool.Common.LinearRandomString;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -9,6 +11,9 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -24,6 +29,7 @@ import SOATestTool.api.ProfileStructureException;
 import SOATestTool.api.SendRequestException;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 import java.util.*;
 
@@ -88,6 +94,8 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
+
+
         jmsMainTabPane.sideProperty().setValue(Side.LEFT);
         jmsMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
 
@@ -110,8 +118,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                                                             }
                                                         }
         );
-
-
 
         jmsButton.setOnAction(new EventHandler<ActionEvent>() {
 
@@ -158,7 +164,22 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                 AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
                 TextArea requestArea = (TextArea)requestAnchor.getChildren().get(1);
 
-                IBMMqRequest request = new IBMMqRequest(requestArea.getText());
+                String request_text = requestArea.getText();
+                LinearRandomInt rInt = new LinearRandomInt( BigInteger.valueOf(System.currentTimeMillis()));
+                LinearRandomString rStr = new LinearRandomString(7);
+
+
+                while (request_text.contains("${rnd_int}")){
+                    rInt.next();
+                    request_text = request_text.replaceFirst("(?:\\$\\{rnd_int})+", rInt.getState().toString());
+                }
+
+
+                while (request_text.contains("${rnd_str}")){
+                    request_text = request_text.replaceFirst("(?:\\$\\{rnd_str})+", rStr.nextString());
+                }
+
+                IBMMqRequest request = new IBMMqRequest(request_text);
                 IBMMqClient client = new IBMMqClient();
                 client.setProfile(profile);
 

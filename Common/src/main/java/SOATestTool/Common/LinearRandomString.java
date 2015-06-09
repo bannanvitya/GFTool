@@ -29,6 +29,7 @@ public class LinearRandomString {
         }
 
         public String nextString() {
+            random.setSeed(System.currentTimeMillis());
             for (int idx = 0; idx < buf.length; ++idx)
                 buf[idx] = symbols[random.nextInt(symbols.length)];
             return new String(buf);

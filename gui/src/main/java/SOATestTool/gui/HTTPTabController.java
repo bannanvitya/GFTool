@@ -1,5 +1,7 @@
 package SOATestTool.gui;
 
+import SOATestTool.Common.LinearRandomInt;
+import SOATestTool.Common.LinearRandomString;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -13,6 +15,9 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -28,6 +33,7 @@ import SOATestTool.api.ProfileStructureException;
 import SOATestTool.api.SendRequestException;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -90,6 +96,10 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
 
+
+
+
+
         httpMainTabPane.sideProperty().setValue(Side.LEFT);
         httpMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
 
@@ -118,6 +128,8 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                                                        }
         );
 
+        
+        
         httpLoadStopButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -598,7 +610,25 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
 
         AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
         TextArea httpRequestField = (TextArea) requestAnchor.getChildren().get(1);
-        HTTPRequest req = new HTTPRequest(httpRequestField.getText());
+
+
+        String request_text = httpRequestField.getText();
+        LinearRandomInt rInt = new LinearRandomInt( BigInteger.valueOf(System.currentTimeMillis()));
+        LinearRandomString rStr = new LinearRandomString(7);
+
+
+        while (request_text.contains("${rnd_int}")){
+            rInt.next();
+            request_text = request_text.replaceFirst("(?:\\$\\{rnd_int})+", rInt.getState().toString());
+        }
+
+
+        while (request_text.contains("${rnd_str}")){
+            request_text = request_text.replaceFirst("(?:\\$\\{rnd_str})+", rStr.nextString());
+        }
+
+
+        HTTPRequest req = new HTTPRequest(request_text);
         client.setProfile(profile);
         HTTPResponse resp = null;
         try {

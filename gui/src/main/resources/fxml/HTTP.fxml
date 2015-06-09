@@ -21,12 +21,6 @@
                                         <MenuItem fx:id="httpProjectSave" mnemonicParsing="false" text="Save" />
                                     </items>
                                 </Menu>
-                                <Menu mnemonicParsing="false" text="Hotkeys">
-                                    <items>
-                                        <MenuItem fx:id="httpRandomInt" mnemonicParsing="false" text="Random int: " />
-                                        <MenuItem fx:id="httpRandomString" mnemonicParsing="false" text="Random string: " />
-                                    </items>
-                                </Menu>
                             </menus>
                             <VBox.margin>
                                 <Insets />

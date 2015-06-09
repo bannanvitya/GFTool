@@ -18,12 +18,6 @@
                                         <MenuItem fx:id="smtpProjectSave" mnemonicParsing="false" text="Save" />
                                     </items>
                                 </Menu>
-                  <Menu mnemonicParsing="false" text="Hotkeys">
-                     <items>
-                         <MenuItem fx:id="smtpRandomInt" mnemonicParsing="false" text="Random int: " />
-                         <MenuItem fx:id="smtpRandomString" mnemonicParsing="false" text="Random string: " />
-                     </items>
-                  </Menu>
                             </menus>
                             <VBox.margin>
                                 <Insets />

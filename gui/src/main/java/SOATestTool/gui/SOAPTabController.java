@@ -1,5 +1,7 @@
 package SOATestTool.gui;
 
+import SOATestTool.Common.LinearRandomInt;
+import SOATestTool.Common.LinearRandomString;
 import SOATestTool.api.PostconditionsException;
 import SOATestTool.api.ProfileNotFoundException;
 import SOATestTool.api.ProfileStructureException;
@@ -35,6 +37,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -65,8 +68,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
 
     @FXML public Button soapButton;
     @FXML public MenuItem soapProjectSave;
-    @FXML public MenuItem soapRandomInt;
-    @FXML public MenuItem soapRandomString;
     @FXML public VBox soapVBox;
 
 
@@ -111,8 +112,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 
 
-        soapRandomInt.setAccelerator(new KeyCodeCombination(KeyCode.Q, KeyCombination.CONTROL_DOWN));
-        soapRandomString.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.CONTROL_DOWN));
+
 
         soapMainTabPane.sideProperty().setValue(Side.LEFT);
         soapMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
@@ -222,29 +222,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 }
         });
 
-        soapRandomInt.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
-                SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
-                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
-                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
 
-                requestArea.insertText(requestArea.getCaretPosition(), "${rnd_int}");
-                }
-        });
-
-        soapRandomString.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
-                SplitPane split = (SplitPane)soapMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
-                AnchorPane requestAnchor = (AnchorPane) split.getItems().get(1);
-                TextArea requestArea = (TextArea) requestAnchor.getChildren().get(2);
-
-                requestArea.insertText(requestArea.getCaretPosition(), "${rnd_str}");
-                }
-        });
 
 
         soapVBox.getChildren().addAll(soapInnerPane);
@@ -438,14 +416,18 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
 
 
         String request_text = requestArea.getText();
+        LinearRandomInt rInt = new LinearRandomInt( BigInteger.valueOf(System.currentTimeMillis()));
+        LinearRandomString rStr = new LinearRandomString(7);
+
 
         while (request_text.contains("${rnd_int}")){
-            request_text = request_text.replace("${rnd_int}", "121212");
+            rInt.next();
+            request_text = request_text.replaceFirst("(?:\\$\\{rnd_int})+", rInt.getState().toString());
         }
 
 
         while (request_text.contains("${rnd_str}")){
-            request_text = request_text.replace("${rnd_str}", "abzabzabz");
+            request_text = request_text.replaceFirst("(?:\\$\\{rnd_str})+", rStr.nextString());
         }
 
 
