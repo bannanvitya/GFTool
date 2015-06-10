@@ -147,7 +147,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         soapLoadByDateTimeRadioButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                soapLoadWhenToStopField.setPromptText("date time");
+                soapLoadWhenToStopField.setPromptText("yyyy-MM-dd HH:mm:ss");
             }
         });
         
@@ -194,7 +194,20 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 }
                 else
                 {
-                    xAxis = new NumberAxis();
+                    Date n = new Date();
+                    long start = n.getTime();
+                    long end = start + 1000000;
+                    try {
+
+                        end = df.parse(soapLoadWhenToStopField.getText()).getTime();
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    xAxis = new NumberAxis(0, (end-start) / 1000, (double)(end - start) / 100000);
+                    xAxis.setMaxWidth(end-start);
+                    xAxis.setAutoRanging(true);
+                    //xAxis.setTickLength(3);
                 }
 
                 xAxis.setAutoRanging(false);
@@ -328,6 +341,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 e.printStackTrace();
             }
             localBegin = new Date();
+            System.out.println(now.getTime() + "   " + globalEnd.getTime());
             while (now.getTime() < globalEnd.getTime() && !soapLoadKeyToStop) {
 
                 if (soapLoadThinkTimeCkeckBox.isSelected())
@@ -358,7 +372,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                         }
                     } else {
                         synchronized (lockObject) {
-                            globalTps.setValue((localCount.getValue() / (duration / 1000)));
+                            globalTps.setValue((localCount.getValue() / ((double) duration / 1000)));
                         }
                     }
                 }
@@ -372,7 +386,7 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
 
-                        series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
+                        series.getData().add(new XYChart.Data(Math.abs(globalBegin.getTime() - now.getTime())/1000, globalTps.getValue().intValue()));
                     });
                 }
                 double temp = 0.0;
@@ -474,7 +488,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         }
         System.out.println(Thread.currentThread().getName() + "  -- Done.");
     }
-    
     
     private void sendSoapRequest(boolean isLoad){
         SingleSelectionModel<Tab> selectionModel = soapMainTabPane.getSelectionModel();
@@ -742,7 +755,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         tab.setText("default");
         return tab;
     }
-
 
     public void setTreeView(String projectName,TreeView<String> treeView, Tab tab, TextArea requestArea) {
         String wsdlUrl = getProjectMap().get(projectName);

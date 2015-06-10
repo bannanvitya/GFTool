@@ -15,6 +15,7 @@
         <module>IBMMqClient</module>
         <module>HTTPClient</module>
         <module>SMTPClient</module>
+        <module>common</module>
     </modules>
 
     <build>

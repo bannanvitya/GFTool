@@ -283,12 +283,7 @@ public class SMTPTabController implements Initializable, ClientTabControllerApi 
 
 
 
-        Label responseLabel = new Label();
-        responseLabel.setText("Response");
 
-        TextArea responseTextArea = new TextArea();
-        responseTextArea.setId("responseTextArea");
-        responseTextArea.wrapTextProperty().setValue(true);
 
 
         Label smtpTypeLabel = new Label();
@@ -376,17 +371,9 @@ public class SMTPTabController implements Initializable, ClientTabControllerApi 
 
 
         projectAnchor.getChildren().addAll(smtpTypeLabel, mailRadioButton,
-                gmailRadioButton, otherSmtpTypeRadioButton, otherTypeField, portField, fromField, passField, responseLabel, responseTextArea);
+                gmailRadioButton, otherSmtpTypeRadioButton, otherTypeField, portField, fromField, passField);
 
 
-
-        AnchorPane.setTopAnchor(responseLabel, 516.0);
-        AnchorPane.setLeftAnchor(responseLabel, 2.0);
-
-        AnchorPane.setTopAnchor(responseTextArea, 539.0);
-        AnchorPane.setLeftAnchor(responseTextArea, 1.0);
-        AnchorPane.setRightAnchor(responseTextArea, 7.0);
-        AnchorPane.setBottomAnchor(responseTextArea, 7.0);
 
         AnchorPane.setTopAnchor(smtpTypeLabel, 7.0);
         AnchorPane.setLeftAnchor(smtpTypeLabel, 1.0);

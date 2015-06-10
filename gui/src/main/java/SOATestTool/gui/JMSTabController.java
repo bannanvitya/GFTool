@@ -167,6 +167,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                 e.printStackTrace();
             }
             localBegin = new Date();
+            System.out.println(now.getTime() + "   " + globalEnd.getTime());
             while (now.getTime() < globalEnd.getTime() && !jmsLoadKeyToStop) {
 
                 if (jmsLoadThinkTimeCkeckBox.isSelected())
@@ -197,7 +198,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                         }
                     } else {
                         synchronized (lockObject) {
-                            globalTps.setValue((localCount.getValue() / (duration / 1000)));
+                            globalTps.setValue((localCount.getValue() / ((double) duration / 1000)));
                         }
                     }
                 }
@@ -205,13 +206,13 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                 synchronized (lockObject) {
                     localCount.setValue(localCount.getValue() + 1);
                     globalCount.setValue(globalCount.getValue() + 1);
-                    progressIndicator.setProgress((double) Math.abs(globalBegin.getTime() - now.getTime()) / (double) globalDuration);
+                    progressIndicator.setProgress((double)Math.abs(globalBegin.getTime() - now.getTime())/(double)globalDuration);
 
                     Platform.runLater(() -> {
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
 
-                        series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
+                        series.getData().add(new XYChart.Data(Math.abs(globalBegin.getTime() - now.getTime())/1000, globalTps.getValue().intValue()));
                     });
                 }
                 double temp = 0.0;
@@ -423,7 +424,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         jmsLoadByDateTimeRadioButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                jmsLoadWhenToStopField.setPromptText("date time");
+                jmsLoadWhenToStopField.setPromptText("yyyy-MM-dd HH:mm:ss");
             }
         });
 
@@ -441,10 +442,24 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                     Long tempAxisWidth = Long.parseLong(jmsLoadWhenToStopField.getText());
                     Double axisWidth = tempAxisWidth.doubleValue();
                     xAxis.setMinWidth(2000);
+
                 }
                 else
                 {
-                    xAxis = new NumberAxis();
+                    Date n = new Date();
+                    long start = n.getTime();
+                    long end = start + 1000000;
+                    try {
+
+                        end = df.parse(jmsLoadWhenToStopField.getText()).getTime();
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    xAxis = new NumberAxis(0, (end-start) / 1000, (double)(end - start) / 100000);
+                    xAxis.setMaxWidth(end-start);
+                    xAxis.setAutoRanging(true);
+                    //xAxis.setTickLength(3);
                 }
 
                 xAxis.setAutoRanging(false);
