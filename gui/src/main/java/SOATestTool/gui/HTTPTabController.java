@@ -13,6 +13,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -20,6 +24,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import SOATestTool.HTTPClient.HTTPClient;
@@ -29,6 +34,7 @@ import SOATestTool.HTTPClient.HTTPResponse;
 import SOATestTool.api.ProfileNotFoundException;
 import SOATestTool.api.ProfileStructureException;
 import SOATestTool.api.SendRequestException;
+import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.math.BigInteger;
@@ -96,26 +102,15 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-
-
-
-
-
-
         httpMainTabPane.sideProperty().setValue(Side.LEFT);
         httpMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
 
         httpInnerPane.getChildren().addAll(httpMainTabPane);
 
-
-        //httpLoadTpsLabel.textProperty().bind(globalTps.asString());
-        //httpLoadCountLabel.textProperty().bind(globalCount.asString());
-
         AnchorPane.setBottomAnchor(httpMainTabPane, 0.0);
         AnchorPane.setLeftAnchor(httpMainTabPane, 0.0);
         AnchorPane.setRightAnchor(httpMainTabPane, 0.0);
         AnchorPane.setTopAnchor(httpMainTabPane, 0.0);
-
 
         httpAddButtonTab.setText("+");
         httpAddButtonTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -165,13 +160,46 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
 
 
         httpLoadStartButton.setOnAction(new EventHandler<ActionEvent>() {
-
-
             @Override
             public void handle(ActionEvent event) {
 
                 SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
 
+                final Stage stage = new Stage(StageStyle.UNIFIED);
+                stage.setTitle("Transactions per second");
+
+                final NumberAxis xAxis;
+                if (httpLoadByCountRadioButton.isSelected()){
+                    xAxis = new NumberAxis(0, Long.parseLong(httpLoadWhenToStopField.getText()), 10);
+                    Long tempAxisWidth = Long.parseLong(httpLoadWhenToStopField.getText());
+                    Double axisWidth = tempAxisWidth.doubleValue();
+                    xAxis.setMinWidth(2000);
+
+                }
+                else
+                {
+                    xAxis = new NumberAxis();
+                }
+
+                xAxis.setAutoRanging(false);
+                xAxis.setLabel("Count");
+
+                Long yAxisRange = Long.parseLong(httpLoadNeededTpsField.getText());
+                yAxisRange = yAxisRange + (Long) yAxisRange/10;
+
+                final NumberAxis yAxis = new NumberAxis(0, yAxisRange, 10);
+                yAxis.setAutoRanging(false);
+
+                final LineChart<Number,Number> lineChart =
+                        new LineChart<Number,Number>(xAxis,yAxis);
+                lineChart.setTitle("Tps");
+                lineChart.setAnimated(false);
+                lineChart.setCreateSymbols(false);
+
+                Scene scene  = new Scene(lineChart,800,600);
+                stage.setScene(scene);
+                stage.show();
+                
                 globalCount.setValue(0);
                 globalTps.setValue(0.0);
                 numberOfThreads = Integer.parseInt(httpLoadThreadsField.getText());
@@ -179,7 +207,19 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                     Thread loadThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                           httpLoad(httpLoadProgressIndicator, httpLoadCurrentTpsField, httpLoadCurrentCountField);
+                            XYChart.Series seriesForThread = new XYChart.Series();
+                            seriesForThread.setName(Thread.currentThread().getName());
+                            seriesForThread.getData().add(new XYChart.Data(0, 0));
+
+                            Rectangle rect = new Rectangle(0, 0);
+                            rect.setVisible(false);
+                            seriesForThread.setNode(rect);
+
+                            Platform.runLater(() -> {
+                                lineChart.getData().add(seriesForThread);
+                            });
+
+                           httpLoad(seriesForThread, httpLoadProgressIndicator, httpLoadCurrentTpsField, httpLoadCurrentCountField);
                         }
                     });
                     loadThread.setDaemon(true);
@@ -648,7 +688,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         }
     }
 
-    public void httpLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
+    public void httpLoad(XYChart.Series series, ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
         System.out.println(Thread.currentThread().getName() + "  -- Start.");
 
         NormalDistribution a = new NormalDistribution();
@@ -720,6 +760,8 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                     Platform.runLater(() -> {
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
+
+                        series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
                     });
                 }
                 double temp = 0.0;
@@ -793,6 +835,8 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                     Platform.runLater(() -> {
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
+
+                        series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
                     });
                 }
                 double temp = 0.0;

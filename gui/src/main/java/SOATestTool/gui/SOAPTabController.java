@@ -32,6 +32,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -208,27 +209,21 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 }
 
                 xAxis.setAutoRanging(false);
-
-
-                final NumberAxis yAxis = new NumberAxis(0, Long.parseLong(soapLoadNeededTpsField.getText()), 10);
-                yAxis.setAutoRanging(false);
                 xAxis.setLabel("Count");
+
+                Long yAxisRange = Long.parseLong(soapLoadNeededTpsField.getText());
+                yAxisRange = yAxisRange + (Long) yAxisRange/10;
+
+                final NumberAxis yAxis = new NumberAxis(0, yAxisRange, 10);
+                yAxis.setAutoRanging(false);
+
                 final LineChart<Number,Number> lineChart =
                         new LineChart<Number,Number>(xAxis,yAxis);
-
                 lineChart.setTitle("Tps");
                 lineChart.setAnimated(false);
-
-                XYChart.Series series = new XYChart.Series();
-                series.setName("Transactions per second");
-                series.getData().add(new XYChart.Data(0, 0));
-
+                lineChart.setCreateSymbols(false);
 
                 Scene scene  = new Scene(lineChart,800,600);
-                lineChart.getData().add(series);
-                series.getNode().setStyle("-fx-stroke-width: 2px; -fx-effect: null;");
-                //series.getData().add(new XYChart.Data(1, 24));
-
                 stage.setScene(scene);
                 stage.show();
 
@@ -239,7 +234,19 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                     Thread loadThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            soapLoad(series, soapLoadProgressIndicator, soapLoadCurrentTpsField, soapLoadCurrentCountField);
+                            XYChart.Series seriesForThread = new XYChart.Series();
+                            seriesForThread.setName(Thread.currentThread().getName());
+                            seriesForThread.getData().add(new XYChart.Data(0, 0));
+
+                            Rectangle rect = new Rectangle(0, 0);
+                            rect.setVisible(false);
+                            seriesForThread.setNode(rect);
+
+                            Platform.runLater(() -> {
+                                lineChart.getData().add(seriesForThread);
+                            });
+
+                            soapLoad(seriesForThread, soapLoadProgressIndicator, soapLoadCurrentTpsField, soapLoadCurrentCountField);
                         }
                     });
                     loadThread.setDaemon(true);
@@ -379,13 +386,12 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 synchronized (lockObject) {
                     localCount.setValue(localCount.getValue() + 1);
                     globalCount.setValue(globalCount.getValue() + 1);
-
+                    progressIndicator.setProgress((double)Math.abs(globalBegin.getTime() - now.getTime())/(double)globalDuration);
 
                     Platform.runLater(() -> {
-                        progressIndicator.setProgress((double)Math.abs(globalBegin.getTime() - now.getTime())/(double)globalDuration);
-
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
+
                         series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
                     });
                 }

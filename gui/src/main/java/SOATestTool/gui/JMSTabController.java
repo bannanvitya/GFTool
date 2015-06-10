@@ -16,12 +16,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.codehaus.jackson.map.ObjectMapper;
 import SOATestTool.IBMMqClient.IBMMqClient;
 import SOATestTool.IBMMqClient.IBMMqProfile;
@@ -135,7 +141,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
     }
 
-    private void jmsLoad(ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
+    private void jmsLoad(XYChart.Series series, ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
         System.out.println(Thread.currentThread().getName() + "  -- Start.");
 
         NormalDistribution a = new NormalDistribution();
@@ -199,13 +205,13 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                 synchronized (lockObject) {
                     localCount.setValue(localCount.getValue() + 1);
                     globalCount.setValue(globalCount.getValue() + 1);
-
+                    progressIndicator.setProgress((double) Math.abs(globalBegin.getTime() - now.getTime()) / (double) globalDuration);
 
                     Platform.runLater(() -> {
-                        progressIndicator.setProgress((double) Math.abs(globalBegin.getTime() - now.getTime()) / (double) globalDuration);
-
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
+
+                        series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
                     });
                 }
                 double temp = 0.0;
@@ -230,7 +236,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
             }
         }
         else {
-
             neededCount = Long.parseLong(jmsLoadWhenToStopField.getText());
 
             while (globalCount.getValue() < neededCount && !jmsLoadKeyToStop) {
@@ -248,7 +253,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
 
                 now = new Date();
                 if (localCount.getValue() == 0) {
@@ -275,13 +279,13 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                     globalCount.setValue(globalCount.getValue() + 1);
                     progressIndicator.setProgress((double)globalCount.getValue()/(double)neededCount);
 
-
                     Platform.runLater(() -> {
                         tpsField.setText(Integer.toString(globalTps.getValue().intValue()));
                         countField.setText(Long.toString(globalCount.getValue()));
+
+                        series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
                     });
                 }
-
 
                 double tempSleep = 0.0;
                 //System.out.println(Thread.currentThread().getName() + "  --  " + globalIterations);
@@ -307,7 +311,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         }
         System.out.println(Thread.currentThread().getName() + "  -- Done.");
     }
-
 
     private void sendJmsRequest(){
         SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
@@ -355,12 +358,10 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         LinearRandomInt rInt = new LinearRandomInt( BigInteger.valueOf(System.currentTimeMillis()));
         LinearRandomString rStr = new LinearRandomString(7);
 
-
         while (request_text.contains("${rnd_int}")){
             rInt.next();
             request_text = request_text.replaceFirst("(?:\\$\\{rnd_int})+", rInt.getState().toString());
         }
-
 
         while (request_text.contains("${rnd_str}")){
             request_text = request_text.replaceFirst("(?:\\$\\{rnd_str})+", rStr.nextString());
@@ -395,8 +396,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
-
-
 
         jmsMainTabPane.sideProperty().setValue(Side.LEFT);
         jmsMainTabPane.tabClosingPolicyProperty().setValue(TabPane.TabClosingPolicy.SELECTED_TAB);
@@ -436,6 +435,42 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
             public void handle(ActionEvent event) {
 
                 SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
+
+                final Stage stage = new Stage(StageStyle.UNIFIED);
+                stage.setTitle("Transactions per second");
+
+                final NumberAxis xAxis;
+                if (jmsLoadByCountRadioButton.isSelected()){
+                    xAxis = new NumberAxis(0, Long.parseLong(jmsLoadWhenToStopField.getText()), 10);
+                    Long tempAxisWidth = Long.parseLong(jmsLoadWhenToStopField.getText());
+                    Double axisWidth = tempAxisWidth.doubleValue();
+                    xAxis.setMinWidth(2000);
+
+                }
+                else
+                {
+                    xAxis = new NumberAxis();
+                }
+
+                xAxis.setAutoRanging(false);
+                xAxis.setLabel("Count");
+
+                Long yAxisRange = Long.parseLong(jmsLoadNeededTpsField.getText());
+                yAxisRange = yAxisRange + (Long) yAxisRange/10;
+
+                final NumberAxis yAxis = new NumberAxis(0, yAxisRange, 10);
+                yAxis.setAutoRanging(false);
+
+                final LineChart<Number,Number> lineChart =
+                        new LineChart<Number,Number>(xAxis,yAxis);
+                lineChart.setTitle("Tps");
+                lineChart.setAnimated(false);
+                lineChart.setCreateSymbols(false);
+
+                Scene scene  = new Scene(lineChart,800,600);
+                stage.setScene(scene);
+                stage.show();
+                
                 jmsLoadCurrentCountField.setText("0.0");
                 jmsLoadCurrentTpsField.setText("0.0");
 
@@ -446,7 +481,19 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                     Thread loadThread = new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            jmsLoad(jmsLoadProgressIndicator, jmsLoadCurrentTpsField, jmsLoadCurrentCountField);
+                            XYChart.Series seriesForThread = new XYChart.Series();
+                            seriesForThread.setName(Thread.currentThread().getName());
+                            seriesForThread.getData().add(new XYChart.Data(0, 0));
+
+                            Rectangle rect = new Rectangle(0, 0);
+                            rect.setVisible(false);
+                            seriesForThread.setNode(rect);
+
+                            Platform.runLater(() -> {
+                                lineChart.getData().add(seriesForThread);
+                            });
+
+                            jmsLoad(seriesForThread, jmsLoadProgressIndicator, jmsLoadCurrentTpsField, jmsLoadCurrentCountField);
                         }
                     });
                     loadThread.setDaemon(true);
@@ -509,7 +556,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
             }
         });
 
-
         jmsVBox.getChildren().addAll(jmsInnerPane); // In this VBox 1) AnchorPane for button 2) AnchorPane named "jmsInnerPane" for all inner dynamic elements
 
         VBox.setVgrow(jmsInnerPane, Priority.ALWAYS);
@@ -541,8 +587,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         AnchorPane projectAnchor = new AnchorPane();
         projectAnchor.setMinWidth(350.0);
 
-
-
         Label requestLabel = new Label();
         requestLabel.setText("Request");
 
@@ -559,7 +603,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         AnchorPane.setLeftAnchor(requestArea, 7.0);
         AnchorPane.setRightAnchor(requestArea, 1.0);
         AnchorPane.setTopAnchor(requestArea, 30.0);
-
 
         Label hostLabel = new Label();
         hostLabel.setPrefHeight(25.0);
@@ -610,7 +653,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         PasswordField passwordField = new PasswordField();
         passwordField.setId("passwordField");
 
-
         TextArea responseArea = new TextArea();
         responseArea.wrapTextProperty().setValue(true);
         projectAnchor.getChildren().addAll(hostLabel, portLabel, queueManagerLabel, channelLabel, transportTypeLabel, queueNameLabel, userIdLabel, passwordLabel,
@@ -639,7 +681,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
 
         AnchorPane.setLeftAnchor(passwordLabel, 1.0);
         AnchorPane.setTopAnchor(passwordLabel, 203.0);
-
 
         AnchorPane.setLeftAnchor(hostField, 87.0);
         AnchorPane.setTopAnchor(hostField, 7.0);
@@ -673,9 +714,7 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         AnchorPane.setTopAnchor(passwordField, 203.0);
         AnchorPane.setRightAnchor(passwordField, 7.0);
 
-
         split.getItems().addAll(requestAnchor, projectAnchor); // split elements
-
 
         if (someTabPane.getTabs().size()>1)
             someTabPane.getTabs().add(someTabPane.getTabs().size()-1, tab);
@@ -684,8 +723,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         tab.setText("default");
         return tab;
     }
-
-
 
     public void setJmsUpperElement(Node node){
         upperElement = node;
