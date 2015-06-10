@@ -50,7 +50,6 @@ import java.util.*;
 public class HTTPTabController implements Initializable, ClientTabControllerApi {
     private Node upperElement;
 
-
     // elements for sequence requests
     @FXML public Button httpButton;
     @FXML public MenuItem httpProjectOpen;
@@ -74,17 +73,14 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     @FXML public volatile TextField httpLoadCurrentCountField;
     @FXML public volatile ProgressIndicator httpLoadProgressIndicator;
 
-
     // main elements of tabs
     TabPane httpMainTabPane = new TabPane();
     Tab httpAddButtonTab = new Tab();
     AnchorPane httpInnerPane = new AnchorPane();
 
-
     // non volatile elements of load
     private boolean httpLoadKeyToStop = false;
     private static Object lockObject = new Object();
-
 
     // volatile elements of load
     private volatile DoubleProperty globalTps = new SimpleDoubleProperty(0.0);
@@ -98,7 +94,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
     private volatile Date globalBegin;
     private volatile long neededCount;
     private volatile Date localBegin;
-
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -124,8 +119,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                                                            }
                                                        }
         );
-
-        
         
         httpLoadStopButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -133,7 +126,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                 httpLoadKeyToStop = true;
             }
         });
-
 
         httpLoadByCountRadioButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -158,7 +150,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             }
         });
 
-
         httpLoadStartButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -174,7 +165,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                     Long tempAxisWidth = Long.parseLong(httpLoadWhenToStopField.getText());
                     Double axisWidth = tempAxisWidth.doubleValue();
                     xAxis.setMinWidth(2000);
-
                 }
                 else
                 {
@@ -218,7 +208,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                             Platform.runLater(() -> {
                                 lineChart.getData().add(seriesForThread);
                             });
-
                            httpLoad(seriesForThread, httpLoadProgressIndicator, httpLoadCurrentTpsField, httpLoadCurrentCountField);
                         }
                     });
@@ -237,7 +226,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                 project.setTitle("Open Project File");
                 Stage stage = new Stage();
                 File file = project.showSaveDialog(stage);
-
 
                 if(file != null){
                     SaveAndOpen.projectGlobalSave(file.getPath(), httpMainTabPane, HTTPTabController.this);
@@ -263,12 +251,8 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             }
         });
 
-
-
         httpVBox.getChildren().addAll(httpInnerPane); // In this VBox 1) AnchorPane for button 2) AnchorPane named "jmsInnerPane" for all inner dynamic elements
-
         VBox.setVgrow(httpInnerPane, Priority.ALWAYS);
-
 
         SaveAndOpen.projectGlobalOpen(System.getenv("SOATOOL_ROOT") + "/serz/http.tab.objects", httpMainTabPane, HTTPTabController.this);
         if (httpMainTabPane.getTabs().size() == 0) {
@@ -279,9 +263,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         httpMainTabPane.getTabs().add(httpAddButtonTab);
         SingleSelectionModel<Tab> selectionModel = httpMainTabPane.getSelectionModel();
         selectionModel.select(httpMainTabPane.getTabs().indexOf(httpAddButtonTab) - 1); // add tab to create new tabs
-
-
-
         httpProjectStateLabel.setText("");
     }
 
@@ -300,8 +281,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         AnchorPane projectAnchor = new AnchorPane(); //projectAnchor
         projectAnchor.setMinWidth(350.0);
 
-
-
         Label requestLabel = new Label(); //requestAnchor elements
         requestLabel.setText("Request");
 
@@ -319,15 +298,11 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         AnchorPane.setRightAnchor(requestArea, 1.0);
         AnchorPane.setTopAnchor(requestArea, 30.0);
 
-
         TableView<Params> tableView = new TableView<Params>(); //responseAnchor elements
         tableView.setEditable(true);
 
         TableColumn firstNameCol = new TableColumn("Header Name");
         TableColumn lastNameCol = new TableColumn("Header Value");
-
-
-
 
         tableView.getColumns().addAll(firstNameCol, lastNameCol);
         firstNameCol.setCellValueFactory(
@@ -394,7 +369,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         postRadioButton.setId("postRadioButton");
         postRadioButton.setToggleGroup(methodGroup);
 
-
         final ToggleGroup contentTypeGroup = new ToggleGroup();
 
         RadioButton appRadioButton = new RadioButton("application/json");
@@ -409,7 +383,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         RadioButton otherTypeRadioButton = new RadioButton("or other:");
         otherTypeRadioButton.setId("otherTypeRadioButton");
         otherTypeRadioButton.setToggleGroup(contentTypeGroup);
-
 
         TextField otherTypeField = new TextField();
         otherTypeField.setId("otherTypeField");
@@ -486,7 +459,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             addRow.setVisible(false);
         }
 
-
         projectAnchor.getChildren().addAll(methodLabel, getRadioButton, postRadioButton, urlField, contentTypeLabel, appRadioButton,
                 textXmlRadioButton, otherTypeRadioButton, otherTypeField, tableView, headerNameField, headerValueField, addRow, responseLabel, responseTextArea);
 
@@ -542,9 +514,7 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         AnchorPane.setLeftAnchor(urlField, 1.0);
         AnchorPane.setRightAnchor(urlField, 7.0);
 
-
         split.getItems().addAll(requestAnchor, projectAnchor); // split elements
-
 
         if (someTabPane.getTabs().size()>1)
             someTabPane.getTabs().add(someTabPane.getTabs().size()-1, tab);
@@ -553,7 +523,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         tab.setText("default");
         return tab;
     }
-
 
     public static class Params {
 
@@ -564,32 +533,24 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             setParamName(pName);
             setParamValue(pValue);
         }
-
         public String getParamName() {
             return paramName.get();
         }
-
         public void setParamName(String name) {
             this.paramName.set(name);
         }
-
         public StringProperty firstParamName() {
             return paramName;
         }
-
         public String getParamValue() {
             return paramValue.get();
         }
-
         public void setParamValue(String name) {
             paramValue.set(name);
         }
-
         public StringProperty surnameParamValue() {
             return paramValue;
         }
-
-
     }
 
     public void setHttpUpperElement(Node node){
@@ -602,7 +563,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         Properties prop = new Properties();
         Properties headers = new Properties();
 
-
         SingleSelectionModel<Tab> selectionModel = httpMainTabPane.getSelectionModel();
         SplitPane split = (SplitPane)httpMainTabPane.getTabs().get(selectionModel.getSelectedIndex()).getContent();
 
@@ -613,10 +573,8 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             headers.setProperty(param.getParamName(), param.getParamValue());
         }
 
-
         TextField httpUrlField = (TextField) projectAnchor.getChildren().get(3);
         prop.setProperty("url", httpUrlField.getText());
-
 
         RadioButton httpGetMethod = (RadioButton) projectAnchor.getChildren().get(1);
         if (httpGetMethod.isSelected())
@@ -635,7 +593,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         else if (httpOtherContentType.isSelected())
             prop.setProperty("contentType", httpContentTypeField.getText());
 
-
         try {
             if (prop.getProperty("methodType").equals("GET"))
                 profile.setId("httpTab", prop, headers);
@@ -653,22 +610,18 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         AnchorPane requestAnchor = (AnchorPane) split.getItems().get(0);
         TextArea httpRequestField = (TextArea) requestAnchor.getChildren().get(1);
 
-
         String request_text = httpRequestField.getText();
         LinearRandomInt rInt = new LinearRandomInt( BigInteger.valueOf(System.currentTimeMillis()));
         LinearRandomString rStr = new LinearRandomString(7);
-
 
         while (request_text.contains("${rnd_int}")){
             rInt.next();
             request_text = request_text.replaceFirst("(?:\\$\\{rnd_int})+", rInt.getState().toString());
         }
 
-
         while (request_text.contains("${rnd_str}")){
             request_text = request_text.replaceFirst("(?:\\$\\{rnd_str})+", rStr.nextString());
         }
-
 
         HTTPRequest req = new HTTPRequest(request_text);
         client.setProfile(profile);
@@ -751,7 +704,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                         }
                     }
                 }
-
                 synchronized (lockObject) {
                     localCount.setValue(localCount.getValue() + 1);
                     globalCount.setValue(globalCount.getValue() + 1);
@@ -788,7 +740,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
             }
         }
         else {
-
             neededCount = Long.parseLong(httpLoadWhenToStopField.getText());
 
             while (globalCount.getValue() < neededCount && !httpLoadKeyToStop) {
@@ -806,7 +757,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
                 now = new Date();
                 if (localCount.getValue() == 0) {
                     localBegin = now;
@@ -826,7 +776,6 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
                     }
                     //System.out.println(tps);
                 }
-
                 synchronized (lockObject) {
                     localCount.setValue(localCount.getValue() + 1);
                     globalCount.setValue(globalCount.getValue() + 1);
@@ -865,5 +814,4 @@ public class HTTPTabController implements Initializable, ClientTabControllerApi 
         }
         System.out.println(Thread.currentThread().getName() + "  -- Done.");
     }
-
 }

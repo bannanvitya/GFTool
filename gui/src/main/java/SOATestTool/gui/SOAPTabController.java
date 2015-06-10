@@ -64,8 +64,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         return projectMap;
     }
 
-
-
     TabPane soapMainTabPane = new TabPane();
     Tab soapAddButtonTab = new Tab();
     AnchorPane soapInnerPane = new AnchorPane();
@@ -73,7 +71,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     @FXML public Button soapButton;
     @FXML public MenuItem soapProjectSave;
     @FXML public VBox soapVBox;
-
 
     // elements for load
     @FXML public Button soapLoadStartButton;
@@ -91,11 +88,9 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     @FXML public CheckBox soapLoadNormalDistributionCkeckBox;
     @FXML public volatile ProgressIndicator soapLoadProgressIndicator;
 
-
     // non volatile elements of load
     private boolean soapLoadKeyToStop = false;
     private static Object lockObject = new Object();
-
 
     // volatile elements of load
     private volatile DoubleProperty globalTps = new SimpleDoubleProperty(0.0);
@@ -111,10 +106,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
     private volatile Date now;
     private volatile long neededCount;
     private volatile Date localBegin;
-
-
-
-
 
     @Override
     public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
@@ -183,8 +174,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         });
 
         soapLoadStartButton.setOnAction(new EventHandler<ActionEvent>() {
-
-
             @Override
             public void handle(ActionEvent event) {
 
@@ -272,20 +261,15 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                 }
         });
 
-
-
-
         soapVBox.getChildren().addAll(soapInnerPane);
         VBox.setVgrow(soapInnerPane, Priority.ALWAYS);
 
         globalOpen(System.getenv("SOATOOL_ROOT") + "/serz/soap.profiles.objects");
 
-
         if (soapMainTabPane.getTabs().size() == 0) {
             Date now = new Date();
             Tab tab = addTab(now.toString(), soapMainTabPane);
         }
-
 
         soapMainTabPane.getTabs().add(soapAddButtonTab);
 
@@ -316,16 +300,12 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
     
     private void soapLoad(XYChart.Series series, ProgressIndicator progressIndicator, TextField tpsField, TextField countField){
         System.out.println(Thread.currentThread().getName() + "  -- Start.");
 
         NormalDistribution a = new NormalDistribution();
-
-
 
         Long thinkTime = Long.valueOf(0);
         if (soapLoadThinkTimeCkeckBox.isSelected())
@@ -435,7 +415,6 @@ public class SOAPTabController implements Initializable, ClientTabControllerApi 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
 
                 now = new Date();
                 if (localCount.getValue() == 0) {

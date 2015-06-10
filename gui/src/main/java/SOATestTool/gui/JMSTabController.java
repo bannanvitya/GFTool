@@ -273,7 +273,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                     }
                     //System.out.println(tps);
                 }
-
                 synchronized (lockObject) {
                     localCount.setValue(localCount.getValue() + 1);
                     globalCount.setValue(globalCount.getValue() + 1);
@@ -286,7 +285,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                         series.getData().add(new XYChart.Data(globalCount.getValue(), globalTps.getValue().intValue()));
                     });
                 }
-
                 double tempSleep = 0.0;
                 //System.out.println(Thread.currentThread().getName() + "  --  " + globalIterations);
                 if (globalTps.getValue() > neededTps) {
@@ -341,7 +339,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         prop.setProperty("userId", userIdField.getText());
         prop.setProperty("password", passwordField.getText());
         System.out.println(prop.toString());
-
 
         try {
             profile.setId("jmsTab", prop);
@@ -435,7 +432,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
             public void handle(ActionEvent event) {
 
                 SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
-
                 final Stage stage = new Stage(StageStyle.UNIFIED);
                 stage.setTitle("Transactions per second");
 
@@ -445,7 +441,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                     Long tempAxisWidth = Long.parseLong(jmsLoadWhenToStopField.getText());
                     Double axisWidth = tempAxisWidth.doubleValue();
                     xAxis.setMinWidth(2000);
-
                 }
                 else
                 {
@@ -516,7 +511,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                                                         });
 
         jmsButton.setOnAction(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent event) {
                 sendJmsRequest();
@@ -546,8 +540,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
                 project.setTitle("Open Project File");
                 Stage stage = new Stage();
                 File file = project.showSaveDialog(stage);
-
-
                 if(file != null){
                     SaveAndOpen.projectGlobalSave(file.getPath(), jmsMainTabPane, JMSTabController.this);
                     SaveAndOpen.projectGlobalSave(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
@@ -557,7 +549,6 @@ public class JMSTabController implements Initializable, ClientTabControllerApi {
         });
 
         jmsVBox.getChildren().addAll(jmsInnerPane); // In this VBox 1) AnchorPane for button 2) AnchorPane named "jmsInnerPane" for all inner dynamic elements
-
         VBox.setVgrow(jmsInnerPane, Priority.ALWAYS);
 
         SaveAndOpen.projectGlobalOpen(System.getenv("SOATOOL_ROOT") + "/serz/jms.tab.objects", jmsMainTabPane, JMSTabController.this);
